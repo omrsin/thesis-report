@@ -13,6 +13,9 @@
 \usepackage{url}
 \usepackage{blindtext}
 \usepackage{setspace}
+\usepackage[justification=centerlast]{caption}
+\usepackage{float}
+\usepackage{xcolor}
 
 % Sets refrences so users can click and jump to the right sections
 \usepackage{hyperref}
@@ -31,7 +34,7 @@
 % For TeXLive users (Bibtex):
 \usepackage[backend=bibtexu, style=numeric-comp, bibstyle=numeric, citestyle=numeric,firstinits=true]{biblatex}
 
-% Allows the creation of code listings
+% Creates code listings
 \usepackage{listings}
 
 % % % % % % % % % % % % % % % % % % % % %
@@ -69,14 +72,38 @@
 %	bookmarksnumbered = false,	% Determines whether the chapter numbers are accepted into the bookmark tree
 %}
 
-% Listing setings
+% Listings default configuration
 \lstset{
-	basicstyle = \footnotesize\ttfamily,
+	basicstyle = \small\ttfamily\color{black},
+	breaklines = true,
+	breakatwhitespace = true,
+	captionpos = b,
+	commentstyle = \color{brown},
+	escapeinside={/*\#}{\#*/},
+	float = t,
 	frame = lines,
+	framexbottommargin = 10pt,
+	framexleftmargin = 20pt,
+	framexrightmargin = 20pt,
+	framextopmargin = 10pt,
+	keywordstyle = \color{purple},
+	ndkeywordstyle = \color{green},
 	numbers = left,
+	numbersep = 10pt,
+	numberstyle = \color{gray},
+	rulecolor = \color{gray},
 	showstringspaces = false,
-	tabsize = 2
+	stringstyle = \color{blue},
+	tabsize = 2,
+	xleftmargin = .15\textwidth,
+	xrightmargin = .15\textwidth
 }
+
+% Sets how the captions for listings are displayed
+\DeclareCaptionFormat{listing}{%
+	\parbox{\textwidth-.3\textwidth+40pt}{\centerlast #1#2#3}%
+}
+\captionsetup[lstlisting]{format=listing,margin={.15\textwidth-20pt,0pt}}
 
 % % % % % % % % % % % % % % % % % % % % %
 %										%
@@ -139,7 +166,7 @@
 
 % Definition of the bibzahl command for manually creating a numbered entry in the bibliography
 \newcommand{\bibzahl}[2] {
-	\begin{tabular}{p{0.75cm}p{\textwidth-1.5cm}}
-		[#1] &#2
-	\end{tabular}
+\begin{tabular}{p{0.75cm}p{\textwidth-1.5cm}}
+	[#1] &#2
+\end{tabular}
 }

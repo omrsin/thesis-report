@@ -3,29 +3,26 @@
 
 %TODO How to include somewhere that Spark was built in Scala \cite{WebScala2017}
 
-Spark is a data processing framework that was first introduced in 2012 \cite{Zaharia2012a}. Similar to other systems, such as MapReduce \cite{Dean2004} and Dryad \cite{Isard2007}, it aims to offer a clean and flexible abstraction to distributed computations on large datasets. However, Spark offers two advantages in comparison to such systems: It makes use of a shared memory abstraction that improves performance by avoiding persisting intermediate sets. It also provides an efficient fault-tolerance mechanism, based on tracking coarse-grained operations, that can recover lost tasks with minimal impact.
+Spark is a data processing framework that was first introduced in 2012~\cite{Zaharia2012a}. Similar to other systems, such as MapReduce~\cite{Dean2004} and Dryad~\cite{Isard2007}, it aims to offer a clean and flexible abstraction to distributed computations on large datasets. However, Spark offers two advantages in comparison to such systems: It makes use of a shared memory abstraction that improves performance by avoiding persisting intermediate sets. It also provides an efficient fault-tolerance mechanism, based on tracking coarse-grained operations, that can recover lost tasks with minimal impact.
 
 The working units in Spark are called \textit{\acrlongpl{abb:rdd}}, better known as \acrshortpl{abb:rdd}. These units represent an immutable partitioned collection of elements in a distributed memory space. \acrshortpl{abb:rdd} can only be created through a set of deterministic operations, known as \textit{transformations} (e.g., \textit{map}, \textit{filter} and \textit{join}), that can be applied to both, raw data or other \acrshortpl{abb:rdd}. Transformations are not evaluated immediately, instead Spark keeps track of all the transformations applied to each \acrshort{abb:rdd} in a program so it can optimize their subsequent processing. Additionally, \acrshortpl{abb:rdd} can be operated to return a value or can be made persistent into storage. These kind of operations are known as \textit{actions} (e.g., \textit{count}, \textit{reduce} and \textit{save}), and they are the ones that trigger the processing of \acrshortpl{abb:rdd}.
 
-To interact with the \acrshort{abb:rdd} abstraction, Spark provides several \acrshortpl{abb:api} for different programming languages such as Java, Scala, Python and recently R \cite{Venkataraman2016}.
+To interact with the \acrshort{abb:rdd} abstraction, Spark provides several \acrshortpl{abb:api} for different programming languages such as Java, Scala, Python and recently R~\cite{Venkataraman2016}.
 
-\lstset{language=Scala}
-\begin{lstlisting}
-object SparkWordCount{
-	def main(args: Array[String]) {
-		val conf = new SparkConf().setAppName("Spark Example").setMaster("local")
-		val spark = new SparkContext(conf)
-		val wordCount = spark.textFile("input/log.txt", 1)
-			.flatMap(_.split(" "))
-			.map((_,1))
-			.reduceByKey(_+_)
-			.collect()
-			.map(println(_))    
-	}
-}
-\end{lstlisting}	
+\begin{lstlisting}[
+	language=Scala,
+	float,
+	caption={[Log processing with Spark] Entries in a log file are filtered, grouped and counted based on a common property.},
+	label=lst:spark
+]
+val log = spark.textFile("*file*") /*# \label{lst:spark:ln:conf} #*/
+val errors = log.filter(_.contains("ERROR")) 
+	.map(error => (error.split('\t')(0),1))
+	.reduceByKey(_+_)
+errors.save()
+\end{lstlisting}
 
-Moreover, repeating the same transformations on the same dataset always yield the same RDD as a result; this property is necessary for the fault-tolerant mechanism.
+Moreover, repeating the same transformations on the same dataset always yield the same RDD as a result; this property is necessary for the fault-tolerant mechanism. I just want to cite here \ref{lst:spark:ln:conf}
 
 (Lineage or provenance) Capturing lineage or provenance information for data has long been a research topic in scientific computing and databases, for applications such as explaining results, allowing them to be reproduced by others, and recomputing data if a bug is found in a workflow or if a dataset is lost \cite{Zaharia2012a}
 
