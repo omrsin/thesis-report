@@ -7,7 +7,7 @@
 \usepackage{tudfonts}
 \usepackage{siunitx}
 \usepackage{booktabs}
-\usepackage{listings}
+\usepackage{listings}					% Creates code listings
 \usepackage[markup=nocolor]{changes}	% Allows the possibility to strike text through
 \usepackage[activate={true,nocompatibility},final,tracking=true,kerning=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
 \usepackage{url}
@@ -34,9 +34,6 @@
 %\usepackage[backend=biber, style=numeric-comp, bibstyle=numeric, citestyle=numeric]{biblatex}
 % For TeXLive users (Bibtex):
 \usepackage[backend=bibtexu, style=numeric-comp, bibstyle=numeric, citestyle=numeric,firstinits=true]{biblatex}
-
-% Creates code listings
-\usepackage{listings}
 
 % % % % % % % % % % % % % % % % % % % % %
 %										%
@@ -99,6 +96,9 @@
 	xleftmargin = .15\textwidth,
 	xrightmargin = .15\textwidth
 }
+
+% Changes the name of the list of listings
+\renewcommand{\lstlistlistingname}{List of \lstlistingname s}
 
 % Sets how the captions for listings are displayed
 \DeclareCaptionFormat{listing}{%
