@@ -5,36 +5,33 @@
 
 Spark is a data processing framework that was first introduced in 2012~\cite{Zaharia2012a}. Similar to other systems, such as MapReduce~\cite{Dean2004} and Dryad~\cite{Isard2007}, it aims to offer a clean and flexible abstraction to distributed computations on large datasets. However, Spark offers two advantages in comparison to such systems: It makes use of a shared memory abstraction that improves performance by avoiding persisting intermediate sets. It also provides an efficient fault-tolerance mechanism, based on tracking coarse-grained operations, that can recover lost tasks with minimal impact.
 
-The working units in Spark are called \textit{\acrlongpl{abb:rdd}}, better known as \acrshortpl{abb:rdd}. These units represent an immutable partitioned collection of elements in a distributed memory space. \acrshortpl{abb:rdd} can only be created through a set of deterministic operations, known as \textit{transformations} (e.g., \textit{map}, \textit{filter} and \textit{join}), that can be applied to both, raw data or other \acrshortpl{abb:rdd}. Transformations are not evaluated immediately, instead Spark keeps track of all the transformations applied to each \acrshort{abb:rdd} in a program so it can optimize their subsequent processing. Additionally, \acrshortpl{abb:rdd} can be operated to return a value or can be made persistent into storage. These kind of operations are known as \textit{actions} (e.g., \textit{count}, \textit{reduce} and \textit{save}), and they are the ones that trigger the processing of \acrshortpl{abb:rdd}.
+The working units in Spark are called \textit{\acrlongpl{acr:rdd}}, better known as \acrshortpl{acr:rdd}. These units represent an immutable partitioned collection of elements in a distributed memory space. \acrshortpl{acr:rdd} can only be created through a set of deterministic operations, known as \textit{transformations} (e.g., \textit{map}, \textit{filter} and \textit{join}), that can be applied to both, raw data or other \acrshortpl{acr:rdd}. Transformations are not evaluated immediately, instead Spark keeps track of all the transformations applied to each \acrshort{acr:rdd} in a program so it can optimize their subsequent processing. Additionally, \acrshortpl{acr:rdd} can be made persistent into storage or can be operated to produce a value. This kind of operations are known as \textit{actions} (e.g., \textit{count}, \textit{reduce} and \textit{save}), and they are the ones that trigger the processing of \acrshortpl{acr:rdd}.
 
-To interact with the \acrshort{abb:rdd} abstraction, Spark provides several \acrshortpl{abb:api} for different programming languages such as Java, Scala, Python and recently R~\cite{Venkataraman2016}.
+To interact with the \acrshort{acr:rdd} abstraction, Spark provides several \acrshortpl{acr:api} for different programming languages such as Java, Scala, Python and recently R~\cite{Venkataraman2016}. Listing~\ref{lst:spark} presents a simple Spark program written with the Scala \acrshort{acr:api}, that processes log files in the search for errors. The operation in line~\ref{lst:ln:spark:conf} creates the first \acrshort{acr:rdd} from a log file, whose origin could be a local file or a partitioned file in a distributed file system such a \acrfull{acr:hdfs}~\cite{WebHadoop2017}. Spark converts each line in the file to a \textit{String} element in the newly created \acrshort{acr:rdd}. In lines~\ref{lst:ln:spark:transformations-begin} to~\ref{lst:ln:spark:transformations-end}, a chain of transformations is applied to the \acrshort{acr:rdd}: First, elements not containing the text ``ERROR'' are filtered. Next, each resulting element is transformed to a tuple consisting of a certain property (e.g., error type; assumed to be the first information in a log entry) and the number 1. Finally, the tuples are grouped and counted based on the chosen property. Line~\ref{lst:ln:spark:actions} represents the action applied to the \acrshort{acr:rdd}, in this saving it to persistent storage.
 
 \begin{lstlisting}[
 	language=Scala,
 	float,
-	caption={[Log processing with Spark] Entries in a log file are filtered, grouped and counted based on a common property.},
+	caption={[Log processing with Spark] Entries in a log file are filtered, grouped and counted based on a common property. Finally the result is saved to persistent storage.},
 	label=lst:spark
 ]
-val log = spark.textFile("*file*") /*# \label{lst:spark:ln:conf} #*/
-val errors = log.filter(_.contains("ERROR")) 
+val log = spark.textFile("*file*") /*# \label{lst:ln:spark:conf} #*/
+val errors = log.filter(_.contains("ERROR")) /*# \label{lst:ln:spark:transformations-begin} #*/
 	.map(error => (error.split('\t')(0),1))
-	.reduceByKey(_+_)
-errors.save()
+	.reduceByKey(_+_) /*# \label{lst:ln:spark:transformations-end} #*/
+errors.save() /*# \label{lst:ln:spark:actions} #*/
 \end{lstlisting}
 
-Moreover, repeating the same transformations on the same dataset always yield the same RDD as a result; this property is necessary for the fault-tolerant mechanism. I just want to cite here \ref{lst:spark:ln:conf}
+% TODO: Glossary entries: Spark, RDD, Distributed File System, data locality, lineage
+During the execution of a program, Spark does not generate imperatively new data collections for every transformation it finds. Instead, it constructs new \acrshortpl{acr:rdd} attached with the operation that has to be applied to each element. The resulting \acrshort{acr:rdd} is a sequence of operations starting from source dataset, whose semantics depends on the nature of each transformation applied. It is not until an action is found that the target \acrshort{acr:rdd} is resolved and the whole sequence of transformations actually operates the data. 
 
-(Lineage or provenance) Capturing lineage or provenance information for data has long been a research topic in scientific computing and databases, for applications such as explaining results, allowing them to be reproduced by others, and recomputing data if a bug is found in a workflow or if a dataset is lost \cite{Zaharia2012a}
+Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to improve the distribution of operations in a clustered dataset, taking advantage of properties like data locality. Moreover, the trace of operations that produced a certain element in an \acrshort{acr:rdd}, known as \textit{\gls{gls:lineage}}, enables Spark to recover failed tasks only recalling to the necessary data elements that reproduce the lost portion. 
 
-(Spark) Spark provides a convenient language-integrated programming interface in the Scala programming language. Spark exposes RDDs through a language-integrated API where each dataset is represented as an object and transformations are invoked using methods on these objects. \cite{Zaharia2012a}
 
 (Spark) Iterative algorithms and interactive querying of data sets.
 
 (Version)Be sure to mention the current version of Spark at the moment or the version used for the analysis.
 
-(How operation starts) Programmers start by defining one or more RDDs through transformations on data in stable storage (e.g., map and filter) \cite{Zaharia2012a}
-
-(Spark Interface in Scala) Spark provides the RDD abstraction through a language-integrated API in Scala, a statically typed functional programming language for the Java VM. \cite{Zaharia2012a}
 
 (First order functions) Users provide arguments to RDD operations like map by passing closures (function literals). Scala represents each closure as a Java object, and these objects can be serialized and loaded on another node to pass the closure across the network. \cite{Zaharia2012a}
 
