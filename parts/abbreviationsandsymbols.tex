@@ -1,16 +1,23 @@
-% Sets an extra index for symbols
-\newglossary[slg]{symbolslist}{syi}{syg}{List of Symbols}
-
 % Deactivates the period at the end of each description
 \renewcommand*{\glspostdescription}{}
 
 % Creates the glossary
 \makeglossaries
 
-\glossarystyle{long3colheader}
+% % % % % % % % % % % % % % %
+%				    		%
+%	Definition of terms		%
+%					    	%
+% % % % % % % % % % % % % % %
+
+\newglossaryentry{gls:term}{
+	name={Term},
+	description={Description of term},
+	text=term
+}
 
 % % % % % % % % % % % % % % %
-%				    	    %
+%				    		%
 %	Definition of symbols	%
 %					    	%
 % % % % % % % % % % % % % % %
@@ -19,31 +26,8 @@
 	name=$\varepsilon$,
 	description={Dehnung},
 	symbol=E
-	sort=epsilon, type=symbolslist
-}
-\newglossaryentry{symb:phi}{
-	name=$\varphi$,
-	description={Winkel},
-	sort=phi, type=symbolslist
-}
-\newglossaryentry{symb:E}{
-	name=E,
-	description={Elastizitätsmodul},
-	sort=E, type=symbolslist
-}
-\newglossaryentry{symb:T}{
-	name=T,
-	description={Temperatur},
-	sort=T, 
-	type=symbolslist,
-	symbol=\si{\kelvin}
-}
-\newglossaryentry{symb:sigma}{
-	name=$\sigma$,
-	description={Spannung},
-	sort=sigma, 
-	type=symbolslist,
-	symbol=\si{\newton\per\millimetre\squared}
+	sort=epsilon, 
+	type=symbols
 }
 
 % % % % % % % % % % % % % % % % %
@@ -55,5 +39,3 @@
 % Command syntax: \newacronym{label}{Abbreviation}{Meaning}
 \newacronym{spz}{SPZ}{Sprachenzentrum}
 \newacronym{pmv}{PMV}{Fachgebiet Papierfabrikation und Mechanische Verfahrenstechnik}
-
-

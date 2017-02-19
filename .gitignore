@@ -10,10 +10,13 @@
 *.ist 
 *.lot 
 *.lof
-*.log 
+*.log
+*.lol 
 *.out 
 *.run.xml
 *.slg
+*.slo
+*.sls
 *.soc 
 *.syg
 *.syi 

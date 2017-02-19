@@ -90,18 +90,23 @@
 % Includes the list of tables
 \listoftables
 
-% Includes the list of abbreviations
-\newpage
+% Includes the list of listings
+\lstlistoflistings
+
+% Adds all the entries in the glossaries. Uncomment to include entries even if they have not been referenced
 \glsaddall
-\setlength{\glsdescwidth}{14cm}
-\printglossary[type=\acronymtype,style=long, title=Glossary]
+
+% Includes the glossary
+%\setlength{\glsdescwidth}{12.5cm}
+\printglossary[style=long]
+
+% Includes the list of abbreviations
+\printacronyms[style=long,title={List of Abbreviations and Acronyms}]
 % Table alternative to the list of abbreviations (Uncomment if preferred)
 %\include{parts/abbreviations_table}
 
 % Includes the list of symbols
-\glsaddall
-\setlength{\glsdescwidth}{12.5cm}
-\printglossary[type=symbolslist,style=longheader, title=List of Symbols]
+\printsymbols[style=longheader,title={List of Symbols}]
 % Table alternative to the list of symbols (Uncomment if preferred)
 %\include{parts/symbols_table}
 
