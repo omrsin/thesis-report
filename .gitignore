@@ -22,5 +22,6 @@
 *.syi 
 *.synctex.gz 
 *.toc
+*.upa
 
 thesis-blx.bib 

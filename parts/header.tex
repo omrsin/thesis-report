@@ -7,12 +7,18 @@
 \usepackage{tudfonts}
 \usepackage{siunitx}
 \usepackage{booktabs}
-\usepackage{listings}
+\usepackage{listings}					% Creates code listings
 \usepackage[markup=nocolor]{changes}	% Allows the possibility to strike text through
 \usepackage[activate={true,nocompatibility},final,tracking=true,kerning=true,spacing=true,factor=1100,stretch=10,shrink=10]{microtype}
 \usepackage{url}
 \usepackage{blindtext}
 \usepackage{setspace}
+\usepackage[justification=centerlast]{caption}
+\usepackage{float}
+\usepackage{xcolor}
+
+% Sets refrences so users can click and jump to the right sections
+\usepackage{hyperref}
 
 \usepackage[
 	nonumberlist, 			% No display of page numbers in the lists of abbreviations and symbols
@@ -29,9 +35,6 @@
 % For TeXLive users (Bibtex):
 \usepackage[backend=bibtexu, style=numeric-comp, bibstyle=numeric, citestyle=numeric,firstinits=true]{biblatex}
 
-% Sets refrences so users can click and jump to the right sections
-\usepackage{hyperref}
-
 % % % % % % % % % % % % % % % % % % % % %
 %										%
 %	Package Settings					%
@@ -43,14 +46,14 @@
 \graphicspath{{img/}}	% Defines directories where \includegraphics looks for image files by default
 \sisetup{
 	exponent-product = \cdot, 			% Sets a period as a separator when using exponential
-	%	output-decimal-marker = {,},		% Use only if the default is a non-english context. Sets the comma as a decimal seprator (in English is a period)
+	%	output-decimal-marker = {,},	% Use only if the default is a non-english context. Sets the comma as a decimal seprator (in English is a period)
 	per-mode = symbol,					% Sets fractions instead of negatives exponents
 	bracket-unit-denominator = false,	% Does not surround units in the denominator with parentheses
 	range-phrase = ~--~,				% Uses an en-dash for ranges whenever \SIrange or \numrange are used
 	number-unit-product = \text{~},		% Fixes the distance between a number and its unit
 	detect-all,							% This also takes into consideration changes in the font for numbers and units
-	%	list-final-separator = ~und~,		% Use only if the default is a non-english context. Translation
-	%	list-pair-separator = ~und~,		% Use only if the default is a non-english context. Translation
+	%	list-final-separator = ~und~,	% Use only if the default is a non-english context. Translation
+	%	list-pair-separator = ~und~,	% Use only if the default is a non-english context. Translation
 }
 
 % Takes care of the coloring of internet and internal links
@@ -66,6 +69,42 @@
 %	bookmarksopen = false,		% Determines whether or not the bookmark bar is expanded when the PDF is opened
 %	bookmarksnumbered = false,	% Determines whether the chapter numbers are accepted into the bookmark tree
 %}
+
+% Listings default configuration
+\lstset{
+	basicstyle = \small\ttfamily\color{black},
+	breaklines = true,
+	breakatwhitespace = true,
+	captionpos = b,
+	commentstyle = \color{brown},
+	escapeinside={/*\#}{\#*/},
+	float = t,
+	frame = lines,
+	framexbottommargin = 10pt,
+	framexleftmargin = 20pt,
+	framexrightmargin = 20pt,
+	framextopmargin = 10pt,
+	keywordstyle = \color{purple},
+	ndkeywordstyle = \color{green},	
+	numbers = left,
+	numbersep = 10pt,
+	numberstyle = \color{gray},
+	rulecolor = \color{gray},
+	showstringspaces = false,
+	stringstyle = \color{blue},
+	tabsize = 2,
+	xleftmargin = .15\textwidth,
+	xrightmargin = .15\textwidth
+}
+
+% Changes the title of the Listings table
+\renewcommand{\lstlistlistingname}{List of Listings}
+
+% Sets how the captions for listings are displayed
+\DeclareCaptionFormat{listing}{%
+	\parbox{\textwidth-.3\textwidth+40pt}{\centerlast #1#2#3}%
+}
+\captionsetup[lstlisting]{format=listing,margin={.15\textwidth-20pt,0pt}}
 
 % % % % % % % % % % % % % % % % % % % % %
 %										%
@@ -128,7 +167,7 @@
 
 % Definition of the bibzahl command for manually creating a numbered entry in the bibliography
 \newcommand{\bibzahl}[2] {
-	\begin{tabular}{p{0.75cm}p{\textwidth-1.5cm}}
-		[#1] &#2
-	\end{tabular}
+\begin{tabular}{p{0.75cm}p{\textwidth-1.5cm}}
+	[#1] &#2
+\end{tabular}
 }
