@@ -1,0 +1,64 @@
+\TUsection{Program Analysis}
+\label{sec:program-analysis}
+
+(Coming from Finite Models.~\cite{BookPezze2008})
+
+(Model Checking, why should we use it?)
+
+(Model) A model is a representation that is simple than the artifact it represents but preserves (or at least approximates) some important attributes of the actual artifact.~\cite{BookPezze2008}
+
+(Models summary) Models play many of the same roles in software development as in engineering of other kinds of artifacts. Models must be much simpler than the artifacts they describe, but must preserve enough essential detail to be useful in making choices. For models of software execution, this means that a model must be abstract away enough detail to represent the potentially infinite set of program executions states by a finite and suitably compact set of model classes. ...Some models, like CFG, can be extracted from programs. Tne key trade-off for these extracted models is precision versus the cost of producing and storing the model.~\cite{BookPezze2008}
+
+(Related to Model Checking --- First of all, programs often contain fatal errors despite the existence of careful designs.Many deadlocks and critical section violations, for example, are introduced at a level of detail which designs typically do not deal with, if formal designs are made at all.) ~\cite{Visser2003}
+
+(Related to Model Checking --- The other kind of error is more simple minded concurrency programming errors, such as forgetting to put code in a critical section or causing deadlocks. Errors of this kind will typically not be caught in a design, and they are a real hazard, in particular in safety critical systems.) ~\cite{Visser2003}
+
+(Related to finite abstractions in model checking and the state space) 
+a single program execution can be viewed as a sequence of states alternating with actions (e.g., machine operations). The possible behavior of a program are a set of such sequences. If we abstract from the physical limits of a particular machine, for all but the most trivial programs the set of possible execution sequences is infinite. That whole set of states and transitions is called the state space of the program. Models of program executions are just abstractions of that space.~\cite{BookPezze2008}
+
+(State and transitions)
+A transition from one state node ``a'' to another state node ``b'' denotes the possibility that a concrete program state corresponding to ``a'' canbe followed immediately by a concrete program state corresponding to ``b''. Usually we label the edge to indicate a program operation, condition, or event associated with the transition. We may label transitions with both an external event or a condition (what must happen or be true for the program to make a corresponding state change) and with a program operation that canbe thought of as a ``response'' to the event. Such finite state machine with \textit{event/response} labels on transitions is called a Mealy machine.~\cite{BookPezze2008}
+
+(About properties of model themselves, how correct they are) There are three kinds of correctness relations that we may reason about with respect to finite state machine models. The first is the internal properties, such as completeness and determinism. Second, the possible executions of a model, described by paths through the FSM, may satisfy (or not) some desired property. Third, the finite state machine model should accurately represent possible behaviors of the program.~\cite{BookPezze2008}
+
+(Finite State Verification) Finite State Verification borrows techniques from symbolic execution and formal verification, but like control and data flow analysis, applies them to models that abstract the potentially infinite state space of a program behavior into finite representations.~\cite{BookPezze2008}. Systematically exploring an enormous space of possible programs states, the challenge is to construct a suitable model of software that can be analyzed with reasonable expenditure of human and computational resources, captures enough significant detail for verification to succeed, and can be shown to be consistent with actual software.
+
+(State Space Exploration --- Benefit) A few seconds of automated analysis to find critical faults that can elude extensive testing seems a very attractive option. 
+
+(State Space Explosion) hmmmm 
+
+(Program Analysis) Conventional program testing is weak at detecting program faults that cause failures only rarely or only under conditions that are difficult to control. For example, conventional programming testing is not an effective way to find race conditions between concurrent threads that interfere only in small critical sections, or to detect memory access faults that only occasionally corrupt critical data structures. These faults lead to failures that are sparsely scattered in a large space of possible program behaviors, and are difficult to detect by sampling, but can be detected by program analyses that fold the enormous program state space down to a more manageable representation.~\cite{BookPezze2008}
+
+Good complement to conventional testing techniques.
+
+Techniques that work statically on the source code can exhaustively examine the whole program source code and verify properties of all possible executions, but are prone to false alarms that result from summarizing all possible and some impossible behaviors together. Techniques that work dynamically on actual execution states and traces do not suffer from the infeasible path problem, but cannot examine the execution space exhaustively.~\cite{BookPezze2008}
+
+----------------
+
+(Symbolic Execution)
+(Definition) Symbolic execution builds predicates that characterize the conditions under which execution paths can be taken adn the effect of the execution on program state. Extracting predicates through symbolic execution is the essential bridge from complexity of program behavior to the simpler and more orderly world of logic. It finds important applications in program analysis, in generating test data, and in formal verification (proof) of program correctness.~\cite{BookPezze2008}.
+
+(Another definition) Symbolic execution is a bridge from an operational view of program execution to logical and mathematical statements.~\cite{BookPezze2008}.
+
+(Usefulness) Conditions under which a particular control flow path is taken can be determined through symbolic execution. This is useful for identifying infeasible program paths (those that can never be taken) and paths that could be taken when they should not. It is fundamental to generating test data to execute particular parts and paths in a program.~\cite{BookPezze2008}.
+
+(Use cases --- not so interesting) Symbolic execution is a fundamental technique that finds many different applications. Test data generators use symbolic execution to derive constraint on input data. Formal verification systems combine symbolic execution to derive logical predicates with theorem provers to prove them. Many development tools use symbolic execution techniques to perform or check program transformations, for example, unrolling a loop for performance or refactoring source code.~\cite{BookPezze2008}. 
+
+(More cases) Although full verification is unfeasible or even useful. ``Nonetheless the basic methods of formal verification, including symbolic execution, underpin practical techniques in software analysis and testing. They find use in several domains:
+
+\begin{itemize}
+	\item Rigorous proof of properties of (small) critical subsystems, such as a safety kernel of a medical device.
+	\item Formal verification of critical properties (e.g., security properties) that are particularly resistant to dynamic testing.
+	\item Formal verification of algorithm descriptions and logical designs that are much less complex than their implementations in program code.
+\end{itemize}.~\cite{BookPezze2008}.
+
+(The basis of symbolic execution relies in tracing execution with symbolic values and expressions).~\cite{BookPezze2008}. When tracing execution with concrete values, it is clear enough what to do with a branch statement, for example, an if or while test: The test predicate is evaluated with the current values, and the appropriate branch is taken. If the values bound to variables are symbolic expressions, however, both the True and False outcomes of the decision may be possible. Execution can be traced through the branch in either direction, and execution of the test is interpreted as adding a constraint to the record outcome.~\cite{BookPezze2008}. 
+
+(Show example)
+
+(Satisfying the predicate) One can think of ``satisfying'' the predicate by finding concrete values for the symbolic variables that make it evaluate to True; this corresponds to finding data values that would force execution of a program path. If no such satisfying values are possible, then that execution path cannot be executed with any data values; we say it is an \textbf{infeasible} path.~\cite{BookPezze2008}.
+
+Symbolic execution techniques find wider application in program analysis tools that aim at finding particular, limited classes of program faults rather than proving program correctness. Typical applications include checking for memory leaks, null pointer deference, etc (don't include these examples).~\cite{BookPezze2008}
+
+
+
