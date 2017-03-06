@@ -1,39 +1,79 @@
 \TUsection{Program Analysis}
 \label{sec:program-analysis}
 
-(Coming from Finite Models.~\cite{BookPezze2008})
+%(Coming from Finite Models.~\cite{BookPezze2008})
 
-(Model Checking, why should we use it?)
+%(Program Analysis) Conventional program testing is weak at detecting program faults that cause failures only rarely or only under conditions that are difficult to control. For example, conventional programming testing is not an effective way to find race conditions between concurrent threads that interfere only in small critical sections, or to detect memory access faults that only occasionally corrupt critical data structures. These faults lead to failures that are sparsely scattered in a large space of possible program behaviors, and are difficult to detect by sampling, but can be detected by program analyses that fold the enormous program state space down to a more manageable representation.~\cite{BookPezze2008}
 
-(Model) A model is a representation that is simple than the artifact it represents but preserves (or at least approximates) some important attributes of the actual artifact.~\cite{BookPezze2008}
+%(Model Checking, why should we use it?)
 
-(Models summary) Models play many of the same roles in software development as in engineering of other kinds of artifacts. Models must be much simpler than the artifacts they describe, but must preserve enough essential detail to be useful in making choices. For models of software execution, this means that a model must be abstract away enough detail to represent the potentially infinite set of program executions states by a finite and suitably compact set of model classes. ...Some models, like CFG, can be extracted from programs. Tne key trade-off for these extracted models is precision versus the cost of producing and storing the model.~\cite{BookPezze2008}
+%(Model) A model is a representation that is simple than the artifact it represents but preserves (or at least approximates) some important attributes of the actual artifact.~\cite{BookPezze2008}
 
-(Related to Model Checking --- First of all, programs often contain fatal errors despite the existence of careful designs.Many deadlocks and critical section violations, for example, are introduced at a level of detail which designs typically do not deal with, if formal designs are made at all.) ~\cite{Visser2003}
+%(Models summary) Models play many of the same roles in software development as in engineering of other kinds of artifacts. Models must be much simpler than the artifacts they describe, but must preserve enough essential detail to be useful in making choices. For models of software execution, this means that a model must abstract away enough detail to represent the potentially infinite set of program executions states by a finite and suitably compact set of model classes. ...Some models, like CFG, can be extracted from programs. The key trade-off for these extracted models is precision versus the cost of producing and storing the model.~\cite{BookPezze2008}
 
-(Related to Model Checking --- The other kind of error is more simple minded concurrency programming errors, such as forgetting to put code in a critical section or causing deadlocks. Errors of this kind will typically not be caught in a design, and they are a real hazard, in particular in safety critical systems.) ~\cite{Visser2003}
+%(Related to finite abstractions in model checking and the state space) 
+%a single program execution can be viewed as a sequence of states alternating with actions (e.g., machine operations). The possible behavior of a program are a set of such sequences. If we abstract from the physical limits of a particular machine, for all but the most trivial programs the set of possible execution sequences is infinite. That whole set of states and transitions is called the state space of the program. Models of program executions are just abstractions of that space.~\cite{BookPezze2008}
 
-(Related to finite abstractions in model checking and the state space) 
-a single program execution can be viewed as a sequence of states alternating with actions (e.g., machine operations). The possible behavior of a program are a set of such sequences. If we abstract from the physical limits of a particular machine, for all but the most trivial programs the set of possible execution sequences is infinite. That whole set of states and transitions is called the state space of the program. Models of program executions are just abstractions of that space.~\cite{BookPezze2008}
+%(State and transitions)
+%A transition from one state node ``a'' to another state node ``b'' denotes the possibility that a concrete program state corresponding to ``a'' can be followed immediately by a concrete program state corresponding to ``b''. Usually we label the edge to indicate a program operation, condition, or event associated with the transition. We may label transitions with both an external event or a condition (what must happen or be true for the program to make a corresponding state change) and with a program operation that can be thought of as a ``response'' to the event. Such finite state machine with \textit{event/response} labels on transitions is called a Mealy machine.~\cite{BookPezze2008}
 
-(State and transitions)
-A transition from one state node ``a'' to another state node ``b'' denotes the possibility that a concrete program state corresponding to ``a'' canbe followed immediately by a concrete program state corresponding to ``b''. Usually we label the edge to indicate a program operation, condition, or event associated with the transition. We may label transitions with both an external event or a condition (what must happen or be true for the program to make a corresponding state change) and with a program operation that canbe thought of as a ``response'' to the event. Such finite state machine with \textit{event/response} labels on transitions is called a Mealy machine.~\cite{BookPezze2008}
+%(About properties of model themselves, how correct they are) There are three kinds of correctness relations that we may reason about with respect to finite state machine models. The first is the internal properties, such as completeness and determinism. Second, the possible executions of a model, described by paths through the FSM, may satisfy (or not) some desired property. Third, the finite state machine model should accurately represent possible behaviors of the program.~\cite{BookPezze2008}
 
-(About properties of model themselves, how correct they are) There are three kinds of correctness relations that we may reason about with respect to finite state machine models. The first is the internal properties, such as completeness and determinism. Second, the possible executions of a model, described by paths through the FSM, may satisfy (or not) some desired property. Third, the finite state machine model should accurately represent possible behaviors of the program.~\cite{BookPezze2008}
+Ensuring the quality and correctness of programs is a key aspect of the software development process. A wide variety of techniques are used to achieve this purpose, among which software testing is one of the most common. However, testing techniques are not always suitable; in particular, they are not effective detecting the causes of spurious failures that occur only under conditions that are hard to control or replicate (e.g., race conditions). Program analysis techniques result in a better approach in those scenarios because they reason about a model representing the system under test, thus, scoping down the program only to the relevant pieces that are used to verify a desired property.
 
-(Finite State Verification) Finite State Verification borrows techniques from symbolic execution and formal verification, but like control and data flow analysis, applies them to models that abstract the potentially infinite state space of a program behavior into finite representations.~\cite{BookPezze2008}. Systematically exploring an enormous space of possible programs states, the challenge is to construct a suitable model of software that can be analyzed with reasonable expenditure of human and computational resources, captures enough significant detail for verification to succeed, and can be shown to be consistent with actual software.
+In general, a model is an abstraction that preserves some selected attributes of an object or concept. They are used in many disciplines as mechanisms to improve communication and support decision making. Models that represent the execution of a program have to discard the unnecessary aspects of it while still preserving the capacity of explaining the potentially infinite execution states in a finite, compact, meaningful, and general view~\cite{BookPezze2008}.
 
-(State Space Exploration --- Benefit) A few seconds of automated analysis to find critical faults that can elude extensive testing seems a very attractive option. 
+Programs can be modeled as a series of \textit{states} that can be reached after certain actions occur, for instance, an action can be thought as the execution of code statements. In consequence, the \textit{behavior} of a program can be defined as a sequence of states (or \textit{path}) ranging from the beginning of the execution to its termination.
 
-(State Space Explosion) hmmmm 
+\textit{\acrfullpl{acr:cfg}} are one example of such models, where nodes represent program statements and directed edges define the control flow relationship between them~\cite{Allen1970}. Listing~\ref{lst:program-analysis:cfg} and figure \ref{fig:program-analysis:cfg} show a simple linear search algorithm and its corresponding \acrlong{acr:cfg} respectively. \acrshort{acr:cfg}s serve as a starting point for different types of analyses, for example, data flow analysis where each node is augmented with information related to data accesses in order to verify that a variable is always initialized before is read. 
 
-(Program Analysis) Conventional program testing is weak at detecting program faults that cause failures only rarely or only under conditions that are difficult to control. For example, conventional programming testing is not an effective way to find race conditions between concurrent threads that interfere only in small critical sections, or to detect memory access faults that only occasionally corrupt critical data structures. These faults lead to failures that are sparsely scattered in a large space of possible program behaviors, and are difficult to detect by sampling, but can be detected by program analyses that fold the enormous program state space down to a more manageable representation.~\cite{BookPezze2008}
+\begin{lstlisting}[
+language=Java,
+caption={[Linear Search Algorithm] Linear search algorithm written in Java to illustrate the creation of a Control Flow Graph. If the element is contained in the array, the corresponding index is returned, otherwise a -1 is returned.},
+float,
+label=lst:program-analysis:cfg
+]
+public static int search(int[] a, int elem) {
+  for(int i = 0; i < a.length; i++) {
+    if(a[i] == elem) {
+      return i;
+    }
+  }
+  return -1;
+}
+\end{lstlisting}
 
-Good complement to conventional testing techniques.
+\begin{figure}[t]
+\centering
+\includegraphics[height=5cm]{example-image}
+\caption[Control Flow Graph of Linear Search]{Control Flow Graph corresponding to the linear search algorithm shown in listing~\ref{lst:program-analysis:cfg}.}
+\label{fig:program-analysis:cfg}
+\end{figure}
 
-Techniques that work statically on the source code can exhaustively examine the whole program source code and verify properties of all possible executions, but are prone to false alarms that result from summarizing all possible and some impossible behaviors together. Techniques that work dynamically on actual execution states and traces do not suffer from the infeasible path problem, but cannot examine the execution space exhaustively.~\cite{BookPezze2008}
+% TODO: Add Symbolic Execution and Explicit State Model Checking to the glossary
+Models like \acrshort{acr:cfg}s are useful when reasoning about properties related to the structure of the system under test. However, analyses of this kind often over approximate on their conclusions given that they lack the means for conclusively asserting properties that depend on the execution of the program. In contrast, \textit{explicit state model checking} and \textit{symbolic execution} techniques reason about the properties of a program when this is being executed. The following sections discuss these two concepts in more detail.
 
-----------------
+%(Finite State Verificatio) Finite State Verification borrows techniques from symbolic execution and formal verification, but like control and data flow analysis, applies them to models that abstract the potentially infinite state space of a program behavior into finite representations.~\cite{BookPezze2008}. Systematically exploring an enormous space of possible programs states, the challenge is to construct a suitable model of software that can be analyzed with reasonable expenditure of human and computational resources, captures enough significant detail for verification to succeed, and can be shown to be consistent with actual software.
+
+%(State Space Explosion)
+
+% TODO: Some missing references, validate if Explicit State Model Checking and Finite State Verification are actually equivalent
+\TUsubsection{Explicit State Model Checking}
+\label{subsec:explicit-state-model-checking}
+
+This technique, also known as Finite State Verification, consists of systematically exploring the potentially huge state space of a program in order to understand all possible executions. States are determined, for example, by all the possible values a variable or an expression can take during the execution of the system under test or by all possible interleavings that can result from the execution of a concurrent program. 
+
+As can be expected, the number of states for non-trivial programs grow exponentially; what is known as \textit{space state explosion}. This condition poses several limitations to the practical use of the technique given that computational resources are quickly exhausted and timeliness conclusions are not feasible. Hence, the challenge relies on the reduction of the state space of the execution while still maintaining a full semantic correspondence between the model and the program, at least in terms of the property that is validated.
+
+% TODO: Missing references about Partial Order Reduction
+Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting when transitions resulting from concurrent operations result in equivalent states, making it necessary to explore such path only once. 
+
+Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been difficult, if not impossible, to detect with traditional software testing techniques. In particular, they result useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. They are commonly used to validate critical and concurrent systems and are often combined with other testing techniques.
+
+% TODO: Maybe mention that in further sections, concrete examples of this technique are shown (JPF)
+
+\TUsubsection{Symbolic Execution}
+\label{subsec:symbolic-execution}
 
 (Symbolic Execution)
 (Definition) Symbolic execution builds predicates that characterize the conditions under which execution paths can be taken adn the effect of the execution on program state. Extracting predicates through symbolic execution is the essential bridge from complexity of program behavior to the simpler and more orderly world of logic. It finds important applications in program analysis, in generating test data, and in formal verification (proof) of program correctness.~\cite{BookPezze2008}.
