@@ -68,21 +68,33 @@ As can be expected, the number of states for non-trivial programs grow exponenti
 % TODO: Missing references about Partial Order Reduction
 Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting when transitions resulting from concurrent operations result in equivalent states, making it necessary to explore such path only once. 
 
-Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been difficult, if not impossible, to detect with traditional software testing techniques. In particular, they result useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. They are commonly used to validate critical and concurrent systems and are often combined with other testing techniques.
+Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been challenging, if not impossible, to notice with traditional software testing techniques. In particular, they result useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. They are commonly used to validate critical and concurrent systems, and are often combined with other testing techniques.
 
-% TODO: Maybe mention that in further sections, concrete examples of this technique are shown (JPF)
+% TODO: Maybe mention that, in further sections, concrete examples of this technique are shown (JPF)
 
 \TUsubsection{Symbolic Execution}
 \label{subsec:symbolic-execution}
 
-(Symbolic Execution)
-(Definition) Symbolic execution builds predicates that characterize the conditions under which execution paths can be taken adn the effect of the execution on program state. Extracting predicates through symbolic execution is the essential bridge from complexity of program behavior to the simpler and more orderly world of logic. It finds important applications in program analysis, in generating test data, and in formal verification (proof) of program correctness.~\cite{BookPezze2008}.
+%(Definition) Symbolic execution builds predicates that characterize the conditions under which execution paths can be taken and the effect of the execution on program state. Extracting predicates through symbolic execution is the essential bridge from complexity of program behavior to the simpler and more orderly world of logic. It finds important applications in program analysis, in generating test data, and in formal verification (proof) of program correctness.~\cite{BookPezze2008}.
 
-(Another definition) Symbolic execution is a bridge from an operational view of program execution to logical and mathematical statements.~\cite{BookPezze2008}.
+%(Another definition) Symbolic execution is a bridge from an operational view of program execution to logical and mathematical statements.~\cite{BookPezze2008}.
+
+%(The basis of symbolic execution relies in tracing execution with symbolic values and expressions).~\cite{BookPezze2008}. When tracing execution with concrete values, it is clear enough what to do with a branch statement, for example, an if or while test: The test predicate is evaluated with the current values, and the appropriate branch is taken. If the values bound to variables are symbolic expressions, however, both the True and False outcomes of the decision may be possible. Execution can be traced through the branch in either direction, and execution of the test is interpreted as adding a constraint to the record outcome.~\cite{BookPezze2008}.
+
+%(Satisfying the predicate) One can think of ``satisfying'' the predicate by finding concrete values for the symbolic variables that make it evaluate to True; this corresponds to finding data values that would force execution of a program path. If no such satisfying values are possible, then that execution path cannot be executed with any data values; we say it is an \textbf{infeasible} path.~\cite{BookPezze2008}.
+
+The first discussions of symbolic execution date several decades back~\cite{Hoare1969,King1976}. The idea consists of executing a program using a set of ``symbolic'' input parameters in order to build logical predicates that characterize all possible executions. This symbolic parameters can be thought as mathematical variables, in contrast to what would be a concrete value. Through the execution, the symbolic values are operated, which generates more complex symbolic expressions. Moreover, the control flow of the executed program defines logical predicates that could depend on symbolic expressions, bridging the representation of the program from its operational view to a series of logical expressions. 
+
+% TODO: Add Path Condition to the glossary, as well as equivalence classes, symbolic execution
+Conditional statements are trivial to evaluate when tracing the execution of a program with a concrete value; simply the branching conditions is evaluated and the corresponding path is chosen to continues the execution. However, if the branch condition depends on symbolic values, both paths, corresponding to the \textit{true} and \textit{false} evaluation respectively, are an option. Hence, the execution continues to be traced through the corresponding branch based on how the predicate has to be evaluated. As a result, each execution path of the program is characterized by an logical predicate known as path condition.
+
+If a path condition is satisfiable, which means there are concrete values that make the predicate hold), then there exists a group of concrete input parameters that can steer the execution of the program through that path. Whereas, if the path condition cannot be satisfied then it will be impossible for any concrete execution to follow that path, rendering the path infeasible. Interestingly enough, each path condition represents an equivalence class of the concrete input parameters. % TODO Mention example in this paragraph
 
 (Usefulness) Conditions under which a particular control flow path is taken can be determined through symbolic execution. This is useful for identifying infeasible program paths (those that can never be taken) and paths that could be taken when they should not. It is fundamental to generating test data to execute particular parts and paths in a program.~\cite{BookPezze2008}.
 
 (Use cases --- not so interesting) Symbolic execution is a fundamental technique that finds many different applications. Test data generators use symbolic execution to derive constraint on input data. Formal verification systems combine symbolic execution to derive logical predicates with theorem provers to prove them. Many development tools use symbolic execution techniques to perform or check program transformations, for example, unrolling a loop for performance or refactoring source code.~\cite{BookPezze2008}. 
+
+(Equivalence classes for data generation)
 
 (More cases) Although full verification is unfeasible or even useful. ``Nonetheless the basic methods of formal verification, including symbolic execution, underpin practical techniques in software analysis and testing. They find use in several domains:
 
@@ -91,12 +103,10 @@ Nonetheless, explicit state model checking proves itself useful because of its c
 	\item Formal verification of critical properties (e.g., security properties) that are particularly resistant to dynamic testing.
 	\item Formal verification of algorithm descriptions and logical designs that are much less complex than their implementations in program code.
 \end{itemize}.~\cite{BookPezze2008}.
-
-(The basis of symbolic execution relies in tracing execution with symbolic values and expressions).~\cite{BookPezze2008}. When tracing execution with concrete values, it is clear enough what to do with a branch statement, for example, an if or while test: The test predicate is evaluated with the current values, and the appropriate branch is taken. If the values bound to variables are symbolic expressions, however, both the True and False outcomes of the decision may be possible. Execution can be traced through the branch in either direction, and execution of the test is interpreted as adding a constraint to the record outcome.~\cite{BookPezze2008}. 
-
+ 
 (Show example)
 
-(Satisfying the predicate) One can think of ``satisfying'' the predicate by finding concrete values for the symbolic variables that make it evaluate to True; this corresponds to finding data values that would force execution of a program path. If no such satisfying values are possible, then that execution path cannot be executed with any data values; we say it is an \textbf{infeasible} path.~\cite{BookPezze2008}.
+(Mention the necessity of solvers and also current tendencies in the field)
 
 Symbolic execution techniques find wider application in program analysis tools that aim at finding particular, limited classes of program faults rather than proving program correctness. Typical applications include checking for memory leaks, null pointer deference, etc (don't include these examples).~\cite{BookPezze2008}
 
