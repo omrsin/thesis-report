@@ -83,14 +83,71 @@ Nonetheless, explicit state model checking proves itself useful because of its c
 
 %(Satisfying the predicate) One can think of ``satisfying'' the predicate by finding concrete values for the symbolic variables that make it evaluate to True; this corresponds to finding data values that would force execution of a program path. If no such satisfying values are possible, then that execution path cannot be executed with any data values; we say it is an \textbf{infeasible} path.~\cite{BookPezze2008}.
 
-The first discussions of symbolic execution date several decades back~\cite{Hoare1969,King1976}. The idea consists of executing a program using a set of ``symbolic'' input parameters in order to build logical predicates that characterize all possible executions. This symbolic parameters can be thought as mathematical variables, in contrast to what would be a concrete value. Through the execution, the symbolic values are operated, which generates more complex symbolic expressions. Moreover, the control flow of the executed program defines logical predicates that could depend on symbolic expressions, bridging the representation of the program from its operational view to a series of logical expressions. 
+% (Usefulness) Conditions under which a particular control flow path is taken can be determined through symbolic execution. This is useful for identifying infeasible program paths (those that can never be taken) and paths that could be taken when they should not. It is fundamental to generating test data to execute particular parts and paths in a program.~\cite{BookPezze2008}.
+
+The first discussions of symbolic execution date several decades back~\cite{Hoare1969,King1976}. The idea consists of executing a program using a set of ``symbolic'' input parameters in order to build logical predicates that characterize all possible executions. This symbolic parameters can be thought as mathematical variables, in contrast to what would be a concrete value. Throughout the execution, the symbolic values are operated, which generates more complex symbolic expressions. Moreover, control flow statements define logical predicates that could depend on symbolic expressions, bridging the representation of the program from its operational view to a series of logical expressions. %TODO Review this last sentece
 
 % TODO: Add Path Condition to the glossary, as well as equivalence classes, symbolic execution
-Conditional statements are trivial to evaluate when tracing the execution of a program with a concrete value; simply the branching conditions is evaluated and the corresponding path is chosen to continues the execution. However, if the branch condition depends on symbolic values, both paths, corresponding to the \textit{true} and \textit{false} evaluation respectively, are an option. Hence, the execution continues to be traced through the corresponding branch based on how the predicate has to be evaluated. As a result, each execution path of the program is characterized by an logical predicate known as path condition.
+Conditional statements are trivial to evaluate when tracing the execution of a program with a concrete value; the branching conditions are simply evaluated and the corresponding path is chosen to proceed with the execution. However, if the branch condition depends on symbolic values, both paths corresponding to the \textit{true} and \textit{false} evaluation respectively are an option. Hence, the execution continues to be traced through the corresponding branch based on how the predicate has to be evaluated. As a result, each execution path of the program is characterized by an logical predicate known as path condition.
 
-If a path condition is satisfiable, which means there are concrete values that make the predicate hold), then there exists a group of concrete input parameters that can steer the execution of the program through that path. Whereas, if the path condition cannot be satisfied then it will be impossible for any concrete execution to follow that path, rendering the path infeasible. Interestingly enough, each path condition represents an equivalence class of the concrete input parameters. % TODO Mention example in this paragraph
+A path condition is satisfiable if there exists a group of concrete input values that makes its logical predicate hold. This means that these parameters can steer the execution of the program through that path. Whereas, if the path condition cannot be satisfied then it will be impossible for any concrete execution to follow that path, rendering the path infeasible. Interestingly enough, each satisfiable path condition represents an equivalence class of concrete input parameters.  % TODO Mention example in this paragraph
 
-(Usefulness) Conditions under which a particular control flow path is taken can be determined through symbolic execution. This is useful for identifying infeasible program paths (those that can never be taken) and paths that could be taken when they should not. It is fundamental to generating test data to execute particular parts and paths in a program.~\cite{BookPezze2008}.
+\begin{lstlisting}[
+language=Java,
+caption={[Trivial program to illustrate symbolic execution] Trivial program to illustrate how symbolic execution works.},
+float,
+label=lst:program-analysis:symbolic
+]
+public void trivial(boolean a, int b, boolean c) {
+  int x = 0, y = 0, z = b + 1;
+  if (a) { x = -1; }
+  if (z > 5) {
+    if (!a && c) { y = -1; }
+  }
+  assert x + y != 0;
+}
+\end{lstlisting}
+
+%\begin{displaymath}
+%	\xymatrix{
+%		A \ar[d] \ar[dr] \ar[drr] &   &   \\
+%		B                         & C & D }
+%\end{displaymath}
+
+
+\begin{figure}[t]	
+	\centering
+%	\includegraphics[height=5cm]{example-image}
+	\[\xymatrix@C=0.3em{
+		 & & & \ar[d]_{x = 0,~y = 0,~z = b_{0} + 1} a = a_{0},b = b_{0}, c = c_{0} \\
+		 & & & \ar@{}[ld]_<(0.2){true} \ar[ld]^{x=-1} a_{0} \ar[rrd] \ar@{}[rrd]^<(0.2){false} \\
+		 & & \ar@{}[ld]_<(0.2){true} \ar[ld] b_{0} + 1 > 5 \ar[dd] \ar@{}[dd]^<(0.1){false} & & & \ar@{}[ld]_<(0.2){true} \ar[ld] b_{0} + 1 > 5 \ar[dd] \ar@{}[dd]^<(0.1){false} \\ 
+		 & \ar@{}[ld]_<(0.2){true} \ar[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \ar@{}[ld]_<(0.2){true} \ar[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \\
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv true ~~~$} & 
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv false ~~$} & 
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
+		   \\ ~} & 
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv true ~~~$} &
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv false ~$} &
+		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~~$ 
+		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
+		   \\ ~}			
+		} \]
+%	\[\xymatrix{
+%		a = a_{0}, b = b_{0}, c = c_{0}  \ar[d] \ar[dr] \ar[drr] &   &   \\
+%		B                         & C & D } \]
+	\caption{Execution graph of the program presented in listing~\ref{lst:program-analysis:symbolic}.}
+	\label{fig:program-analysis:symbolic}
+\end{figure}
 
 (Use cases --- not so interesting) Symbolic execution is a fundamental technique that finds many different applications. Test data generators use symbolic execution to derive constraint on input data. Formal verification systems combine symbolic execution to derive logical predicates with theorem provers to prove them. Many development tools use symbolic execution techniques to perform or check program transformations, for example, unrolling a loop for performance or refactoring source code.~\cite{BookPezze2008}. 
 
