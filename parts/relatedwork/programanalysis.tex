@@ -104,7 +104,7 @@ public void trivial(boolean a, int b, boolean c) {
   if (z > 5) {
     if (!a && c) { y = -1; }
   }
-  assert x + y != 0;
+  assert x + y != 0; /*# \label{lst:ln:symbolic:assertion} #*/
 }
 \end{lstlisting}
 
@@ -119,33 +119,30 @@ public void trivial(boolean a, int b, boolean c) {
 	\centering
 %	\includegraphics[height=5cm]{example-image}
 	\[\xymatrix@C=0.3em{
-		 & & & \ar[d]_{x = 0,~y = 0,~z = b_{0} + 1} a = a_{0},b = b_{0}, c = c_{0} \\
+		 & & & \ar[d]^{x = 0,~y = 0,~z = b_{0} + 1} \txt{\small $a = a_{0},b = b_{0}, c = c_{0}$} \\
 		 & & & \ar@{}[ld]_<(0.2){true} \ar[ld]^{x=-1} a_{0} \ar[rrd] \ar@{}[rrd]^<(0.2){false} \\
 		 & & \ar@{}[ld]_<(0.2){true} \ar[ld] b_{0} + 1 > 5 \ar[dd] \ar@{}[dd]^<(0.1){false} & & & \ar@{}[ld]_<(0.2){true} \ar[ld] b_{0} + 1 > 5 \ar[dd] \ar@{}[dd]^<(0.1){false} \\ 
-		 & \ar@{}[ld]_<(0.2){true} \ar[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \ar@{}[ld]_<(0.2){true} \ar[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \\
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~$ 
-		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
-		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv true ~~~$} & 
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~$ 
-		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
-		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv false ~~$} & 
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv true ~~~~~~~~~$ 
-		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
+		 & \ar@{}[ld]_<(0.2){true} \ar@{.>}[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \ar@{}[ld]_<(0.2){true} \ar[ld]^>(0.5){y=-1} \neg a_{0} \land c_{0} \ar[d] \ar@{}[d]^<(0.2){false} & & & \\
+		 *+[F.] \txt{\footnotesize $~~~~~~~~~~~~~~~a_{0} \equiv true$ 
+		   \\ \footnotesize $\land ~b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $\land ~~~~\neg a_{0} \land c_{0} \equiv true$} & 
+		 *+[F] \txt{\footnotesize $~~~~~~~~~~~~~~a_{0} \equiv true$ 
+		   \\ \footnotesize $\land ~b_{0}+1 > 5 \equiv true~~$ 
+		   \\ \footnotesize $\land ~~~~\neg a_{0} \land c_{0} \equiv false$} & 
+		 *+[F] \txt{\footnotesize $~~~~~~~~~~~~~~a_{0} \equiv true$ 
+		   \\ \footnotesize $\land ~b_{0}+1 > 5 \equiv false$
 		   \\ ~} & 
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~~$ 
-		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
-		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv true ~~~$} &
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~$ 
-		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv true$ 
-		   \\ \footnotesize $\land ~ \neg a_{0} \land c_{0} \equiv false ~$} &
-		 *+[F.] \txt{\footnotesize $a_{0} \equiv false ~~~~~~~~$ 
+		 *+[F] \txt{\footnotesize $~~~~~~~~~~~~~~~~~a_{0} \equiv false$ 
+		   \\ \footnotesize $\land ~b_{0}+1 > 5 \equiv true$ 
+		   \\ \footnotesize $~\land ~~~~\neg a_{0} \land c_{0} \equiv true ~$} &
+		 *+[F--] \txt{\footnotesize $~~~~~~~~~~~~~~~a_{0} \equiv false$ 
+		   \\ \footnotesize $\land ~b_{0}+1 > 5 \equiv true~~$ 
+		   \\ \footnotesize $\land ~~~~\neg a_{0} \land c_{0} \equiv false$} &
+		 *+[F--] \txt{\footnotesize $~~~~~~~~~~~~~~~a_{0} \equiv false$ 
 		   \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
 		   \\ ~}			
 		} \]
-%	\[\xymatrix{
-%		a = a_{0}, b = b_{0}, c = c_{0}  \ar[d] \ar[dr] \ar[drr] &   &   \\
-%		B                         & C & D } \]
-	\caption{Execution graph of the program presented in listing~\ref{lst:program-analysis:symbolic}.}
+	\caption{Execution graph of the program presented in listing~\ref{lst:program-analysis:symbolic}. The root node represents the input parameters as symbolic values while the intermediate nodes illustrate the control flow of the program evaluated on the symbolic values wherever possible. More importantly, the leaves collect the predicates that form the path condition for that particular execution. The left most leave in the dotted frame contains an unfeasible path condition given that the predicate cannot be satisfied. Moreover, the path conditions in the dashed frames define executions that will fail the assertion of line \ref{lst:ln:symbolic:assertion}.}
 	\label{fig:program-analysis:symbolic}
 \end{figure}
 
