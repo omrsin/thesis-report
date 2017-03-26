@@ -39,7 +39,7 @@ In its core, \jpf is a \acrlong{acr:jvm} implemented in Java itself, comprised o
 \begin{figure}[t]
 \centering
 \includegraphics[height=5cm]{example-image}
-\caption{\jpf Workflow}
+\caption[\jpf workflow]{\jpf Workflow}
 \label{fig:jpf:process}
 \end{figure}
 
@@ -71,8 +71,30 @@ Listing~\ref{lst:jsp:random} introduces an example that illustrates better how \
 
 \begin{figure}[t]
 \centering
-\includegraphics[height=5cm]{example-image}
-\caption{State space of the random example}
+\[\xymatrix@C=1em{
+	% Row 1
+	& & & \ar@[red][lld] \ar@/_1pc/@{.o}[lld]!U|{\txt{\tiny 1}} \circ \ar[rrd] & & & & \txt{\texttt{~~~~~~Random random = new Random()}} \\
+	% Row 2
+	& \ar[ld] \ar@/_1pc/@{.o}[ld]!U|{\txt{\tiny 2}} \ar[d] \ar@/_/@{.o}[d]!U|{\txt{\tiny 5}} \txt{\texttt{a=0}} \ar@[red][rd] \ar@/^1pc/@{.o}[rd]!U|{\txt{\tiny 8}} & & & & 
+	  \ar[ld] \ar[d] \texttt{a=1} \ar[rd] & & \txt{\texttt{~~~int a = random.nextInt(2)}} \\
+	% Row 3   
+	\ar[d] \ar@/_1pc/@{.o}[d]!U|{\txt{\tiny 3}} \txt{\texttt{b=0}} & 
+	\ar[d] \ar@/_/@{.o}[d]!U|{\txt{\tiny 6}} \txt{\texttt{b=1}} & 
+	\ar@[red][d] \ar@/^1pc/@{.o}[d]!U|{\txt{\tiny 9}} \txt{\texttt{b=2}} & & 
+	\ar[d] \txt{\texttt{b=0}} & 
+	\ar[d] \txt{\texttt{b=1}} & 
+	\ar[d] \txt{\texttt{b=2}} & \txt{\texttt{~~~int b = random.nextint(3)}} \\
+	% Row 4
+	\txt{\texttt{c=0}} \ar@{.o}[ruu]!U|{\txt{\tiny 4}} & 
+	\ar@/_1pc/@{.o}[uu]!U|{\txt{\tiny 7}} \txt{\texttt{c=0}} & 
+	\txt{\texttt{c=0/0}} & & 
+	\txt{\texttt{c=-1}} & 
+	\txt{\texttt{c=1/0}} & 
+	\txt{\texttt{c=1}} & 
+	\txt{\texttt{int c = a/(b+a-2)~~~~~~}}
+} \]
+%\includegraphics[height=5cm]{example-image}
+\caption[State space exploration of the random program example]{State space exploration of the random example}
 \label{fig:jpf:random}
 \end{figure}
 

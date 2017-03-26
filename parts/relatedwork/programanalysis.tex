@@ -68,7 +68,7 @@ public static int search(int[] a, int elem) {
 	\path [line] (FORACCUM) -- (FORCOND);
 	\path [line, rounded corners] (FORCOND.225) -- node[left]{\textit{false}}(-0.4,-3) -| (RETURN.north);
 \end{tikzpicture}
-\caption[Control Flow Graph of Linear Search Algorithm]{Control Flow Graph corresponding to the linear search algorithm shown in listing~\ref{lst:program-analysis:cfg}. The entry node is the signature of the method, while end nodes, represented with a double frame, contain the return statements that put at end to the execution. The \textit{for} loop instruction was split into its composing statements to better display how the control flow work for this instruction.}
+\caption[Control Flow Graph of the linear search algorithm]{Control Flow Graph corresponding to the linear search algorithm shown in listing~\ref{lst:program-analysis:cfg}. The entry node is the signature of the method, while end nodes, represented with a double frame, contain the return statements that put at end to the execution. The \textit{for} loop instruction was split into its composing statements to better display how the control flow work for this instruction.}
 \label{fig:program-analysis:cfg}
 \end{figure}
 
@@ -166,7 +166,7 @@ public void trivial(boolean a, int b, boolean c) {
 	 \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
  \\ ~}			
 } \]
-\caption{Symbolic execution tree of the program presented in listing~\ref{lst:program-analysis:symbolic}. The root node represents the input parameters as symbolic values while the intermediate nodes illustrate the control flow of the program evaluated on these symbolic values wherever possible.Each intermediate node branches into two options, each corresponding to the predicate evaluating to \textit{true} or \textit{false} respectively. Also, each branch is labeled with the statements executed following one of the evaluations. More importantly, the leaves collect the predicates that form the path condition for that particular execution. The left most leave in the dotted frame contains an unfeasible path condition given that the predicate cannot be satisfied. Moreover, the path conditions in the dashed frames define executions that will fail the assertion of line \ref{lst:ln:symbolic:assertion}.}
+\caption[Symbolic execution tree of a trivial program]{Symbolic execution tree of the program presented in listing~\ref{lst:program-analysis:symbolic}. The root node represents the input parameters as symbolic values while the intermediate nodes illustrate the control flow of the program evaluated on these symbolic values wherever possible.Each intermediate node branches into two options, each corresponding to the predicate evaluating to \textit{true} or \textit{false} respectively. Also, each branch is labeled with the statements executed following one of the evaluations. More importantly, the leaves collect the predicates that form the path condition for that particular execution. The left most leave in the dotted frame contains an unfeasible path condition given that the predicate cannot be satisfied. Moreover, the path conditions in the dashed frames define executions that will fail the assertion of line \ref{lst:ln:symbolic:assertion}.}
 \label{fig:program-analysis:symbolic}
 \end{figure}
 
