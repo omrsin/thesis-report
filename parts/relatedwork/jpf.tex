@@ -50,7 +50,7 @@ Figure \ref{fig:jpf:process} portrays the elements that participate in a verific
 
 \begin{lstlisting}[
 language=Java,
-caption={[Simple example with random values] The use of random values could lead to unexpected behavior. In this case, a division by zero could occur if certain combinations of random values are used.(Example taken from JPF)},
+caption={[Simple example with random values] The use of random values could lead to unexpected behavior. In this case, a division by zero could occur if certain combinations of random values are used. (Example taken from~\cite{WebNASAAmes2017})},
 float,
 label=lst:jsp:random
 ]
@@ -67,26 +67,26 @@ public class RandomExample {
 \end{lstlisting}
 
 %(Simple example) (Division by zero seems reasonable)
-Listing~\ref{lst:jsp:random} introduces an example that illustrates better how \jpf{acr:jpf} works. The program analyzed represents a trivial division of two random values. However, the problem relies on the fact that, under some specific values, the operation could yield invalid. Problems like this, where computations depend on random and unbounded values, are common sources of bugs in real software and, in many cases, are difficult to identify. With the right configuration, \jpf{acr:jpf} could detect this kind of problems by exploring the range of possible values that a random integer could take. Lines~\ref{lst:ln:jsp:first-random}~and~\ref{lst:ln:jsp:second-random} indicate that random values have been generated; at this point \jpf{acr:jpf} could start exploring all different possible combinations spanning the domain of all integer values that can be represented, but clearly this would imply an enormous number of combinations that would result in a state space explosion. To avoid this, a choice generator is registered, defining a minimal range of integers that could actually occur in an execution; in this case from~0 to parameter passed to the \textit{nextInt} function. Consequently, a combination that triggers the invalid operation is found promptly and reported back to the user. Figure~\ref{fig:jpf:random} depicts the corresponding state graph that would result from validating the program with \jpf.
+Listing~\ref{lst:jsp:random} introduces an example that illustrates better how \jpf{acr:jpf} works. The program analyzed represents a trivial division of two random values. However, the problem relies on the fact that, under some specific values, the operation could yield invalid. Problems like this, where computations depend on random and unbounded values, are common sources of bugs in real software and, in many cases, are difficult to identify. With the right configuration, \jpf{acr:jpf} could detect this kind of problems by exploring the range of possible values that a random integer could take. Lines~\ref{lst:ln:jsp:first-random}~and~\ref{lst:ln:jsp:second-random} indicate that random values have been generated; at this point \jpf{acr:jpf} could start exploring all different possible combinations spanning the domain of all integer values that can be represented, but clearly this would imply an enormous number of combinations that would result in a state space explosion. To avoid this, a choice generator is registered, defining a minimal range of integers that could actually occur in an execution; in this case ranging from~0 to the parameter passed to the \textit{nextInt} function. Consequently, a combination that triggers the invalid operation is found promptly and reported back to the user. Figure~\ref{fig:jpf:random} depicts how \jpf explores the state space in order to validate the program.
 
 \begin{figure}[t]
 \centering
 \[\xymatrix@C=1em{
 	% Row 1
-	& & & \ar@[red][lld] \ar@/_1pc/@{.o}[lld]!U|{\txt{\tiny 1}} \circ \ar[rrd] & & & & \txt{\texttt{~~~~~~Random random = new Random()}} \\
+	& & & \ar@[red][lld] \ar@/_1pc/@{.>}[lld]_{\txt{\tiny 1}} \circ \ar[rrd] & & & & \txt{\texttt{~~~~~~Random random = new Random()}} \\
 	% Row 2
-	& \ar[ld] \ar@/_1pc/@{.o}[ld]!U|{\txt{\tiny 2}} \ar[d] \ar@/_/@{.o}[d]!U|{\txt{\tiny 5}} \txt{\texttt{a=0}} \ar@[red][rd] \ar@/^1pc/@{.o}[rd]!U|{\txt{\tiny 8}} & & & & 
+	& \ar[ld] \ar@/_1pc/@{.>}[ld]_{\txt{\tiny 2}} \ar[d] \ar@/_/@{.>}[d]_(0.7){\txt{\tiny 5}} \txt{\texttt{a=0}} \ar@[red][rd] \ar@/^1pc/@{.>}[rd]^{\txt{\tiny 8}} & & & & 
 	  \ar[ld] \ar[d] \texttt{a=1} \ar[rd] & & \txt{\texttt{~~~int a = random.nextInt(2)}} \\
 	% Row 3   
-	\ar[d] \ar@/_1pc/@{.o}[d]!U|{\txt{\tiny 3}} \txt{\texttt{b=0}} & 
-	\ar[d] \ar@/_/@{.o}[d]!U|{\txt{\tiny 6}} \txt{\texttt{b=1}} & 
-	\ar@[red][d] \ar@/^1pc/@{.o}[d]!U|{\txt{\tiny 9}} \txt{\texttt{b=2}} & & 
+	\ar[d] \ar@/_1pc/@{.>}[d]_{\txt{\tiny 3}} \txt{\texttt{b=0}} & 
+	\ar[d] \ar@/_/@{.>}[d]_{\txt{\tiny 6}} \txt{\texttt{b=1}} & 
+	\ar@[red][d] \ar@/^1pc/@{.>}[d]^{\txt{\tiny 9}} \txt{\texttt{b=2}} & & 
 	\ar[d] \txt{\texttt{b=0}} & 
 	\ar[d] \txt{\texttt{b=1}} & 
 	\ar[d] \txt{\texttt{b=2}} & \txt{\texttt{~~~int b = random.nextint(3)}} \\
 	% Row 4
-	\txt{\texttt{c=0}} \ar@{.o}[ruu]!U|{\txt{\tiny 4}} & 
-	\ar@/_1pc/@{.o}[uu]!U|{\txt{\tiny 7}} \txt{\texttt{c=0}} & 
+	\txt{\texttt{c=0}} \ar@{.>}[ruu]_(0.4){\txt{\tiny 4}} & 
+	\ar@/_1pc/@{.>}[uu]_{\txt{\tiny 7}} \txt{\texttt{c=0}} & 
 	\txt{\texttt{c=0/0}} & & 
 	\txt{\texttt{c=-1}} & 
 	\txt{\texttt{c=1/0}} & 
@@ -94,7 +94,7 @@ Listing~\ref{lst:jsp:random} introduces an example that illustrates better how \
 	\txt{\texttt{int c = a/(b+a-2)~~~~~~}}
 } \]
 %\includegraphics[height=5cm]{example-image}
-\caption[State space exploration of the random program example]{State space exploration of the random example}
+\caption[State space exploration of an example program]{State space exploration of the program shown in listing~\ref{lst:jsp:random}. \jpf starts checking the state space whenever the the conditions that trigger the property to be validated are found; in this case, using random values. The \texttt{nextInt} instruction causes \jpf to register a \textit{Choice Generator} and start exploring the state space of the possible options. The dashed edges represent the search strategy used to explore the state space; in this case depth-first search. If a given execution path gets to an end and no unexpected behavior is found, \jpf backtracks to the latest instruction where a \textit{Choice Generator} was registered and tries a different value. The red arrows point to an execution that triggers an error. Whenever an error is found \jpf halts the validation and reports its findings.}
 \label{fig:jpf:random}
 \end{figure}
 
@@ -119,11 +119,27 @@ Although \textit{explicit state model checking} is \jpf's default mode of operat
 \TUsubsection{Symbolic PathFinder}
 \label{subsec:spf}
 
-(Definition of SPF)
+(Mention previous versions of JPF)~\cite{Khurshid2003,Visser2008,Anand2007}
 
-(Explain its extension points: Choice Generators, Listeners, Symbolic Instruction Factory)
+(Definition) SPF is part of the Java PathFinder verification tool-set [4]. Java Pathfinder includes JPF-core, an explicit-state model checker, and several extension projects, one of them being SPF (jpf-symbc Java project). The model checker consists of an extensible custom Java Virtual Machine (VM), state storage and backtracking capabilities, different search strate- gies, as well as listeners for monitoring and influencing the search. JPF-core executes the program concretely based on the standard semantics of the Java. In contrast, SPF replaces the concrete execution semantics of JPF-core with a non-standard symbolic interpreta- tion. SPF relies on the JPF-core framework to systemati- cally explore the different symbolic execution paths, as well as different thread interleavings. To limit the possibly in- finite search space that results from symbolically executing programs with loops or recursion, a user-specified depth is provided. We describe SPF’s features below.~\cite{Pasareanu2010}
 
-(Mention the solvers)
+(Types supported) SPF handles inputs and opera- tions on booleans, integers, reals, and complex data structures, as well as multi-threading, via integration with the Java PathFinder (JPF) model checker~\cite{Luckow2014}
+
+(Symbolic Execution) SPF replaces the standard concrete execution semantics by using a Symbol- icInstructionFactory, that extends the bytecode instruc- tions to manipulate symbolic values and expressions. For ex- ample, when adding two symbolic integers sym1 and sym2 (by executing the IADD bytecode) the result is a symbolic expression representing sym1 +sym2. Storage of symbolic values and expressions is accomplished by assigning symbolic attributes to variables, fields, and stack operands.~\cite{Pasareanu2010}
+
+(Conditionals and Choice Generators) The symbolic execution of conditional instructions (if statements) involves exploration of two paths corresponding to the branch predicate eval- uating to true and false; both choices are generated non- deterministically by the PCChoiceGenerator. Each generated choice is associated with a path condition encoding the condition and its negation respectively.~\cite{Pasareanu2010}
+
+(Solvers) The path conditions are checked for satisfiability using off-the-shelf decision pro- cedures or constraint solvers. If the path condition is satisfi- able, the search continues; otherwise, the search backtracks (meaning that branch is unreachable). SPF uses multiple decision procedures and constraint solvers through a generic interface. Currently, SPF supports: choco for in- teger/real constraints, cvc3 for linear constraints, and the interval arithmetic solver IASolver. Adding support for ad- ditional constraint solvers such as HAMPI and YICES is work in progress.~\cite{Pasareanu2010}
+
+(Solvers) solvers such as CHOCO [3], CORAL [8], and CVC3 [1]~\cite{Luckow2014}
+
+(Input Data Structures - maybe not needed) SPF uses lazy initialization [5] to handle unbounded input data structures. The execution starts on data structures with un-initialized fields and it initializes them lazily, when the fields are first accesed. A field of class T is initialized non-deterministically to (1) null, (2) a reference to a new instance of class T with uninitialized fields, or (3) a reference to an object of type T created during a prior field initialization; this sytematically treats aliasing. The HeapChoiceGenerator is used to gener- ate the choices.~\cite{Pasareanu2010}
+
+(Native Peers maybe not necessary) Most notably, SPF incorporates native peers that capture the calls to the java.lang.Math libraries and dispatch them to an appropriate constraint solver that can handle complex Math constraints. The same mechanism is also used for capturing String operations.~\cite{Pasareanu2010}
+
+(Listeners) The listeners gather and display information about the path conditions generated during the symbolic execution. They generate test cases and sequences in various user-defined formats.~\cite{Pasareanu2010}
+
+(Current limitations) Work in progress includes updating the symbolic string analysis and careful testing of the code~cite{Luckow2014}. (However, mention how the current version has some limited support.)
 
 
 
