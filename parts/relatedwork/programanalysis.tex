@@ -58,7 +58,7 @@ public static int search(int[] a, int elem) {
 	\node [block, right of=FORCOND, node distance=3cm] (FORACCUM) {i++{;})};	
 	\node [block, below of=FORCOND] (IF) {\textbf{if}(a[i]==elem)};	
 	\node [block-double, below of=IF] (IFRETURN) {\textbf{return} i{;}};	
-	\node [block-double, below of=FORINIT] (RETURN) {\textbf{return} -1{;}};
+	\node [block-double, left of=IFRETURN, node distance=3cm] (RETURN) {\textbf{return} -1{;}};
 	% Draw edges
 	\path [line, rounded corners] (INIT) -- (-5,0) |- (FORINIT.west);
 	\path [line] (FORINIT) -- (FORCOND);
