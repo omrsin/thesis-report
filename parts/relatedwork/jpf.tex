@@ -36,9 +36,79 @@ Java is a widely known, general-purpose programming language with strong roots o
 
 In its core, \jpf is a \acrlong{acr:jvm} implemented in Java itself, comprised of several extensible components that dictate the verification strategy to be followed. The fact that \jpf is written in Java means that it is executed on a canonical \jpf{acr:jvm}; in other words, a \jpf{acr:jvm} on top of a \jpf{acr:jvm}. 
 
+% Define block styles
+\tikzstyle{block} = [rectangle, draw, fill=white,text centered, rounded corners, drop shadow]
+\tikzstyle{textTop} = [below right, yshift=-0.2cm, xshift=0.1cm]
+\tikzstyle{longBlock} = [block, minimum height= 7cm, minimum width = 2cm, node distance=2.75cm]
+\tikzstyle{placeholder} = [rectangle, text centered, minimum height= 7cm, minimum width = 2cm, node distance=2.75cm]
+\tikzstyle{smallBlock} = [rectangle, draw, fill=white, text centered, drop shadow, text width=2cm, minimum height=1cm, node distance = 1.175cm]
+%\tikzstyle{block-double} = [rectangle, draw, fill=white, text centered, rounded corners, minimum height=2em, drop shadow, double distance=1pt]
+\tikzstyle{arrow}  = [draw, -{>[length=2mm, width=1mm]}]
+\tikzstyle{line} = [draw, dashed]
+
 \begin{figure}[t]
 \centering
-\includegraphics[height=5cm]{example-image}
+\footnotesize
+\begin{tikzpicture}[auto]
+	% Place nodes
+	\node [block, minimum height=10cm, minimum width=12cm] (HOSTJVM) {};
+	\node [textTop] at (HOSTJVM.north west) {\textbf{Host JVM}};
+	\node [block, left, minimum height=8.5cm, minimum width=11cm, xshift=-0.5cm, yshift=-0.25cm] at (HOSTJVM.east) (JPF) {};
+	\node [textTop] at (JPF.north west) {\textbf{JPF}};
+	
+	\node [longBlock, left, xshift=-0.5cm] at (JPF.east) (EXTENSIONS) {Extensions};
+	\node [placeholder, left of=EXTENSIONS] (PLACEHOLDER) {};
+	\node [longBlock, left of=PLACEHOLDER] (JPFCORE) {JPF Core};
+	
+	\node [smallBlock, below] at (PLACEHOLDER.north) (FACTORY) {Bytecode Factories};
+	\node [smallBlock, below of=FACTORY] (CHOICE) {Choice Generators};
+	\node [smallBlock, below of=CHOICE] (LISTENER) {Listeners};
+	\node [smallBlock, below of=LISTENER] (NATIVE) {Native Peers};
+	\node [smallBlock, below of=NATIVE] (PUBLISHER) {Publishers};
+	\node [smallBlock, below of=PUBLISHER] (SEARCH) {Search Strategies};
+	
+	\node [block, minimum height=2cm, minimum width=2cm] at (JPF.west) (APP) {\txt{\textbf{Application} \\ \textit{(bytecode)}}};
+	\node [block, minimum height=2cm, minimum width=2cm, right of=HOSTJVM, xshift=0.5cm] at (HOSTJVM.east) (REPORT) {Report};
+	
+	\node [smallBlock, below of=JPFCORE, yshift=-1cm] at (JPFCORE.south) (CONFIG) {Configuration};
+
+%\node [longBlock] (JPF) {\textbf{JPF Core}};	
+%\node [block, below of=INIT] (FORCOND) {i<a.length(){;}};	
+%\node [block, left of=FORCOND, node distance=3cm] (FORINIT) {\textbf{for}(\textbf{int} i=0{;}};
+%\node [block, right of=FORCOND, node distance=3cm] (FORACCUM) {i++{;})};	
+%\node [block, below of=FORCOND] (IF) {\textbf{if}(a[i]==elem)};	
+%\node [block-double, below of=IF] (IFRETURN) {\textbf{return} i{;}};	
+%\node [block-double, left of=IFRETURN, node distance=3cm] (RETURN) {\textbf{return} -1{;}};
+	% Draw edges
+	%\path [line, rounded corners] (INIT) -- (-5,0) |- (FORINIT.west);
+	\path [arrow] (APP) -- (JPFCORE);
+	
+	\path [arrow] (JPFCORE) -- (FACTORY);
+	\path [arrow] (JPFCORE) -- (CHOICE);
+	\path [arrow] (JPFCORE) -- (LISTENER);
+	\path [arrow] (JPFCORE) -- (NATIVE);
+	\path [arrow] (JPFCORE) -- (PUBLISHER);
+	\path [arrow] (JPFCORE) -- (SEARCH);
+	
+	\path [arrow] (FACTORY)   -- (EXTENSIONS);
+	\path [arrow] (CHOICE) 	  -- (EXTENSIONS);
+	\path [arrow] (LISTENER)  -- (EXTENSIONS);
+	\path [arrow] (NATIVE) 	  -- (EXTENSIONS);
+	\path [arrow] (PUBLISHER) -- (EXTENSIONS);
+	\path [arrow] (SEARCH) 	  -- (EXTENSIONS);
+	
+	\path [line, rounded corners] (APP.292.5) |- (CONFIG.west);
+	\path [line] (JPFCORE)					   -- (CONFIG);
+	\path [line, rounded corners] (EXTENSIONS.south) |- (CONFIG.east);
+	
+	\path [arrow] (JPF) -- (REPORT);
+
+%\path [line] (FORCOND) -- node[near start]{\textit{true}}(IF);
+%\path [line] (IF) -- node[near start]{\textit{true}}(IFRETURN);
+%\path [line, rounded corners] (IF) -| node[near start]{\textit{false}}(FORACCUM.south);
+%\path [line] (FORACCUM) -- (FORCOND);
+%\path [line, rounded corners] (FORCOND.225) -- node[left]{\textit{false}}(-0.4,-3) -| (RETURN.north);
+\end{tikzpicture}
 \caption[\jpf workflow]{\jpf Workflow}
 \label{fig:jpf:process}
 \end{figure}
