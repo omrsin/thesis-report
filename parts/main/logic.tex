@@ -1,0 +1,46 @@
+\TUsection{Logic}
+
+% Mention the structure of spark programs (series of transformations culminating in an action)
+
+% Mention that RDD transformations themselves are not the targets of the analysis rather the invocation of the passed functions as arguments
+
+% Create a diagram with a chain of transformations and the potential changes in the input and how this operations can include conditionals
+
+% Mention the special case of filters that are conditionals by themselves
+
+% Mention the special case of flatMap and their increased cardinality in the output
+
+A Spark program consists of a chain of transformations on one or more \acrshort{acr:rdd}s to finally conclude with an action. \acrshort{acr:rdd}s are manipulated through an \acrshort{acr:api} that provides the general guidelines on how the data collection is to be processed without falling into the specifics. For example, the \textit{filter} transformation indicate that only the elements matching a given filtering condition would be selected, without specifying exactly what is the condition to be evaluated. A similar approach is followed by most of the actions and transformations in Spark.
+
+The precise behavior of most actions and transformations is defined by the programmer. Given that most of Spark's actions and transformations are first order functions (they accept a function as a parameter), the programmers define a custom function that fulfills the contract of the specific operation. For example, again the \textit{filter} transformation expects as a parameter a function that takes an element of the same type as the type of the elements in the collection handled by the \acrshort{acr:rdd} and returns a boolean value. When the \textit{filter} transformation is later invoked, it calls the passed function with each element in the \acrshort{acr:rdd} and, depending on the output, it decides if the value is filtered or not.
+% Refer to the first part of the diagram
+
+%This are two linear diagrams to illustrate a chain of transformations and underneath a chain of calls to their respective functions bound with conditions particular to eachs transformation.
+
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}[node distance = 5cm, auto]
+	\end{tikzpicture}
+	
+	\begin{minipage}[t]{\linewidth}
+	\end{minipage}
+	\vspace{\belowdisplayskip}
+	
+	\begin{tikzpicture}[node distance = 4.7cm, auto]
+	\end{tikzpicture}
+	
+	\begin{minipage}[t]{\linewidth}
+	\end{minipage}
+	
+	\caption[*]{*}
+\end{figure}
+
+Having this in mind, the symbolic execution of an isolated Spark operation depends solely on the behavior of the function passed by the user. However, when analyzing a whole program, special considerations for every particular operation must be taken into account. These considerations are different in nature but mostly refer to how output values are percolated to the subsequent operations in order to ensure the correct analysis of the next functions.
+% Refer to the second part of the diagram
+
+The whole process could be summarized in the following three steps:
+\begin{enumerate}
+	\item Identify the Spark operation
+	\item Carry out the symbolic execution of the passed function
+	\item Take special considerations based on the executed Spark operation
+\end{enumerate}

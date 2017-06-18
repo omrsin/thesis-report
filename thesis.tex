@@ -46,6 +46,10 @@
 \pdfbookmark[0]{Impressum}{impressum}
 \include{parts/impressum}
 
+% Includes the declatarion of academic integrity (Uncomment the variant corresponding to the language)
+%\include{parts/declarationacademicintegrity_de}
+\include{parts/declarationacademicintegrity_en}
+
 % Includes the abstract
 \include{parts/abstract} % New TUD-Design abstract/summary template
 %\include{parts/abstractalternative} % Classic abstract template (Uncomment if preferred)
@@ -79,10 +83,6 @@
 
 % Includes the bibliography
 \printbibliography
-
-% Includes the declatarion of academic integrity (Uncomment the variant corresponding to the language)
-%\include{parts/declarationacademicintegrity_de}
-\include{parts/declarationacademicintegrity_en}
 
 % Includes the list of figures
 \cleardoublepage
@@ -119,7 +119,9 @@
 % Table alternative to the list of symbols (Uncomment if preferred)
 %\include{parts/symbols_table}
 
-% Includes appendix
-\include{parts/appendix}
+% Includes appendices
+\appendix
+\include{parts/appendix-collaborations}
+\include{parts/appendix-installation}
 
 \end{document}
