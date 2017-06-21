@@ -12,32 +12,35 @@
 % Mention the special case of flatMap and their increased cardinality in the output
 
 A Spark program consists of a chain of transformations on one or more \acrshort{acr:rdd}s to finally conclude with an action. \acrshort{acr:rdd}s are manipulated through an \acrshort{acr:api} that provides the general guidelines on how the data collection is to be processed without falling into the specifics. For example, the \textit{filter} transformation indicate that only the elements matching a given filtering condition would be selected, without specifying exactly what is the condition to be evaluated. A similar approach is followed by most of the actions and transformations in Spark.
+%TODO: MAYBE Refer to the first part of the diagram
 
 The precise behavior of most actions and transformations is defined by the programmer. Given that most of Spark's actions and transformations are first order functions (they accept a function as a parameter), the programmers define a custom function that fulfills the contract of the specific operation. For example, again the \textit{filter} transformation expects as a parameter a function that takes an element of the same type as the type of the elements in the collection handled by the \acrshort{acr:rdd} and returns a boolean value. When the \textit{filter} transformation is later invoked, it calls the passed function with each element in the \acrshort{acr:rdd} and, depending on the output, it decides if the value is filtered or not.
-% Refer to the first part of the diagram
 
-%This are two linear diagrams to illustrate a chain of transformations and underneath a chain of calls to their respective functions bound with conditions particular to eachs transformation.
+%TODO: MAYBE This are two linear diagrams to illustrate a chain of transformations and underneath a chain of calls to their respective functions bound with conditions particular to eachs transformation.
 
-\begin{figure}[t]
-	\centering
-	\begin{tikzpicture}[node distance = 5cm, auto]
-	\end{tikzpicture}
-	
-	\begin{minipage}[t]{\linewidth}
-	\end{minipage}
-	\vspace{\belowdisplayskip}
-	
-	\begin{tikzpicture}[node distance = 4.7cm, auto]
-	\end{tikzpicture}
-	
-	\begin{minipage}[t]{\linewidth}
-	\end{minipage}
-	
-	\caption[*]{*}
-\end{figure}
+%% Define block styles
+%\tikzstyle{block} = [rectangle, draw, fill=white, align=center,rounded corners, minimum height=3em, minimum width=3em, drop shadow]
+%\tikzstyle{line} = [draw, -{>[length=2mm, width=1mm]}]
+%\begin{figure}[t]
+%	\centering
+%	\begin{tikzpicture}[node distance = 5cm, auto]
+%	\end{tikzpicture}
+%	
+%	\begin{minipage}[t]{\linewidth}
+%	\end{minipage}
+%	\vspace{\belowdisplayskip}
+%	
+%	\begin{tikzpicture}[node distance = 4.7cm, auto]
+%	\end{tikzpicture}
+%	
+%	\begin{minipage}[t]{\linewidth}
+%	\end{minipage}
+%	
+%	\caption[*]{*}
+%\end{figure}
 
 Having this in mind, the symbolic execution of an isolated Spark operation depends solely on the behavior of the function passed by the user. However, when analyzing a whole program, special considerations for every particular operation must be taken into account. These considerations are different in nature but mostly refer to how output values are percolated to the subsequent operations in order to ensure the correct analysis of the next functions.
-% Refer to the second part of the diagram
+%TODO: MAYBE Refer to the second part of the diagram
 
 The whole process could be summarized in the following three steps:
 \begin{enumerate}
@@ -45,3 +48,79 @@ The whole process could be summarized in the following three steps:
 	\item Carry out the symbolic execution of the passed function
 	\item Take special considerations based on the executed Spark operation
 \end{enumerate}
+
+Following these three steps, the symbolic execution of a Spark program using \spf as the underlying analysis framework is represented by the state diagram depicted in~\ref{fig:logic:state-diagram}. Here we consider how a black-box analysis should proceed in order to reason about the execution flow of a Spark program and the control flow instruction that might occur in them.
+
+The starting point of the analysis consists in detecting that a Spark operation of interest is being executed; relevant operations can be defined by the user beforehand. Once this has happened, the next step is to prepare for the exact operation that was detected, for example, indicating what function was passed to the detected operation and prepare the \spf analysis to consider its inputs as symbolic. Generally, these two steps occur simultaneously but given their semantic differences in the process, it was important to highlight them as different states of the analysis.
+
+The real analysis begins once the passed function is invoked. The process is split in three stages: \textit{pre-process}, \textit{analysis} and \textit{post-process}. During the \textit{pre-process} stage, we must ensure that the parameters passed to the function are correctly instantiated; for example, if a \textit{map} and a \textit{filter} transformations took place in that order, we must ensure that the input symbolic expression passed to the function executed by the \textit{filter} is the output of the function invoked by the \textit{map} transformation. This guarantees a coherent inter-methodical analysis. The subsequent stage is the core analysis, which proceeds in the same way as an analysis of a regular method in \spf would do. Lastly, during the post-process stage the framework makes all the necessary preparations to be able to continue the symbolic execution of subsequent Spark operations.
+
+Once the analysis of a Spark operation is done, the framework continues to explore the program. This can lead to the detection of another relevant Spark operation. Finally, once the execution has finished, \jpf will backtrack to any decision points defined by the \textit{Choice Generators}. These points always take place inside one of the functions passed to any Spark operations; this is why the framework has to re-establish a strategy corresponding the Spark operation containing the invoked function. The analysis continues as usual once the strategy has been re-established. After all choices have been explored the execution terminates and the analysis provides an output.
+
+% Define block styles
+\tikzstyle{block} = [rectangle, draw, fill=white, align=center,rounded corners, minimum height=3em, minimum width=3em, drop shadow]
+\tikzstyle{line} = [draw, -{>[length=2mm, width=1mm]}]
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}[node distance = 2.5cm, auto]
+	% Place nodes
+	\node [block, very thick] (DETECTSPARK) {\small Detect \\ \small Spark \\ \small Operation};
+	\node [block, right of=DETECTSPARK] (PREPARESTRATEGY) {\small Prepare \\ \small Strategy};	
+	\node [block, right of=PREPARESTRATEGY] (DETECTFUNC) {\small Detect \\ \small Function \\ \small Invocation};
+	\node [block, right of=DETECTFUNC] (PREPROC) {\small Pre-process};
+	\node [block, right of=PREPROC] (ANALYSIS) {\small Analyze};
+	\node [block, below of=ANALYSIS] (POSTPROC) {\small Post-process};
+	\node [block, right of=ANALYSIS] (BACKTRACK) {\small Backtrack};
+	\node [block, above of=BACKTRACK] (RESTABLISHSTRATEGY) {\small Re-establish \\ \small Strategy};
+	\node [block, right of=BACKTRACK, double distance=1pt] (TERMINATE) {\small Terminate \\ \small Execution};			
+	% Draw edges
+	\path [line, rounded corners] (DETECTSPARK) -- (PREPARESTRATEGY);
+	\path [line, rounded corners] (PREPARESTRATEGY) -- (DETECTFUNC);
+	\path [line, rounded corners] (DETECTFUNC) -- (PREPROC);
+	\path [line, rounded corners] (PREPROC) -- (ANALYSIS);
+	\path [line, rounded corners] (ANALYSIS) -- (POSTPROC);
+	\path [line, rounded corners] (POSTPROC) -| (BACKTRACK);
+	\path [line, rounded corners] (POSTPROC) -| (DETECTSPARK);
+	\path [line, rounded corners] (BACKTRACK) -- (RESTABLISHSTRATEGY);
+	\path [line, rounded corners] (RESTABLISHSTRATEGY) -| (ANALYSIS);
+	\path [line, rounded corners] (BACKTRACK) -- (TERMINATE);
+	\end{tikzpicture}
+	\caption[State Diagram of the Symbolic Execution Process of Spark Programs]{State diagram of the symbolic execution process of Spark programs.}
+	\label{fig:logic:state-diagram}
+\end{figure}
+
+\TUsubsection{A Concrete Example}
+\label{subsec:logic:example}
+
+The trivial example presented in listing~\ref{lst:logic:example} depicts a simple Spark program with no purpose in itself. However, this simple example allows us to explain better how the analysis will be carried out. The relevant Spark operations in this example are the \textit{map} and \textit{filter} transformations in lines~\ref{lst:ln:logic:example:map} and~\ref{lst:ln:logic:example:filter} respectively. All other operations related to Spark are not relevant. 
+
+\begin{lstlisting}[
+language=Java,
+caption={[Trivial Example to Illustrate the Symbolic Execution of Spark Programs] Trivial example to illustrate the symbolic execution of spark programs. The program itself has no real purpose other than to serve as a good scenario to demonstrate inter and intra procedural conditions of the analysis.},
+float=h,
+label=lst:logic:example
+]
+SparkConf conf = new SparkConf()
+.setAppName("Example")
+.setMaster("local");
+
+JavaSparkContext spark = new JavaSparkContext(conf);
+
+List<Integer> numberList = Arrays.asList(1,2,3);
+JavaRDD<Integer> numbers = spark.parallelize(numberList);
+
+numbers.map(v1 -> { /*# \label{lst:ln:logic:example:map} #*/
+	if(v1 > 1) return v1; /*# \label{lst:ln:logic:example:if} #*/
+	else return v1+2; /*# \label{lst:ln:logic:example:map-modifies} #*/
+})
+.filter(v2 -> v2 > 2); /*# \label{lst:ln:logic:example:filter} #*/
+
+spark.stop();
+spark.close();
+\end{lstlisting}
+
+The first operation detected during the analysis is the \textit{map} transformation in line~\ref{lst:ln:logic:example:map}. At this point, \textit{JPF-SymSpark} approaches the situation following a ``map'' strategy and prepares itself for the imminent invocation of the function passed to the \textit{map}. All the functions in this example are depicted as lambda functions. Once the function is invoked, the framework proceeds with the pre-processing stage, however, because no previous operations were executed, the initial input for the function is a trivial symbolic reference~($V_0$). This reference serves as our symbolic variable for determining the possible input values that would explore all the feasible paths in the program.
+
+During the symbolic execution of the function we find that there is a branching instruction in line~\ref{lst:ln:logic:example:if}. This represents a decision point and, for this reason, a \textit{choice generator} is registered with two options: one where $V_0$ is greater than one and another where it is less than or equals to one. The control flow continues with one of the paths and stores the other for a later exploration. Given the nature of the \textit{map} transformation, the input parameter might suffer a certain transformation which, in turn, is the returned value, as it is shown in line~\ref{lst:ln:logic:example:map-modifies}. During the pre-processing of the operation the symbolic expression $V_0 + 1$ is then set to be the input value of the immediate Spark operation, which in this case is a \textit{filter}. The \textit{filter} transformation is processed in a similar fashion except that in this case the input value used in its function is instantiated to whatever output generated the \textit{map} transformation.
+
+The function passed to the \textit{filter} transformation returns a boolean that depends on the symbolic input value. Given the nature of this kind of instruction, \spf registers a \textit{choice genertor} in order to explore the possible outcomes of evaluating the boolean condition. Again, one of the paths is chosen and the analysis continues. At this point there are no more relevant Spark operations and the execution comes to an end, thus, triggering a backtrack to the last unexplored path. Finally, the analysis continues until there are no more unexplored paths left.

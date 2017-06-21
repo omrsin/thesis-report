@@ -1,0 +1,22 @@
+\TUsubsection{Instruction Factory}
+
+% Point out how the detection of Spark operations as well relies on the combinations of the Instruction Factory, the instruction class itself and Platform-specific validator classes.
+
+% Indicate that the only relevant instruction is INVOKEVIRTUAL
+
+% Show a comparison between how a code looks and how its compiled bytecode instruction looks
+
+The first step for carrying out the analysis is to determine when a Spark operation is being executed. Given that all relevant operations are implemented as non-static methods in the concrete \textit{JavaRDD} class, the bytecode instruction of interest is \textit{invokevirtual}. This instruction is in charge of dispatching Java methods, unless they are interface methods, static methods or some other special cases (\textit{invokeinterface}, \textit{invokestatic} and \textit{invokespecial} are used respectively in these cases)~\cite{Lindholm2014}.
+
+For this purpose, we implemented the \textit{SparkSymbolicInstructionFactory} class; which extends from the \textit{SymbolicInstructionFactory} class defined in the \spf module. The goal of this class is to solely intercept calls to the \textit{invokevirtual} bytecode instruction and validate if they intend to dispatch one of the Spark operations relevant to the analysis.
+
+Just to illustrate this situation better in the case of the Java implementation, let us assume that the \textit{filter} transformation is being called on an existing \acrshort{acr:rdd} such as
+
+\hspace*{1cm} \lstinline[language=Java,]|rdd.filter(...)|
+
+then, the corresponding bytecode will look like the following
+
+\hspace*{1cm} \lstinline[]|invokevirtual PATH/JavaRDD.filter:(PATH/Function;) PATH/JavaRDD;|
+
+with ``PATH'' representing the full package path where the classes or interfaces are located. The rest of the instruction represents the method name and the method descriptor; sufficient information for identifying the methods of interest. The function parameter was intentionally omitted because, although the passed parameter must implement the \textit{Function} interface, this can be done in several ways; being the most common lambda functions and anonymous classes. At this point, neither of this two approaches represent a difference when detecting the Spark operation, however, it will require special attention later on when detecting the invocation of the passed function.
+

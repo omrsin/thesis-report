@@ -9,61 +9,11 @@
 
 This section describes general structure and technical aspects of the \textit{JPF-SymSpark} module. The work presented here is based on the logical processes defined in the previous section. The following sections explain the different components that conform the module and what role do they play in the whole analysis.
 
-% Maybe mention that the module was created using the jpf-template project
+%TODO: Maybe mention that the module was created using the jpf-template project
+%TODO: Mention the structure and key aspects, for example the configuration properties, and the new Instruction Factory
 
-\TUsubsection{Spark Library and JPF}
-
-When executing an analysis using \jpf, the whole program is run under an instrumented \acrshort{acr:jvm} that keeps track of the execution state of the program. \jpf considers every program statement executed, even if it is executed by third-party libraries or dependencies indirectly invoked in the system under test. These libraries must be included in the \jpf's classpath (which is a different classpath than the normal Java classpath of the system under test) if they are executed, because if not, \jpf will fail indicating that is not able to find certain references during execution.
-
-On the other hand, Spark, as many other modern applications, depends on a constantly growing number of external libraries. To execute an analysis on a Spark program one could include all this libraries and dependencies in the the \jpf's classpath and let \jpf handle all the invocations internally. However, this approach has several problems: First, the execution of more statements increases the workload and state space of \jpf. Second, some Spark operations handle native calls that, for example, deal with the way tasks are placed in the OS; \jpf does not handle such native operations which leads to the need of creating surrogate peers that mock the behavior of such calls. Lastly and more importantly, most of these operations are called in methods that are unrelated to the actions and transformations that we are interested in, leading to an unnecessary overhead that does not provide any benefit.
-
-Because of all these reasons, including the Spark library and all its dependencies was not a reasonable approach. Instead, we decided to create a mock Spark library that mimics some of the classes that participate in a Spark program. The idea is to minimize the number of external dependencies and native calls while at the same time replacing the implementations of methods irrelevant to the analyses with simplified versions themselves. Listing~\ref{lst:module:java-spark-context} is an example of how a class that is irrelevant to the analysis is simplified. In the regular Spark library the \textit{JavaSparkContext} class triggers a lot of heavy processes, like initializing the whole Spark framework; now it is just reduced to empty or simple code blocks.
-
-\begin{lstlisting}[
-language=Java,
-caption={[Mocked JavaSparkContext] Mocked version of the \textit{JavaSparkContext} class. The methods are as simple as they could be while still maintaining the contract of the original class. Note that the classes \textit{SparkConf} and \textit{JavaRDD} are also mocked.},
-float=h,
-label=lst:module:java-spark-context
-]
-import java.util.Arrays;
-import java.util.List;
-import org.apache.spark.SparkConf;
-
-public class JavaSparkContext {	
-	public JavaSparkContext(SparkConf conf){}
-	public void stop() {}	
-	public void close() {}
-	public <T> JavaRDD<T> parallelize(List<T> list) {		
-		return new JavaRDD<T>(list);
-	}
-	public JavaRDD<String> textFile(String file) {
-		return new JavaRDD<String>(Arrays.asList(""));
-	}
-}
-\end{lstlisting}
-
-However, some of the methods invoked by the Spark library are relevant to the analysis. Such is the case of the methods defined in the \textit{JavaRDD} class and the rest of the classes in the \acrshort{acr:rdd} family. These methods include operations like \textit{filter}, \textit{map} and \textit{reduce}, that make use of the functions passed by the programmers. In these cases, it is extremely relevant that the passed function is invoked inside these methods so the analysis can be triggered following the usual \spf approach. Listing~\ref{lst:module:filter-javardd} shows an example of the mocked \textit{filter} method of the \textit{JavaRDD} class. The function passed to the \textit{filter} method is invoked with the first element of the \acrshort{acr:rdd} only and that the returned value is the current RDD itself given that it does not affect the end result when using symbolic values.
-
-\begin{lstlisting}[
-language=Java,
-caption={[Mocked \textit{filter} method in the JavaRDD class] Mocked filter method in the JavaRDD class. The function passed to the method is invoked. Note that the \textit{Function} interface is also mocked.},
-float=h,
-label=lst:module:filter-javardd
-]
-public JavaRDD<T> filter(Function<T,Boolean> f) {		
-	try {
-		f.call(list_t.get(0));
-	} catch (Exception e) {
-		e.printStackTrace();
-	}
-	return this;
-}
-\end{lstlisting}
-
-\TUsubsection{Instruction Factory}
-
-\TUsubsection{Spark Listener and Flow Coordinator}
-
-\TUsubsection{Method Strategies}
-
-\TUsubsection{Choice Generators}
+\input{parts/main/spark_library}
+\input{parts/main/instruction_factory}
+\input{parts/main/listener}
+\input{parts/main/strategies}
+\input{parts/main/choice_generators}
