@@ -121,6 +121,37 @@ spark.close();
 
 The first operation detected during the analysis is the \textit{map} transformation in line~\ref{lst:ln:logic:example:map}. At this point, \textit{JPF-SymSpark} approaches the situation following a ``map'' strategy and prepares itself for the imminent invocation of the function passed to the \textit{map}. All the functions in this example are depicted as lambda functions. Once the function is invoked, the framework proceeds with the pre-processing stage, however, because no previous operations were executed, the initial input for the function is a trivial symbolic reference~($V_0$). This reference serves as our symbolic variable for determining the possible input values that would explore all the feasible paths in the program.
 
-During the symbolic execution of the function we find that there is a branching instruction in line~\ref{lst:ln:logic:example:if}. This represents a decision point and, for this reason, a \textit{choice generator} is registered with two options: one where $V_0$ is greater than one and another where it is less than or equals to one. The control flow continues with one of the paths and stores the other for a later exploration. Given the nature of the \textit{map} transformation, the input parameter might suffer a certain transformation which, in turn, is the returned value, as it is shown in line~\ref{lst:ln:logic:example:map-modifies}. During the pre-processing of the operation the symbolic expression $V_0 + 1$ is then set to be the input value of the immediate Spark operation, which in this case is a \textit{filter}. The \textit{filter} transformation is processed in a similar fashion except that in this case the input value used in its function is instantiated to whatever output generated the \textit{map} transformation.
+During the symbolic execution of the function we find that there is a branching instruction in line~\ref{lst:ln:logic:example:if}. This represents a decision point and, for this reason, a \textit{choice generator} is registered with two options: one where $V_0$ is greater than one and another where it is less than or equals to one. The control flow continues with one of the paths and stores the other for a later exploration. Given the nature of the \textit{map} transformation, the input parameter might suffer a certain transformation which, in turn, is the returned value, as it is shown in line~\ref{lst:ln:logic:example:map-modifies}. During the pre-processing of the operation the symbolic expression $V_0 + 2$ is then set to be the input value of the immediate Spark operation, which in this case is a \textit{filter}. The \textit{filter} transformation is processed in a similar fashion except that in this case the input value used in its function is instantiated to whatever output generated the \textit{map} transformation.
 
 The function passed to the \textit{filter} transformation returns a boolean that depends on the symbolic input value. Given the nature of this kind of instruction, \spf registers a \textit{choice genertor} in order to explore the possible outcomes of evaluating the boolean condition. Again, one of the paths is chosen and the analysis continues. At this point there are no more relevant Spark operations and the execution comes to an end, thus, triggering a backtrack to the last unexplored path. Finally, the analysis continues until there are no more unexplored paths left.
+
+To further illustrate the example, figure~\ref{fig:logic:symbolic-spark-example} shows the symbolic execution tree of the program. One interesting aspect to note is that the results of the \textit{map} are percolated to the subsequent Spark operations; such is the case of the rightmost subtree in the symbolic execution tree. 
+
+When observed in this way, the analysis of the program turns out to be similar to the sequential execution of the respective input functions of each of the Spark operations in the program. However, this is not always the case given that some operations have particular semantic implications, for example, \textit{flatMap} produces multiple symbolic output, hence, making it impossible to simply connect the function passed to a \textit{flatMap} as it is to any following operation.
+
+After the analysis is done, the module can solve the resulting path conditions and obtain a representative value in the range to produce a reduced input data set that is able to offer full path coverage of the program.
+
+
+\begin{figure}[t]
+	\[\xymatrix@C=0.3em @R=0.8em{ 
+		& & & \ar[dd]^<(0.4){v1 = V_{0}} map & & & & \\
+		& & & & & & & \\
+		& & & \ar@{}[lldd]_<(0.2){true} \ar@{}[lldd]^>(0.5){V_{0}} \ar[lldd] V_{0} > 1 \ar[rrdd] \ar@{}[rrdd]_>(0.5){V_{0} + 2} \ar@{}[rrdd]^<(0.2){false} & & & & \\
+		& & & & & & & \\
+		& \ar[dd]^<(0.3){v2 = V_{0}} filter & & & & \ar[dd]^<(0.3){v2 = V_{0} + 2} filter & \\
+		& & & & & & & \\
+		& \ar@{}[ldd]_<(0.2){true} \ar[ldd] V_{0} > 2 \ar[rdd] \ar@{}[rdd]^<(0.2){false} & & & & \ar@{}[ldd]_<(0.2){true} \ar[ldd] V_{0} + 2 > 2 \ar[rdd] \ar@{}[rdd]^<(0.2){false} & \\
+		& & & & & & & \\
+		*+[F] \txt{$~~~V_{0} > 1$ 
+			\\ $\land ~V_{0} > 2$} & & 
+		*+[F] \txt{$~~~V_{0} > 1$ 
+			\\ $\land ~V_{0} \leq 2$} & &
+		*+[F] \txt{$~~~~~~~~~V_{0} \leq 1$ 
+			\\ $\land ~V_{0} + 2 > 2$} & &
+		*+[F] \txt{$~~~~~~~~~V_{0} \leq 1$ 
+			\\ $\land ~V_{0} + 2 \leq 2$} \\
+		V_{0} = 3 & & V_{0} = 2 & & V_{0} = 1 & & V_{0} = 0 & 
+	} \]
+	\caption[Symbolic Execution Tree of a Trivial Spark Program]{Symbolic execution tree corresponding to the Spark program shown in listing~\ref{lst:logic:example}. The input set $\{3,2,1,0\}$ represents a minimal input set that would explore all feasible paths in the program.}
+	\label{fig:logic:symbolic-spark-example}
+\end{figure}
