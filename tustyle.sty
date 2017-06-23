@@ -229,15 +229,22 @@
 {}{}}
 
 
-\newcommand{\TUcolorblock}{\put(-0.15,-4.3){\color{tucolor}{\rule{\textwidth}{10\unitlength+1.24cm}}}}
+\newcommand{\TUcolorblock}{\put(-0.15,-4.3){\color{tucolor}{\rule{\textwidth}{9.7\unitlength}}}}
 
 \newcommand{\theTUtitle}{}
+\newcommand{\theTUsubtitle}{}
 \newcommand{\theTUauthor}{}
 \newcommand{\theTUdate}{}
+\newcommand{\theTUsupervisors}{}
+\newcommand{\theTUfaculty}{}
+\newcommand{\theTUdepartment}{}
 \newcommand{\TUtitle}[1]{\renewcommand{\theTUtitle}{#1}}
+\newcommand{\TUsubtitle}[1]{\renewcommand{\theTUsubtitle}{#1}}
 \newcommand{\TUauthor}[1]{\renewcommand{\theTUauthor}{#1}}
 \newcommand{\TUdate}[1]{\renewcommand{\theTUdate}{#1}}
-
+\newcommand{\TUsupervisors}[2]{\renewcommand{\theTUsupervisors}{1. Gutachten: #1\\2. Gutachten: #2}}
+\newcommand{\TUfaculty}[1]{\renewcommand{\theTUfaculty}{#1}}
+\newcommand{\TUdepartment}[1]{\renewcommand{\theTUdepartment}{#1}}
 \AtBeginDocument{
 	\gdef\maketitle{
 	\makeatletter
@@ -250,18 +257,32 @@
 		\begin{picture}(14.14213562,10)
 			\TUcolorblock
 			\put(-0.15,-4.3){\rule{\textwidth}{.5\TUlinewidth}}
-			\put(-0.15,6.42){\rule{\textwidth}{.5\TUlinewidth}}
-			\put(-0.1,6.42){\begin{minipage}[t]{\textwidth}
+			\put(-0.15,5.40){\rule{\textwidth}{.5\TUlinewidth}}
+			\put(-0.1,5.42){\begin{minipage}[t]{\textwidth}
 				\vspace{.5\TUlogoheight}\flushright
 				\includegraphics[height=\TUlogoheight]{tud_logo}
 			\end{minipage}}
-			\put(-0.15,7.42){\rule{\textwidth}{.5\TUlinewidth}}
-			\put(-0.15,6.85){\begin{minipage}[c][1.14\unitlength]{\textwidth}
-			\Large\noindent\textsf{\theTUauthor\\\theTUdate}
-			\end{minipage}}
-			\put(-0.15,7.7){\begin{minipage}[b][1.14\unitlength]{\textwidth-0.5cm}\flushleft
-			\fontsize{34}{45}\selectfont\noindent\textsf{\textbf{\theTUtitle}}
-			\end{minipage}}
+			\put(6.7,2.82){				
+				\colorbox{white}{					
+					\begin{minipage}[t][10mm][c]{49 mm}
+						\flushleft
+						\scriptsize{
+						\textsf{\theTUfaculty}
+						\textsf{\theTUdepartment}}
+					\end{minipage}
+				}			
+			}
+			\put(-0.15,7.30){\rule{\textwidth}{.5\TUlinewidth}}
+			\put(-0.15,6.3){\begin{minipage}[c][1.14\unitlength]{\textwidth}
+				\normalsize\noindent\textsf{\textbf{\theTUsubtitle}} \\
+				\textsf{Master-Thesis von \theTUauthor} \\
+				\textsf{Tag der Einreichung: \theTUdate} \\ \\
+				\textsf{\theTUsupervisors}
+			\end{minipage}}			
+			\put(-0.15,7.7){\begin{minipage}[b][1.14\unitlength]{\textwidth-0.5cm}
+				\flushleft\fontsize{34}{45}\selectfont\noindent\textsf{\textbf{\theTUtitle}}
+			\end{minipage}
+			}
 		\end{picture}
 	\end{titlepage}
 	\makeatother
