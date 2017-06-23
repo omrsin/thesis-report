@@ -7,7 +7,25 @@
 % Strategies
 % Choice Generators
 
-This section describes general structure and technical aspects of the \textit{JPF-SymSpark} module. The work presented here is based on the logical processes defined in the previous section. The following sections explain the different components that conform the module and what role do they play in the whole analysis.
+This section describes general structure and technical aspects of the \textit{JPF-SymSpark} module. The work presented here is based on the logical processes defined in the previous section. The main extension points used in the module are:
+
+\begin{itemize}
+	\item \textbf{Bytecode Factory}: Implemented in the \textit{SparkSymbolicInstructionFactory} class, this bytecode instruction factory is in charge of detecting relevant Spark instructions.
+	\item \textbf{Listeners}: The main listener is the \textit{SparkMethodListener} class. After the bytecode instruction factory, the listener provides the main interaction point with the analyzed program. In our case, the listener aims to orchestrate the correct symbolic execution of a sequence of Spark operations.
+	\item \textbf{Publishers}: The \textit{SparkMethodListener} class also works as a publisher (this two responsibilities are often held together by the same class). The class produces a reduced input dataset obtained after selecting concrete values that satisfy the path conditions.
+	\item \textbf{Choice Generators}: In some cases, additional choice generators must be registered in order to correctly reproduce the behavior of some of the Spark operations. Such is the case of the \textit{SparkMultipleOutputChoiceGenerator} class, which is used when analyzing a \textit{flatMap} transformation, given that it can potentially produce multiple outputs.
+\end{itemize}
+
+Additionally, the module also introduces the following additional control components that play an important role during the analysis:
+
+\begin{itemize}
+	\item \textbf{Validators}: This are abstractions that encapsulate the necessary validations to determine if an executed instruction is a Spark operation or an invocation of the user-defined function. As for the case of the Java platform, the validator is implemented in the \textit{JavaSparkValidator} class.
+	\item \textbf{Method Strategies}: Each Spark operation follows a different strategy depending on how they deal with their input and output parameters. One example of a method strategy can be found in the \textit{FilterStrategy} class.
+	\item \textbf{Method Coordinator}: The coordinator is in charge of selecting the adequate strategy based on the Spark operation currently being executed. It maintains a general view on the whole process. The method coordinator is implemented in \textit{MethodSequenceCoordinator} class.
+	\item \textbf{Dummy Spark Library}: The regular Spark library underwent into several unnecessary workload that was not relevant to the symbolic execution. Instead of it, a dummy Spark library was implemented and included as one of the dependencies of the module.
+\end{itemize}
+
+The following sections explain in more detail the different components that conform the module and what role do they play in the whole analysis.
 
 %TODO: Maybe mention that the module was created using the jpf-template project
 %TODO: Mention the structure and key aspects, for example the configuration properties, and the new Instruction Factory
