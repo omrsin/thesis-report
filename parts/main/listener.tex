@@ -1,1 +1,124 @@
-\TUsubsection{Spark Listener and Flow Coordinator}
+\TUsubsection{Spark Listener and Method Sequence Coordinator}
+
+The overall process of the \textit{JPF-SymSpark} module is implemented by the \textit{SparkMethodListener} and the \textit{MethodSequenceCoordinator}. The listener acts as a stateless interpreter of the analysis' progress while the coordinator behaves as a stateful control node that provides coherence to the whole process. Both entities work together closely, being the listener just an entry point that dispatches actions to the coordinator based on a selected few relevant events.
+
+\TUsubsubsection{Spark Method Listener}
+
+The Spark method listener extends the \textit{PropertyListenerAdapter} which already provides entry points to all the events exposed by \jpf. The relevant events in our case are:
+
+\begin{itemize}
+	\item \textbf{instructionExecuted}: Which is triggered every time an instruction is executed. When this event is triggered, the listener forwards the executed instruction to the coordinator in order to validate if it is a relevant instruction for the analysis.
+	\item \textbf{methodExited}: Which is triggered every time a method finishes its execution. In this case, if the method is related to Spark, the listener indicates to the coordinator that it should prepare to percolate the output to possible subsequent Spark methods.
+	\item \textbf{stateAdvanced} Which every time the internal state of \jpf advances. This is only relevant to identify that an end state has been reached, in which case the listener indicates to the coordinator that a full path has been explored.
+	\item \textbf{stateBacktracked}: Which is triggered every time the execution reached an end state but there were already choice generators registered with unexplored options. The state is always backtracked to the latest point where a choice generator was registered. In this case, the listener instructs the coordinator to obtain a solution to the symbolic input value if the state backtracked to a different alternative of the path condition.
+\end{itemize}
+
+Additionally to these events, the \textit{SparkMethodListener} also implements the \textit{PublisherExtension} interface which allows it to act as a publisher as well. The combination of a listener and a publisher is a common practice among the \jpf modules, given it is convenient to collect information worth to be published during the different events tracked by the listener. As a publisher, when the whole analysis is done, the different sample values that satisfied the path conditions that were collected by the coordinator are displayed in the console as a single input dataset.
+
+\TUsubsubsection{Method Sequence Coordinator}
+
+The \textit{MethodSequenceCoordinator} class was created as a stateful control structure used to keep track of the progress and results of the analysis. Although it is heavily influenced by the events detected in the listener, the idea was to keep it detached to the event-flow responsibilities of the listener, focusing only on the module's process state.
+
+The goal of the coordinator is to switch to the adequate strategy based on the Spark operations. The different strategies actually do the heavy-lifting in the analysis, and are in charge of handling the behavior of each particular operation correctly. More on the strategies can be found in section~\ref{subsec:module:strategies}.
+
+The main actions of the coordinator are:
+
+\begin{itemize}
+	\item \textbf{detectSparkInstruction}: This action determines whether the executed instruction is a Spark operation or the respective invocation if its parameter function. In the case of being a Spark operation, the coordinator selects the adequate strategy matching the operation. Otherwise, if it detect the invocation of the parameter function, then it indicates to the currently active strategy to execute the pre-processing phase.
+	\item \textbf{percolateToNextMethod}: In this case, the coordinator instructs the active strategy to execute its post-processing phase. In general, all post-processing activities deal with the inter-connection of Spark operations, this is, dealing with output parameters and the interruption of the control flow, among others.
+	\item \textbf{processSolution}: Arguably the most important action of the coordinator. This action is invoked anytime \jpf backtracks to a previous state. In the case the state is backtracked to a point where a different path most be taken in a branching condition, that means that the other path has been completely explored. Being this the case, the current path condition is obtained from the choice generator and passed to the solver to determine if it is feasible or not; in the positive case, a sample value of the symbolic input is added to the solution list, otherwise an unfeasible path is reported.
+\end{itemize}
+
+% Define block styles
+\tikzstyle{block} = [rectangle, draw, fill=white, align=center,rounded corners, minimum height=3em, minimum width=3em]
+\tikzstyle{invisible-block} = [rectangle, draw=none, fill=none, minimum width=3cm, minimum height=4mm, node distance=4.9mm]
+\tikzstyle{line} = [draw, -{>[length=2mm, width=1mm]}]
+\tikzstyle{line-dashed} = [draw, dashed, -{>[length=2mm, width=1mm]}]
+\begin{figure}[t]
+	\centering
+	\begin{tikzpicture}[node distance=2cm, auto]
+	% Place nodes
+%	if(v1 > 1) return v1;
+%	else return v1 +2;
+%. filter (v2 -> v2 > 2);
+	\node [block, draw=none, align=left] (CODE) {
+		\\
+		\texttt{...} \\
+		\texttt{numbers.map(} \\
+		\texttt{~~v1 -> \{} \\
+		\texttt{~~~~if(v1 > 1) return v1;} \\
+		\texttt{~~~~else return v1+2;} \\
+		\texttt{~~\}} \\
+		\texttt{)} \\
+		\texttt{.filter (v2 -> v2 > 2);} \\
+		\texttt{...} \\		
+	};
+	
+	\node [invisible-block, minimum height=5cm, minimum width=3cm] (INVISIBLE){};
+	\node [invisible-block, below of=INVISIBLE] at (INVISIBLE.north) (C1){};
+	\node [invisible-block, below of=C1, minimum width=0.2cm](C2){};
+	\node [invisible-block, below of=C2, minimum width=1cm](C3){};
+	\node [invisible-block, below of=C3](C4){};
+	\node [invisible-block, below of=C4](C5){};
+	\node [invisible-block, below of=C5, minimum width=3.5cm](C6){};
+	\node [invisible-block, below of=C6, minimum width=4.5cm](C7){};
+	\node [invisible-block, below of=C7, xshift=0.6cm](C8){};
+	\node [invisible-block, below of=C8, xshift=-0.6cm, minimum width=3.5cm](C9){};
+	
+	\node [block, right of=CODE,  drop shadow, node distance=6cm, minimum height=5cm, minimum width=3cm] (LISTENER) {Spark \\ Method \\ Listener};
+	\node [invisible-block, below of=LISTENER] at (LISTENER.north) (L1){};
+	\node [invisible-block, below of=L1](L2){};
+	\node [invisible-block, below of=L2](L3){};
+	\node [invisible-block, below of=L3](L4){};
+	\node [invisible-block, below of=L4](L5){};
+	\node [invisible-block, below of=L5](L6){};
+	\node [invisible-block, below of=L6](L7){};
+	\node [invisible-block, below of=L7](L8){};
+	\node [invisible-block, below of=L8](L9){};
+	
+	\node [block, right of=LISTENER,  drop shadow, node distance=6.5cm, minimum height=5cm, minimum width=3cm] (COORDINATOR) {Method \\ Sequence \\ Coordinator};
+	\node [invisible-block, below of=COORDINATOR] at (COORDINATOR.north) (CO1){};
+	\node [invisible-block, below of=CO1](CO2){};
+	\node [invisible-block, below of=CO2](CO3){};
+	\node [invisible-block, below of=CO3](CO4){};
+	\node [invisible-block, below of=CO4](CO5){};
+	\node [invisible-block, below of=CO5](CO6){};
+	\node [invisible-block, below of=CO6](CO7){};
+	\node [invisible-block, below of=CO7](CO8){};
+	\node [invisible-block, below of=CO8](CO9){};
+%	\node [block, very thick] (DETECTSPARK) {\small Detect \\ \small Spark \\ \small Operation};
+%	\node [block, right of=DETECTSPARK] (PREPARESTRATEGY) {\small Prepare \\ \small Strategy};	
+%	\node [block, right of=PREPARESTRATEGY] (DETECTFUNC) {\small Detect \\ \small Function \\ \small Invocation};
+%	\node [block, right of=DETECTFUNC] (PREPROC) {\small Pre-process};
+%	\node [block, right of=PREPROC] (ANALYSIS) {\small Analyze};
+%	\node [block, below of=ANALYSIS] (POSTPROC) {\small Post-process};
+%	\node [block, right of=ANALYSIS] (BACKTRACK) {\small Backtrack};
+%	\node [block, above of=BACKTRACK] (RESTABLISHSTRATEGY) {\small Re-establish \\ \small Strategy};
+%	\node [block, right of=BACKTRACK, double distance=1pt] (TERMINATE) {\small Terminate \\ \small Execution};			
+	% Draw edges
+	\path [line-dashed] (C2.east) -- (L2.west);
+	\path [line-dashed] (C3.west) -- (L3.west);
+	\path [line-dashed] (C7.west) -- (L7.west);
+	\path [line-dashed] (C8.east) -- (L8.west);
+	\path [line-dashed] (C9.west) -- (L9.west);
+	
+	\path [line] (L2.east) -- node[]{\footnotesize \textit{detectSparkInstruction}} (CO2.west);
+	\path [line] (L3.east) -- node[]{\footnotesize \textit{detectSparkInstruction}} (CO3.west);
+	\path [line] (L7.east) -- node[]{\footnotesize \textit{percolateToNextMethod}} (CO7.west);
+	\path [line] (L8.east) -- node[]{\footnotesize \textit{detectSparkInstruction}}(CO8.west);
+	\path [line] (L9.east) -- node[]{\footnotesize \textit{processSolution}}(CO9.west);
+	
+%	\path [line, rounded corners] (DETECTSPARK) -- (PREPARESTRATEGY);
+%	\path [line, rounded corners] (PREPARESTRATEGY) -- (DETECTFUNC);
+%	\path [line, rounded corners] (DETECTFUNC) -- (PREPROC);
+%	\path [line, rounded corners] (PREPROC) -- (ANALYSIS);
+%	\path [line, rounded corners] (ANALYSIS) -- (POSTPROC);
+%	\path [line, rounded corners] (POSTPROC) -| (BACKTRACK);
+%	\path [line, rounded corners] (POSTPROC) -| (DETECTSPARK);
+%	\path [line, rounded corners] (BACKTRACK) -- (RESTABLISHSTRATEGY);
+%	\path [line, rounded corners] (RESTABLISHSTRATEGY) -| (ANALYSIS);
+%	\path [line, rounded corners] (BACKTRACK) -- (TERMINATE);
+	\end{tikzpicture}
+	\caption[State Diagram of the Symbolic Execution Process of Spark Programs]{State diagram of the symbolic execution process of Spark programs.}
+	\label{fig:logic:state-diagram}
+\end{figure}

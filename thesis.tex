@@ -81,8 +81,10 @@
 \pagenumbering{Roman}					% Activates the roman page numbering
 \setcounter{page}{\value{savecounter}}	% Restores the last used roman numeral
 
-% Includes the bibliography
-\printbibliography
+% Includes appendices
+\appendix
+\include{parts/appendix-collaborations}
+\include{parts/appendix-installation}
 
 % Includes the list of figures
 \cleardoublepage
@@ -119,9 +121,7 @@
 % Table alternative to the list of symbols (Uncomment if preferred)
 %\include{parts/symbols_table}
 
-% Includes appendices
-\appendix
-\include{parts/appendix-collaborations}
-\include{parts/appendix-installation}
+% Includes the bibliography
+\printbibliography
 
 \end{document}
