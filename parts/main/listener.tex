@@ -33,14 +33,11 @@ The main actions of the coordinator are:
 \tikzstyle{block} = [rectangle, draw, fill=white, align=center,rounded corners, minimum height=3em, minimum width=3em]
 \tikzstyle{invisible-block} = [rectangle, draw=none, fill=none, minimum width=3cm, minimum height=4mm, node distance=4.9mm]
 \tikzstyle{line} = [draw, -{>[length=2mm, width=1mm]}]
-\tikzstyle{line-dashed} = [draw, dashed, -{>[length=2mm, width=1mm]}]
+\tikzstyle{line-dashed} = [draw, dotted, -{>[length=2mm, width=1mm]}]
 \begin{figure}[t]
 	\centering
 	\begin{tikzpicture}[node distance=2cm, auto]
 	% Place nodes
-%	if(v1 > 1) return v1;
-%	else return v1 +2;
-%. filter (v2 -> v2 > 2);
 	\node [block, draw=none, align=left] (CODE) {
 		\\
 		\texttt{...} \\
@@ -50,22 +47,22 @@ The main actions of the coordinator are:
 		\texttt{~~~~else return v1+2;} \\
 		\texttt{~~\}} \\
 		\texttt{)} \\
-		\texttt{.filter (v2 -> v2 > 2);} \\
+		\texttt{.filter(v2 -> v2 > 2);} \\
 		\texttt{...} \\		
 	};
 	
 	\node [invisible-block, minimum height=5cm, minimum width=3cm] (INVISIBLE){};
 	\node [invisible-block, below of=INVISIBLE] at (INVISIBLE.north) (C1){};
-	\node [invisible-block, below of=C1, minimum width=0.2cm](C2){};
-	\node [invisible-block, below of=C2, minimum width=1cm](C3){};
+	\node [invisible-block, below of=C1, minimum width=0.7cm](C2){};
+	\node [invisible-block, below of=C2, minimum width=0.7cm](C3){};
 	\node [invisible-block, below of=C3](C4){};
 	\node [invisible-block, below of=C4](C5){};
-	\node [invisible-block, below of=C5, minimum width=3.5cm](C6){};
-	\node [invisible-block, below of=C6, minimum width=4.5cm](C7){};
+	\node [invisible-block, below of=C5, minimum width=0.7cm](C6){};
+	\node [invisible-block, below of=C6, minimum width=2cm](C7){};
 	\node [invisible-block, below of=C7, xshift=0.6cm](C8){};
-	\node [invisible-block, below of=C8, xshift=-0.6cm, minimum width=3.5cm](C9){};
+	\node [invisible-block, below of=C8, xshift=-0.6cm, minimum width=2cm](C9){};
 	
-	\node [block, right of=CODE,  drop shadow, node distance=6cm, minimum height=5cm, minimum width=3cm] (LISTENER) {Spark \\ Method \\ Listener};
+	\node [block, right of=CODE,  drop shadow, node distance=6.5cm, minimum height=5cm, minimum width=3cm] (LISTENER) {Spark \\ Method \\ Listener};
 	\node [invisible-block, below of=LISTENER] at (LISTENER.north) (L1){};
 	\node [invisible-block, below of=L1](L2){};
 	\node [invisible-block, below of=L2](L3){};
@@ -86,39 +83,22 @@ The main actions of the coordinator are:
 	\node [invisible-block, below of=CO6](CO7){};
 	\node [invisible-block, below of=CO7](CO8){};
 	\node [invisible-block, below of=CO8](CO9){};
-%	\node [block, very thick] (DETECTSPARK) {\small Detect \\ \small Spark \\ \small Operation};
-%	\node [block, right of=DETECTSPARK] (PREPARESTRATEGY) {\small Prepare \\ \small Strategy};	
-%	\node [block, right of=PREPARESTRATEGY] (DETECTFUNC) {\small Detect \\ \small Function \\ \small Invocation};
-%	\node [block, right of=DETECTFUNC] (PREPROC) {\small Pre-process};
-%	\node [block, right of=PREPROC] (ANALYSIS) {\small Analyze};
-%	\node [block, below of=ANALYSIS] (POSTPROC) {\small Post-process};
-%	\node [block, right of=ANALYSIS] (BACKTRACK) {\small Backtrack};
-%	\node [block, above of=BACKTRACK] (RESTABLISHSTRATEGY) {\small Re-establish \\ \small Strategy};
-%	\node [block, right of=BACKTRACK, double distance=1pt] (TERMINATE) {\small Terminate \\ \small Execution};			
+			
 	% Draw edges
-	\path [line-dashed] (C2.east) -- (L2.west);
-	\path [line-dashed] (C3.west) -- (L3.west);
-	\path [line-dashed] (C7.west) -- (L7.west);
-	\path [line-dashed] (C8.east) -- (L8.west);
-	\path [line-dashed] (C9.west) -- (L9.west);
+	\path [line-dashed] (C2.east) -- node[right=0.85cm, above=0.5mm]{\footnotesize \textit{instructionExecuted}} (L2.west);
+	\path [line-dashed] (C3.east) -- node[right=0.85cm, above=0.5mm]{\footnotesize \textit{instructionExecuted}} (L3.west);
+	\path [line-dashed] (C7.west) -- node[right=1.9cm, above=0.5mm]{\footnotesize \textit{methodExited}} (L7.west);
+	\path [line-dashed] (C8.east) -- node[]{\footnotesize \textit{instructionExecuted}} (L8.west);
+	\path [line-dashed] (C9.west) -- node[right=1.71cm, above=0.5mm]{\footnotesize \textit{stateBacktracked}} (L9.west);
 	
 	\path [line] (L2.east) -- node[]{\footnotesize \textit{detectSparkInstruction}} (CO2.west);
 	\path [line] (L3.east) -- node[]{\footnotesize \textit{detectSparkInstruction}} (CO3.west);
 	\path [line] (L7.east) -- node[]{\footnotesize \textit{percolateToNextMethod}} (CO7.west);
 	\path [line] (L8.east) -- node[]{\footnotesize \textit{detectSparkInstruction}}(CO8.west);
 	\path [line] (L9.east) -- node[]{\footnotesize \textit{processSolution}}(CO9.west);
-	
-%	\path [line, rounded corners] (DETECTSPARK) -- (PREPARESTRATEGY);
-%	\path [line, rounded corners] (PREPARESTRATEGY) -- (DETECTFUNC);
-%	\path [line, rounded corners] (DETECTFUNC) -- (PREPROC);
-%	\path [line, rounded corners] (PREPROC) -- (ANALYSIS);
-%	\path [line, rounded corners] (ANALYSIS) -- (POSTPROC);
-%	\path [line, rounded corners] (POSTPROC) -| (BACKTRACK);
-%	\path [line, rounded corners] (POSTPROC) -| (DETECTSPARK);
-%	\path [line, rounded corners] (BACKTRACK) -- (RESTABLISHSTRATEGY);
-%	\path [line, rounded corners] (RESTABLISHSTRATEGY) -| (ANALYSIS);
-%	\path [line, rounded corners] (BACKTRACK) -- (TERMINATE);
 	\end{tikzpicture}
-	\caption[State Diagram of the Symbolic Execution Process of Spark Programs]{State diagram of the symbolic execution process of Spark programs.}
-	\label{fig:logic:state-diagram}
+	\caption[Execution flow of the Spark Method Listener and Coordinator]{Execution flow of the Spark method listener and the coordinator when analyzing the sample program shown in listing~\ref{lst:logic:example}. The exact point on which the listener events are triggered actually depends on precise bytecode instructions; this diagram provides an approximation to where this instructions occur in the source code.}
+	\label{fig:listener:flow-diagram}
 \end{figure}
+
+The diagram shown in~\ref{fig:listener:flow-diagram} shows at which point during the execution of the program under test will the listener events be triggered. The \textit{instructionExecuted} event gets triggered on every instruction, however, the depicted points only refer to those instructions that are relevant to the analysis and will cause a respective action in the coordinator; the namely instructions correspond to the invocation of a Spark operation or its respective parameter function. Likewise, the \textit{methodExecuted} action is only relevant when the Spark operation or the parameter function finish. The \textit{stateBacktracked} is indicated to occur at a later point, usually at the end of the program although the backtrack process can be forced without necessarily having reached this point.
