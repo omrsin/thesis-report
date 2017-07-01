@@ -26,12 +26,12 @@ The purpose of the \textit{filter} transformation is to produce a new \acrshort{
 	\node [block, right of=FILTER] at (FILTER.left corner) (BACKTRACK) {Backtrack};
 	
 	% Draw edges
-	\path [line] (INIT) -- node[]{\small $SYM\_EXPR$}(FILTER.apex);
-	\path [line] (FILTER.right corner) -- node[below]{\textit{true}} node[]{\small $SYM\_EXPR$}(TRUE);
-	\path [line] (FILTER.left corner) -- node[below]{false}(BACKTRACK);
+	\path [line] (INIT) -- node[]{\footnotesize $SYM\_EXPR$}(FILTER.apex);
+	\path [line] (FILTER.right corner) -- node[below]{\textit{true}} node[]{\footnotesize $SYM\_EXPR$}(TRUE);
+	\path [line] (FILTER.left corner) -- node[below]{\textit{false}}(BACKTRACK);
 	
 	\end{tikzpicture}
-	\caption[Diagram of the \textit{filter} Strategy]{Diagram of the \textit{filter} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise is a new symbolic expression. Filter transformations always produce at least two branches, one that satisfy the predicate and one that does not. In the case of the branch that does not satisfy it, the execution is terminated and an immediate backtrack is triggered. The output of the transformation is always the same input symbolic expression disregarding the path taken.}
+	\caption[Diagram of the \textit{filter} Strategy]{Diagram of the \textit{filter} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise a new symbolic expression is used instead. Filter transformations always produce at least two branches, one that satisfy the predicate and one that does not. In the case of the branch that does not satisfy it, the execution is terminated and an immediate backtrack is triggered. The output of the transformation is always the same input symbolic expression disregarding the path taken.}
 	\label{fig:strategies:filter}
 \end{figure}
 
@@ -68,13 +68,13 @@ The \textit{map} transformation constructs a new \acrshort{acr:rdd} containing t
 	\node [invisible-block, right of=MAP] at (MAP.left corner) (SCN3) {...};
 	
 	% Draw edges
-	\path [line] (INIT) -- node[]{\small $SYM\_EXPR$}(MAP.apex);
-	\path [line] (MAP.right corner) -- node[]{\small $SYM\_EXPR^I$}(SCN1);
-	\path [line] (MAP.30) -- node[below=3mm]{...} node[]{\small $SYM\_EXPR^{II}$}(SCN2);	
-	\path [line] (MAP.left corner) -- node[]{\small $SYM\_EXPR^N$}(SCN3);
+	\path [line] (INIT) -- node[]{\footnotesize $SYM\_EXPR$}(MAP.apex);
+	\path [line] (MAP.right corner) -- node[]{\footnotesize $SYM\_EXPR^I$}(SCN1);
+	\path [line] (MAP.30) -- node[below=3mm]{...} node[]{\footnotesize $SYM\_EXPR^{II}$}(SCN2);	
+	\path [line] (MAP.left corner) -- node[]{\footnotesize $SYM\_EXPR^N$}(SCN3);
 	
 	\end{tikzpicture}
-	\caption[Diagram of the \textit{map} Strategy]{Diagram of the \textit{map} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise is a new symbolic expression. The output value percolated to the following functions is a new symbolic expression derived from any operations applied on the symbolic input. Map transformations do not necessarily have a branching condition, however, in the case there are, it is most likely that the output value will be different.}
+	\caption[Diagram of the \textit{map} Strategy]{Diagram of the \textit{map} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise a new symbolic expression is used instead. The output value percolated to the following functions is a new symbolic expression derived from any operations applied on the symbolic input. Map transformations do not necessarily have a branching condition, however, in the case there are, it is most likely that the output value will be different.}
 	\label{fig:strategies:map}
 \end{figure}
 
@@ -116,7 +116,7 @@ The pre-processing is carried out differently depending on the chosen mode. In t
 	\node [block, right of=REDUCE] at (REDUCE.east) (BACKTRACK) {Backtrack};
 	
 	% Draw edges
-	\path [line] (INIT) -- node[]{\small $(CONC, SYM\_EXPR)$}(REDUCE.west);
+	\path [line] (INIT) -- node[]{\footnotesize $(CONC, SYM\_EXPR)$}(REDUCE.west);
 	\path [line] (REDUCE.east) -- (BACKTRACK);	
 	\end{tikzpicture}
 	
@@ -133,7 +133,7 @@ The pre-processing is carried out differently depending on the chosen mode. In t
 	\node [block, right of=REDUCE] at (REDUCE.east) (BACKTRACK) {Backtrack};
 	
 	% Draw edges
-	\path [line] (INIT) -- node[]{\small $(SYM\_EXPR^I, SYM\_EXPR^{II})$}(REDUCE.west);
+	\path [line] (INIT) -- node[]{\footnotesize $(SYM\_EXPR^I, SYM\_EXPR^{II})$}(REDUCE.west);
 	\path [line] (REDUCE.east) -- (BACKTRACK);	
 	\end{tikzpicture}
 
@@ -153,7 +153,7 @@ Independently of the output of the \textit{reduce} action, the post-processing p
 
 \TUsubsubsection{\textit{flatMap}}
 
-The \textit{flatMap} transformation behaves similarly to the \textit{map} action, the only difference is that the function passed to the \textit{flatMap} has a collection of elements as an output value instead of a single element. These elements could have undergone different transformations even though they are returned in the same collection. One example of this behavior can be seen in listing~\ref{lst:strategies:java-spark-flatmap}. In the example, two different iterable collections are returned, one contains two elements resulting from two different manipulations of the initial input, while the second contains only one element with another manipulation different from the other two.
+The \textit{flatMap} transformation behaves similarly to the \textit{map} action, the only difference is that the function passed to the \textit{flatMap} has a collection of elements as an output value instead of a single element. These elements could have undergone different transformations even though they are returned in the same collection. One example of this behavior can be seen in listing~\ref{lst:strategies:java-spark-flatmap}. Here, two different iterable collections are returned, one contains two elements resulting from two different manipulations of the initial input, while the second contains only one element with another manipulation different from the other two. Figure~\ref{fig:strategies:flatMap} depicts the symbolic execution of a \textit{flatMap} transformation according to the flatMap strategy; it shows how each path taken inside the passed function ends up in the registration of a new choice generator whose options are the possible symbolic expressions in the returned collection.
 
 \begin{lstlisting}[
 language=Java,
@@ -162,49 +162,63 @@ float=h,
 label=lst:strategies:java-spark-flatmap
 ]
 numbers.flatMap(t -> {				
-	if(t > 2) return Arrays.asList(t*2, t*3).iterator();
-	else return Arrays.asList(t*4).iterator();				
+if(t > 2) return Arrays.asList(t*2, t*3).iterator();
+else return Arrays.asList(t*4).iterator();				
 });
 \end{lstlisting}
+
+\textit{Pre-processing}
+
+The pre-processing phase is identical to the pre-processing phase of the filter and map strategies. Again, the handling of the input parameters of the passed function is carried out in the same way because the passed functions have the same number of input parameters, hence their stack frame behaves the same. However, the function passed to a \textit{flatMap} transformation implements the \texttt{FlatMapFunction} interface, which differentiates from the \texttt{Function} interface used by the other two transformation by returning an the iterator of a collection instead.
+
+\textit{Post-processing}
+
+The post-processing phase of this strategy behaves quite differently from all the other strategies so far. The idea would be to obtain all the different symbolic expressions inside the iterable object returned by the function and use each of them to feed subsequent Spark operations. However, the problem here lies in the change of the cardinality of the possible outcomes; so far we have had always the scenario of one input producing exactly one output, but now one input could potentially imply several output.
+
+For this purpose, the strategy relies on how the mocked up \textit{flatMap} transformation is implemented in \texttt{JavaRDD} class. In this implementation, the returned iterable is completely traversed using the \textit{next} method, forcing the execution to bring each element of the collection into the stack frame of the \textit{flatMap} method. This implementation does not deviate starkly from the original \textit{flatMap} operation given that in the case of the regular Spark library, the whole iterator is explored to build a new \acrshort{acr:rdd}.
 
 % Define block styles
 \tikzstyle{block} = [rectangle, draw, fill=white, align=center, minimum height=4em, minimum width=3em, drop shadow]
 \tikzstyle{invisible-block} = [rectangle, draw=none, fill=none, align=center, minimum height=3em, minimum width=3em]
-\tikzstyle{triangle} = [isosceles triangle, draw, fill=white, align=center, shape border rotate=-180, minimum height=3em, minimum width=4cm, drop shadow]
+\tikzstyle{triangle} = [isosceles triangle, draw, fill=white, align=center, shape border rotate=-180, minimum height=3em, minimum width=2.5cm, drop shadow]
 \tikzstyle{line} = [draw, -{>[length=2mm, width=1mm]}]
-\begin{figure}[h]
+\begin{figure}[t]
 	\centering
 	\begin{tikzpicture}[node distance=2cm, auto]
 	% Place nodes	
 	\node [invisible-block] (INIT) {...};
 	\node [triangle, right of=INIT, node distance=5.5cm] (FLATMAP) {\textit{flatMap}};
 	\node [block, right of=FLATMAP] at (FLATMAP.right corner) (CG1) {$CG^I$};
-	\node [block, right of=FLATMAP] at (FLATMAP.5) (CG2) {$CG^{II}$};
-	\node [block, right of=FLATMAP] at (FLATMAP.left corner) (CG3) {$CG^{N}$}; 
+	\node [block, right of=FLATMAP] at (FLATMAP.left corner) (CG2) {$CG^{N}$}; 
 	\node [invisible-block, right of=CG1, node distance=4cm] at (CG1.north east) (SCN11) {...};
-	\node [invisible-block, right of=CG1, node distance=4cm] at (CG1.5) (SCN12) {...};
+	\node [invisible-block, right of=CG1, node distance=4cm] at (CG1.20) (SCN12) {...};
 	\node [invisible-block, right of=CG1, node distance=4cm] at (CG1.south east) (SCN13) {...};
 	\node [invisible-block, right of=CG2, node distance=4cm] at (CG2.north east) (SCN21) {...};
-	\node [invisible-block, right of=CG2, node distance=4cm] at (CG2.5) (SCN22) {...};
+	\node [invisible-block, right of=CG2, node distance=4cm] at (CG2.20) (SCN22) {...};
 	\node [invisible-block, right of=CG2, node distance=4cm] at (CG2.south east) (SCN23) {...};
-	\node [invisible-block, right of=CG3, node distance=4cm] at (CG3.north east) (SCN31) {...};
-	\node [invisible-block, right of=CG3, node distance=4cm] at (CG3.5) (SCN32) {...};
-	\node [invisible-block, right of=CG3, node distance=4cm] at (CG3.south east) (SCN33) {...};
-%	\node [invisible-block, right of=CG2] (SCN2) {...};
-%	\node [invisible-block, right of=CG3] (SCN3) {...};
 	
 	% Draw edges
 	\path [line] (INIT) -- node[]{\footnotesize $SYM\_EXPR$}(FLATMAP.apex);
-	\path [line] (FLATMAP.right corner) -- (CG1);
-%	\path [line] (FLATMAP.right corner) -- node[]{\footnotesize $SYM\_EXPR^I$}(SCN1);
-	\path [line] (FLATMAP.5) -- node[below=7mm]{...} (CG2);	
-	\path [line] (FLATMAP.left corner) -- (CG3);
+	\path [line] (FLATMAP.right corner) -- node[below=1.1cm]{...} (CG1);
+	\path [line] (FLATMAP.left corner) -- (CG2);
+	
 	\path [line] (CG1.north east) -- node[]{\footnotesize $SYM\_EXPR^{I\_I}$}(SCN11);
-	\path [line] (CG1.5) -- node[]{\footnotesize $SYM\_EXPR^{I\_II}$}(SCN12);
+	\path [line] (CG1.20) -- node[below=1mm]{...} node[]{\footnotesize $SYM\_EXPR^{I\_II}$}(SCN12);
 	\path [line] (CG1.south east) -- node[]{\footnotesize $SYM\_EXPR^{I\_M}$}(SCN13);
 	
+	\path [line] (CG2.north east) -- node[]{\footnotesize $SYM\_EXPR^{N\_I}$}(SCN21);
+	\path [line] (CG2.20) -- node[below=1mm]{...} node[]{\footnotesize $SYM\_EXPR^{N\_II}$}(SCN22);
+	\path [line] (CG2.south east) -- node[]{\footnotesize $SYM\_EXPR^{N\_P}$}(SCN23);
+	
+	
 	\end{tikzpicture}
-	\caption[Diagram of the \textit{flatMap} Strategy]{Diagram of the \textit{flatMap} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise is a new symbolic expression. The output value percolated to the following functions is taken from a special choice generator registered when the \textit{flatMap} transformation is done. The choice generator contains all the different elements contained in the collection. Every path taken during the \textit{flatMap} transformation registers a new choice generator with all possible values returned in that particular path.}
+	\caption[Diagram of the \textit{flatMap} Strategy]{Diagram of the \textit{flatMap} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise a new symbolic expression is used instead. The output value percolated to the following functions is taken from a special choice generator registered when the \textit{flatMap} transformation has finished executing. The choice generator contains all the different elements contained in the collection. Every path taken during the \textit{flatMap} transformation registers a new choice generator with all possible values returned in that particular path.}
 	\label{fig:strategies:flatMap}
 \end{figure}
 
+Considering how the implementation behaves, the post-processing phase waits until the passed function exits and then checks for an \texttt{invokevirtual} instruction invoking the \textit{next} method. Once detected, the respective value is taken from the stack frame and added to a list of output values in the strategy. This list is filled up with every element in the iterator.
+
+Lastly, when the \textit{flatMap} transformation exits, the strategy register a new custom-made choice generator whose possible values are the collected output values. Registering a choice generator a this point ensures that, after backtracking, a new option from the collection will be chosen exactly at the end of the \textit{flatMap} transformation. The selected value will be used as input of any subsequent Spark operations and the analysis will continue accordingly.
+
+The choice generator used in this scenario is called \texttt{SparkMultipleOutputChoiceGenerator}; it extends the \texttt{IntIntervalGenerator} of the \jpf
+core. It contains a list of symbolic expressions representing the different manipulations of the input value and uses the integer range to select one of this options every time a backtrack occurs. The range is defined between zero and the size of the list minus one.
