@@ -1,10 +1,14 @@
-\TUchapter{JPF-SymSpark}
-\label{ch:jpf-symspark}
+\TUchapter{Symbolic Execution of Spark Programs}
+\label{ch:symbolic-spark}
 
-JPF-SymSpark is a \jpf module whose goal is to coordinate the symbolic execution of Spark programs and produce a reduced input dataset that ensures full path coverage on a regular execution. It builds on top of \spf to delegate the handling symbolic expressions while it focus on how to interconnect Spark's transformations and actions in order to reason coherently over the program's data flow.
+To provide a flexible programming paradigm for big data processing, Spark's main \acrshort{acr:api} exposes methods that act as higher order functions. Particularly, these methods receive user defined functions as input parameters that dictate how certain operations will be carried out. However, the passed functions always have to comply to some conditions imposed by the method, for example, the function passed to a \textit{filter} transformation must be defined over the data type of the target \acrshort{acr:rdd} and must return a \textit{boolean} value.
 
-In the following sections we will provide an overview of the logical process carried out by the analysis and an explanation of the different components that conform the module.
+The use of functions as parameters in Spark operations has an impact on the control flow of the program. Not only the particular Spark operation defines how the program will behave, but also the passed functions could potentially introduce control flow statements like conditionals or loops. Moreover, the control flow behavior of the Spark operations themselves is mostly static (e.g., the iterative and cumulative nature of a \textit{reduce} action), whereas the diverse range of variation introduced by a user defined function is practically unbounded.
 
-\input{parts/main/logic}
+For this reason, in the context of program analysis in general and to our particular scope of symbolic execution, both the nature of the Spark operations and the peculiarities of the user defined functions on each program are necessary components that have to be studied together in order to provide a reasonable conclusion.
+
+The following sections describe the conceptual process of a symbolic execution carried out on a Spark program, as well as a detailed explanation of our proposed implementation.
+
+\input{parts/main/process}
 \input{parts/main/module}
 
