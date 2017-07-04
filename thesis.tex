@@ -37,24 +37,31 @@
 
 % Roman page numbers
 \pagenumbering{Roman}
+\setcounter{page}{0}
 
 % Creates the title page and sets its PDF bookmark
-\pdfbookmark[0]{Title}{titelseite}
+\pdfbookmark[0]{Title}{title}
 \maketitle
 
 % Includes the legal imprint and sets its PDF bookmark
+\setcounter{page}{0}
 \pdfbookmark[0]{Impressum}{impressum}
 \include{parts/impressum}
 
 % Includes the declatarion of academic integrity (Uncomment the variant corresponding to the language)
 %\include{parts/declarationacademicintegrity_de}
+\setcounter{page}{0}
+\pdfbookmark[0]{Declaration of Academic Integrity}{declaration}
 \include{parts/declarationacademicintegrity_en}
 
 % Includes the abstract
+\setcounter{page}{0}
+\pdfbookmark[0]{Abstract}{abstract}
 \include{parts/abstract} % New TUD-Design abstract/summary template
 %\include{parts/abstractalternative} % Classic abstract template (Uncomment if preferred)
 
 % Includes the table of contents and sets its PDF bookmark
+\setcounter{page}{0}
 \pdfbookmark[0]{Contents}{toc} % The PDF bookmark is set here because it is not set automatically
 \tableofcontents
 
@@ -109,19 +116,21 @@
 
 % Includes the glossary
 %\setlength{\glsdescwidth}{12.5cm}
-\printglossary[style=long]
+%\printglossary[style=long]
 
 % Includes the list of abbreviations
-\printacronyms[style=long,title={List of Abbreviations and Acronyms}]
+%\printacronyms[style=long,title={List of Abbreviations and Acronyms}]
 % Table alternative to the list of abbreviations (Uncomment if preferred)
 %\include{parts/abbreviations_table}
 
 % Includes the list of symbols
-\printsymbols[style=longheader,title={List of Symbols}]
+%\printsymbols[style=longheader,title={List of Symbols}]
 % Table alternative to the list of symbols (Uncomment if preferred)
 %\include{parts/symbols_table}
 
 % Includes the bibliography
+\clearpage
+\pdfbookmark[0]{Bibliography}{bib} % The PDF bookmark is set here because it is not set automatically
 \printbibliography
 
 \end{document}

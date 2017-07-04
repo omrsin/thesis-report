@@ -1,4 +1,29 @@
 \TUchapter{Appendix - Installation and Use}
 \label{app:installation}
 
-\blindtext
+This appendix aims to serve as a checklist for installing \textit{JPF-SysSpark}, as well as a brief guide on how to use the module in combination with \jpf{}.
+\begin{itemize}
+	\item Docker approach (preferred)
+	\item Manual approach
+\end{itemize}
+
+\TUsection{Docker approach}
+
+Docker is a widely supported platform for the creation and maintenance of virtual containers~\cite{Merkel2014}. It is designed to provide self-contained, portable environments that are ideal for distributing software with a fixed set of dependencies.
+
+For this reason, we provide the description of a Docker container that prepares an environment with all the dependencies and configurations required by \textit{JPF-SymSpark}. This installation method is the preferred approach given that its simplicity and tested behavior. The following steps assume that Docker is already installed in the system:
+
+\begin{enumerate}
+	\item Clone the \textit{JPF-SymSpark} repository \\ \\	
+		\lstinline[]|git clone https://github.com/omrsin/jpf-symbc.git|
+	\item Go to the root directory of the project and build the container \\ \\
+		\lstinline[]|docker build -t jpf-symspark .|
+	\item Once the container is successfully built, run a container shell with \\ \\
+		\lstinline[]|docker run -it jpf-symspark|
+	\item Inside the container, the installation of the module can be validated by running \\ \\
+		\lstinline[]|cd jpf-symspark/src/examples/de/tudarmstadt/thesis/symspark/examples/java/applied/| \\
+		\lstinline[]|jpf WordCountExample.jpf|
+\end{enumerate}
+
+The output should display the outcome of the analysis run on the WordCountExample.java program.
+
