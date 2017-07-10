@@ -93,13 +93,25 @@ In the case the \textit{map} transformation incurs in any branching condition, t
 
 \TUsubsubsection{\textit{reduce}}
 
-The \textit{reduce} action produces a single output value resulting from the combination of all the elements in the \acrshort{acr:rdd}. The combination is defined in the function passed to action, which has to fulfill the properties of being commutative and associative. The function passed to the action implements the \textit{Function2} interface, whose main difference is that it takes two input parameters: the first is the accumulated value of the operation so far, and the second represents one element in the \acrshort{acr:rdd}. The behavior of a \textit{reduce} action resembles to a full scan over the elements of the \acrshort{acr:rdd}, carrying always the accumulated value iteration over iteration.
+The \textit{reduce} action produces a single output value resulting from the combination of all the elements in the \acrshort{acr:rdd}. The combination is defined in the function passed to action, which has to fulfill the properties of being commutative and associative. The function passed to the action implements the \textit{Function2} interface, whose main difference is that it takes two input parameters: the first is the accumulated value of the operation so far, and the second represents one element in the \acrshort{acr:rdd}. The behavior of a \textit{reduce} action resembles to a full scan over the elements of the \acrshort{acr:rdd}, carrying always the accumulated value iteration over iteration. 
+
+Reduce actions can be analyzed following two different strategies: one where the accumulated parameter of the function is not considered as a symbolic variable and another where it is. The strategy discussed next refers to the former; the latter is explained in the subsequent section. The user indicates which mode to use by specifying it in the configuration file.
 
 \textit{Pre-processing}
 
-The reduce strategy has two modes of operation: both modes consider the input parameter corresponding to a single element in the \acrshort{acr:rdd} as the percolated symbolic expression, however, the first mode considers the parameter corresponding to the accumulated value of the reduce action as a concrete input while the second considers it as a symbolic expression. The user indicates which mode to use by specifying it in the configuration file.
+This strategy considers the input parameter corresponding to a single element in the \acrshort{acr:rdd} as the percolated symbolic expression, however, the parameter corresponding to the accumulated value of the reduce action is considered as a concrete input. 
 
-The pre-processing is carried out differently depending on the chosen mode. In the case of the first mode, the analysis takes advantage of the concolic operational mode of \spf{} by defining the method to be inspected with the first parameter as a concrete input (achieved by using the ``con'' keyword instead of ``sym'' in the fully qualified method name). Afterwards, in a similar fashion as in the filter and map strategies, the second or third element in the stack frame is replaced with the percolated symbolic expression (depending if the instruction is \texttt{invokevirtual} or \texttt{invokestatic}). Figure~\ref{fig:strategies:reduce:concrete} illustrates this mode. In the case of the second mode, the method is registered with both parameters as symbolic input, and both elements are replaced in the stack frame with the percolated symbolic expression. However, although both symbolic expressions follow the same structure (same operations applied to the initial symbolic input), the core symbolic variable in both of them are different. The reason for this comes from the fact that this two values represent two elements of the \acrshort{acr:rdd} that suffered the same transformation but are potentially different. Figure~\ref{fig:strategies:reduce:symbolic} depicts this situation.
+The analysis takes advantage of the concolic operational mode of \spf{} by defining the method to be inspected with the first parameter as a concrete input (achieved by using the ``con'' keyword instead of ``sym'' in the fully qualified method name). Afterwards, in a similar fashion as in the filter and map strategies, the second or third element in the stack frame is replaced with the percolated symbolic expression (depending if the instruction is \texttt{invokevirtual} or \texttt{invokestatic}). Figure~\ref{fig:strategies:reduce:concrete} illustrates this mode.
+
+\textit{Post-processing}
+
+Independently of the output of the \textit{reduce} action, the post-processing phase of the reduce strategy always triggers a termination of the current execution thread and a backtrack. This is because of the nature of Spark actions which indicate the culmination of the processing of an \acrshort{acr:rdd}. However, during the analysis of the reduce action, there might be branching operations executed on the single parameter, which will cause \spf{} to register a choice generator and explore all the possible paths. Ultimately, all these paths will lead to a backtrack after the end of the \textit{reduce} action.
+
+\TUsubsubsection{\textit{iterativeReduce}}
+
+The second strategy that can be used when analyzing \textit{reduce} actions considers both parameters of the passed function as symbolic. The direct consequence of this consideration is that the symbolic engine has to reason now over a variable that represents an accumulated value resulting from the application of the passed function several times. Given that the numbers of elements in the \acrshort{acr:rdd} is irrelevant for the sake of the analysis, the uses has to specify how many iterations of the \textit{reduce} action will be carried out in oder to ensure termination. However, path explosion can occur easily given that each iteration makes the number of reachable states grow exponentially.
+
+The complexity of this strategy is noticeable in comparison to the other strategies. The expected output dataset now becomes a family of datasets corresponding to the number of elements indicated to be in the \acrshort{acr:rdd}. The path conditions take into consideration multiple symbolic variables that have to comply with all the transformations and constraints collected so far.
 
 % Define block styles
 \tikzstyle{block} = [rectangle, draw, fill=white, align=center,rounded corners, minimum height=3em, minimum width=3em, drop shadow]
@@ -134,22 +146,31 @@ The pre-processing is carried out differently depending on the chosen mode. In t
 	
 	% Draw edges
 	\path [line] (INIT) -- node[]{\footnotesize $(SYM\_EXPR^I, SYM\_EXPR^{II})$}(REDUCE.west);
-	\path [line] (REDUCE.east) -- (BACKTRACK);	
+	\path [line] (REDUCE.east) -- (BACKTRACK);
+	\path [line] (REDUCE) edge [loop above] node[]{\footnotesize $(SYM\_EXPR^{X_n}, SYM\_EXPR^{Y_n})$} ();	
 	\end{tikzpicture}
-
+	
 	\begin{minipage}[t]{\linewidth}
-		\subcaption{Reduce strategy with the accumulated value taken as a symbolic input.}
+		\subcaption{Reduce strategy with the accumulated value taken as a symbolic input. The value $n$ represents \\ a given iteration.}
 		\label{fig:strategies:reduce:symbolic}
 	\end{minipage}
 	
-	\caption[Diagrams of the \textit{reduce} Strategy]{Diagrams of the \textit{reduce} Strategy. The two modes of execution are shown here. The first considers the accumulated input parameter as concrete, this translates to only considering branching operations applied on single elements of the \acrshort{acr:rdd}. The other mode considers the accumulated to be a symbolic input as well. A backtrack is always triggered after a reduce action.}
+	\caption[Diagrams of the \textit{reduce} Strategy]{Diagrams of the \textit{reduce} Strategy. The two modes of execution are shown here. The first considers the accumulated input parameter as concrete, this translates to only considering branching operations applied on single elements of the \acrshort{acr:rdd}. The other mode considers the accumulated to be a symbolic input as well and iterates over the operation a fixed number of times. A backtrack is always triggered after a reduce action.}
 \end{figure}
+
+\textit{Pre-processing}
+
+As mentioned before, this strategy considers both parameters of the function passed to the \textit{reduce} action as symbolic variables. Once the \textit{reduce} actions is detected, a new choice generator called \textit{SparkIterativeChoiceGenerator} is registered. This choice generator is used to keep a reference of the number of times the function has to be executed and it also keeps track of the output of each the iterations; it is not used as a value provider in a direct sense rather as a placeholder to keep track of the iterative execution. The current path condition, if any, is also kept in the choice generator along with the single symbolic variable used so far. This values will serve as a template for creating new symbolic variables that comply to the conditions found so far.
+
+Once the execution of the \textit{call} method is detected, the strategy follows one of two approaches: If there are no accumulated values registered in the choice generator then a new symbolic expression is created taking into consideration the base structure of the percolated expression. This new expression is used as the first accumulated value while the percolated expression is used as the single input value. On the other case, an output value (representing the result of a previous iteration) is taken from the choice generator and set as the accumulated value while a new symbolic expression is produced and set as the regular single input value of the function. Figure~\ref{fig:strategies:reduce:symbolic} illustrates this mode.
+
+As a technical note, symbolic expressions and path conditions are implemented in \spf{} following the \textit{visitor} design pattern~\cite{Gamma1994}. New visitors were implemented in order to create copies of existing expressions and conditions among others.
 
 \textit{Post-processing}
 
-Independently of the output of the \textit{reduce} action, the post-processing phase of the reduce strategy always triggers a termination of the current execution thread and a backtrack. This is because of the nature of Spark actions which indicate the culmination of the processing of an \acrshort{acr:rdd}. However, during the analysis of the reduce action, there might be branching operations executed on the accumulated or the single parameter, which will cause \spf{} to register a choice generator and explore all the possible paths. Ultimately, all these paths will lead to a backtrack after the end of the \textit{reduce} action.
+Once the \textit{call} method finishes execution the current path condition is extended by enforcing the same initial constraints on the newly generated expressions for this iteration. Additionally, any constraints accumulated from a previous iteration must also be included in the current path condition. This has to be done at this point because \jpf{} is not really executing an iteration, instead the iteration is simulated with the \textit{SparkIterativeChoiceGenerator}, which will cause the path conditions to be solved after the method and the engine to backtrack to the latest point (most likely the point where the \textit{SparkIterativeChoiceGenerator} was registered), hence missing interconnection between the iterations. Including this conditions ensure that the right path in the symbolic execution tree is taken.
 
-%TODO: The second mode is not yet complete
+Lastly, the output expression of the method is stored in the the choice generator along with the current path condition. This will serve as an input for a subsequent iteration in case the maximum number of iterations has not been reached yet.
 
 \TUsubsubsection{\textit{flatMap}}
 
