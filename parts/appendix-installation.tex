@@ -18,7 +18,7 @@ For this reason, we provide the description of a Docker container that prepares 
 		\lstinline[]|git clone https://github.com/omrsin/jpf-symbc.git|
 	\item Go to the root directory of the project and build the container \\ \\
 		\lstinline[]|docker build -t jpf-symspark .|
-	\item Once the container is successfully built, run a container shell\\ \\
+	\item Once the container has been successfully built, run a container shell\\ \\
 		\lstinline[]|docker run -it jpf-symspark|
 	\item Inside the container, the installation of the module can be validated by running \\ \\
 		\lstinline[]|cd jpf-symspark/src/examples/de/tudarmstadt/thesis/symspark/examples/java/applied/| \\
@@ -31,7 +31,7 @@ The created container could serve as a template for any future projects that aim
 
 \TUsection{Manual approach}
 
-This sections will list all the dependencies and configuration requirements that are needed to execute \jpf{} and \textit{JPF-SymSpark} correctly. By no means it should me considered as an extensive guide that works under all platforms; the described approach will only be focused on explaining the steps used in the environment where to project was developed. The following steps should be executed in an Ubuntu~16.04 OS~\cite{Ubuntu2017} with at least 2 gigabytes of memory.
+This section lists all the dependencies and configuration requirements that are needed to execute \jpf{} and \textit{JPF-SymSpark} correctly. By no means it should be considered as an extensive guide that works under all platforms; the described approach will only be focused on explaining the steps used in the environment where to project was developed. The following steps should be executed in an Ubuntu~16.04 Desktop OS~\cite{Ubuntu2017} with at least 2 gigabytes of memory.
 
 \textbf{Prerequisites}
 
@@ -52,7 +52,7 @@ This is the main module of \jpf{}. In addition to the following installation ste
 	\item Clone the project \textit{jpf-core} from the official repository \\ \\
 		\lstinline[]|hg clone http://babelfish.arc.nasa.gov/hg/jpf/jpf-core|
 	\item Create the \textit{site.properties} file as suggested in the official \jpf{} site. Make sure to be pointing the jpf-core property to the directory where the project was cloned. Additionally, be sure to remove or comment the other references to modules in the example \textit{.properties} file provided.
-	\item In order to be able to build the project, JUnit libraries need to be in the classpath. The ant script requires the JUNIT\_HOME directory to be specified. This could be done by creating the JUNIT\_HOME environment variable and placing it in the path. However, the \textit{build.xml} file of the \textit{jpf-core}  project could be modified by replacing the value property \textit{junit.home} with the value of the directory where the JUnit library was placed. This option is more convenient because it avoids polluting the classpath with variables that might potentially generate conflicts with other programs.
+	\item In order to be able to build the project, JUnit libraries need to be in the classpath. The ant script requires the JUNIT\_HOME directory to be specified. This could be done by creating the JUNIT\_HOME environment variable and placing it in the path. However, the \textit{build.xml} file of the \textit{jpf-core} project could be modified by replacing the value property \textit{junit.home} with the value of the directory where the JUnit library was placed. This option is more convenient because it avoids polluting the classpath with variables that might potentially generate conflicts with other programs.
 	\item Finally, build the \textit{jpf-core} project. Go to the directory where it is located and execute \\ \\
 		\lstinline[]|ant test|
 	\item In order to test if the build was successful, go to the jpf-core directory and execute \\ \\
@@ -79,12 +79,11 @@ This is the symbolic execution module built on top of \jpf{} known as \spf{} or 
 This is the module that we developed based on \spf{}. It provides the mechanisms to carry out symbolic executions of Spark programs. The installation steps follow the same pattern as in the case of \textit{jpf-symbc}.
 
 \begin{enumerate}
-	\item Clone the project \textit{jpf-symspark} from our hosted repository on the same root directory where \textit{jpf-core} and \textit{jpf-symbc} were cloned \\ \\
+	\item Clone the \textit{jpf-symspark} project from our hosted repository on the same root directory where \textit{jpf-core} and \textit{jpf-symbc} were cloned \\ \\
 	\lstinline[]|https://github.com/omrsin/jpf-symspark.git|
 	\item Update the \textit{site.properties} file as suggested in the official \jpf{} site. Every time a new module is downloaded this file must be updated. Make sure to be pointing the \textit{jpf-symspark} property to the directory where the project was cloned.	
 	\item Build the \textit{jpf-symspark} project. Go to the directory where it is located and execute \\ \\		
-	\lstinline[]|ant build| \\ \\
-	If the test target generates errors then executing \lstinline[]|ant build| would be sufficient (considering no build errors were found). With this, \spf{} should be available.
+	\lstinline[]|ant build| \\ \\	
 	\item In order to test if the build was successful, go to the jpf-symspark directory and execute \\ \\
 		\lstinline[]|java -jar build/RunJPF.jar \\| \\
 		\hspace{2cm} \lstinline[]|src/examples/de/tudarmstadt/thesis/symspark/examples/java/applied/WordCountExample.jpf| \\ \\
@@ -95,12 +94,12 @@ It is recommended to install the \textit{eclipse-jpf} plug-in for the Eclipse ID
 
 \TUsection{Usage}
 
-The \textit{JPF-SymSpark} module it is used in a similar way as \spf{}, however some additional properties were added to the \textit{properties} file of the module or must be included in the \textit{.jpf} for a particular analysis in order execute correctly.
+The \textit{JPF-SymSpark} module is used in a similar way as \spf{}. However, some additional properties were added to the \textit{.properties} file of the module or must be included in the \textit{.jpf} file used for a particular analysis in order execute correctly.
 
 The properties used are:
 
 \begin{itemize}
-	\item \textbf{spark.methods}: Used to indicate which spark operations are to be analyzed by the module. Every time a Spark operation with this name is found on the program, it will be executed symbolically. This option replaces the use of the \textit{symbolic.method} property used by \spf{} given that the target methods to be analyzed will be set dynamically during the analysis based on the spark operations defined. The values supported for this property are: \textit{filter}, \textit{map}, \textit{reduce} and \textit{flatMap}; multiple values must be separated with a semicolon.
+	\item \textbf{spark.methods}: Used to indicate which spark operations are to be analyzed by the module. Every time a Spark operation with this name is found in the program it will be executed symbolically. This option replaces the use of the \textit{symbolic.method} property used by \spf{} given that the target methods to be analyzed will be set dynamically during the analysis based on the spark operations defined. The values supported for this property are: \textit{filter}, \textit{map}, \textit{reduce} and \textit{flatMap}; multiple values must be separated with a semicolon.
 	\item \textbf{spark.reduce.iterations}: Used to indicate how many iterations of a reduce action will be analyzed. The value must be greater than 0. This option is only relevant if the reduce action was included among the methods to be analyzed in the \textit{spark.methods} property.
 	\item \textbf{listener}: Defines the listener to be used during the analysis. By default, the module uses the \textit{SparkMethodListener} as defined in its \textit{.properties} file.
 	\item \textbf{jvm.insn\_factory.class}: This property is used to specify the instruction factory used by the module. By default, the module uses the \textit{SparkSymbolicInstructionFactory} as defined in the \textit{.properties} file.
@@ -111,7 +110,7 @@ Other \spf{} specific properties are still supported. Listing~\ref{lst:app:jpf-f
 \begin{lstlisting}[
 language=,
 float,
-caption={[Sample \textit{.jpf} file.] Sample \textit{.jpf} file corresponding to the WordCountExmaple.java program.},
+caption={[Sample \textit{.jpf} file of the \textit{JPF-SymSpark} module.] Sample \textit{.jpf} file of the \textit{JPF-SymSpark} module corresponding to the WordCountExmaple.java program.},
 label=lst:app:jpf-file
 ]
 @using=jpf-symspark
@@ -127,4 +126,4 @@ symbolic.string_dp=automata
 spark.methods=filter /*# \label{lst:ln:app:jpf:methods} #*/
 \end{lstlisting}
 
-The analysis can be run by means of the previously mentioned Eclipse plug-in or by execution through the command line as shown in the installation steps.
+The analysis can be run by means of the previously mentioned Eclipse plug-in or by execution through the command line as shown in the installation steps. Additional examples can be found in the \textit{examples} directory of the \textit{JPF-SymSpark} module.
