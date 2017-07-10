@@ -1,15 +1,10 @@
 \TUchapter{Future Work}
 
-\TUsection{Limitations}
+Allow the analysis on objects not only on primitive types.
 
-The limited support to String symbolic operations. The lack of a solver that specializes on Strings makes it limited to supporting many big data tasks.
+Give support to Scala
 
-The complications when dealing with lambda expressions makes it difficult to use the tool on real spark applications. Because most current developers prefer java8 syntax favoring its flexibility and reduced verbosity.
+Give support to more Spark actions and transformations, although the ones supported already provide the basic idea for the rest of the strategies.
 
-The ugly ill-maintained codebase of jpf-symbc makes it cumbersome to extend and easily outdated due to abundance of code smells and bad practices.
+Write an annotation that would allow the analysis of only the indicated methods, interconnecting those that are consecutive.
 
-Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
-
-Limited support to objects and how symbolic objects are created and shared
-
-Limited support to String operations

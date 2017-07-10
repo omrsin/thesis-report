@@ -174,30 +174,6 @@ Lastly, the output expression of the method is stored in the the choice generato
 
 \TUsubsubsection{\textit{flatMap}}
 
-The \textit{flatMap} transformation behaves similarly to the \textit{map} action, the only difference is that the function passed to the \textit{flatMap} has a collection of elements as an output value instead of a single element. These elements could have undergone different transformations even though they are returned in the same collection. One example of this behavior can be seen in listing~\ref{lst:strategies:java-spark-flatmap}. Here, two different iterable collections are returned, one contains two elements resulting from two different manipulations of the initial input, while the second contains only one element with another manipulation different from the other two. Figure~\ref{fig:strategies:flatMap} depicts the symbolic execution of a \textit{flatMap} transformation according to the flatMap strategy; it shows how each path taken inside the passed function ends up in the registration of a new choice generator whose options are the possible symbolic expressions in the returned collection.
-
-\begin{lstlisting}[
-language=Java,
-caption={[FlatMap Example] A trivial example of the \textit{flatMap} transformation. It shows how the returned iterable can have elements that have undergone different transformations.},
-float=h,
-label=lst:strategies:java-spark-flatmap
-]
-numbers.flatMap(t -> {				
-if(t > 2) return Arrays.asList(t*2, t*3).iterator();
-else return Arrays.asList(t*4).iterator();				
-});
-\end{lstlisting}
-
-\textit{Pre-processing}
-
-The pre-processing phase is identical to the pre-processing phase of the filter and map strategies. Again, the handling of the input parameters of the passed function is carried out in the same way because the passed functions have the same number of input parameters, hence their stack frame behaves the same. However, the function passed to a \textit{flatMap} transformation implements the \texttt{FlatMapFunction} interface, which differentiates from the \texttt{Function} interface used by the other two transformation by returning an the iterator of a collection instead.
-
-\textit{Post-processing}
-
-The post-processing phase of this strategy behaves quite differently from all the other strategies so far. The idea would be to obtain all the different symbolic expressions inside the iterable object returned by the function and use each of them to feed subsequent Spark operations. However, the problem here lies in the change of the cardinality of the possible outcomes; so far we have had always the scenario of one input producing exactly one output, but now one input could potentially imply several output.
-
-For this purpose, the strategy relies on how the mocked up \textit{flatMap} transformation is implemented in \texttt{JavaRDD} class. In this implementation, the returned iterable is completely traversed using the \textit{next} method, forcing the execution to bring each element of the collection into the stack frame of the \textit{flatMap} method. This implementation does not deviate starkly from the original \textit{flatMap} operation given that in the case of the regular Spark library, the whole iterator is explored to build a new \acrshort{acr:rdd}.
-
 % Define block styles
 \tikzstyle{block} = [rectangle, draw, fill=white, align=center, minimum height=4em, minimum width=3em, drop shadow]
 \tikzstyle{invisible-block} = [rectangle, draw=none, fill=none, align=center, minimum height=3em, minimum width=3em]
@@ -236,6 +212,30 @@ For this purpose, the strategy relies on how the mocked up \textit{flatMap} tran
 	\caption[Diagram of the \textit{flatMap} Strategy]{Diagram of the \textit{flatMap} strategy. The input parameter is initialized to the symbolic expression percolated by the previous Spark operation if there is any, otherwise a new symbolic expression is used instead. The output value percolated to the following functions is taken from a special choice generator registered when the \textit{flatMap} transformation has finished executing. The choice generator contains all the different elements contained in the collection. Every path taken during the \textit{flatMap} transformation registers a new choice generator with all possible values returned in that particular path.}
 	\label{fig:strategies:flatMap}
 \end{figure}
+
+The \textit{flatMap} transformation behaves similarly to the \textit{map} action, the only difference is that the function passed to the \textit{flatMap} has a collection of elements as an output value instead of a single element. These elements could have undergone different transformations even though they are returned in the same collection. One example of this behavior can be seen in listing~\ref{lst:strategies:java-spark-flatmap}. Here, two different iterable collections are returned, one contains two elements resulting from two different manipulations of the initial input, while the second contains only one element with another manipulation different from the other two. Figure~\ref{fig:strategies:flatMap} depicts the symbolic execution of a \textit{flatMap} transformation according to the flatMap strategy; it shows how each path taken inside the passed function ends up in the registration of a new choice generator whose options are the possible symbolic expressions in the returned collection.
+
+\begin{lstlisting}[
+language=Java,
+caption={[FlatMap Example] A trivial example of the \textit{flatMap} transformation. It shows how the returned iterable can have elements that have undergone different transformations.},
+float=h,
+label=lst:strategies:java-spark-flatmap
+]
+numbers.flatMap(t -> {				
+if(t > 2) return Arrays.asList(t*2, t*3).iterator();
+else return Arrays.asList(t*4).iterator();				
+});
+\end{lstlisting}
+
+\textit{Pre-processing}
+
+The pre-processing phase is identical to the pre-processing phase of the filter and map strategies. Again, the handling of the input parameters of the passed function is carried out in the same way because the passed functions have the same number of input parameters, hence their stack frame behaves the same. However, the function passed to a \textit{flatMap} transformation implements the \texttt{FlatMapFunction} interface, which differentiates from the \texttt{Function} interface used by the other two transformation by returning an the iterator of a collection instead.
+
+\textit{Post-processing}
+
+The post-processing phase of this strategy behaves quite differently from all the other strategies so far. The idea would be to obtain all the different symbolic expressions inside the iterable object returned by the function and use each of them to feed subsequent Spark operations. However, the problem here lies in the change of the cardinality of the possible outcomes; so far we have had always the scenario of one input producing exactly one output, but now one input could potentially imply several output.
+
+For this purpose, the strategy relies on how the mocked up \textit{flatMap} transformation is implemented in \texttt{JavaRDD} class. In this implementation, the returned iterable is completely traversed using the \textit{next} method, forcing the execution to bring each element of the collection into the stack frame of the \textit{flatMap} method. This implementation does not deviate starkly from the original \textit{flatMap} operation given that in the case of the regular Spark library, the whole iterator is explored to build a new \acrshort{acr:rdd}.
 
 Considering how the implementation behaves, the post-processing phase waits until the passed function exits and then checks for an \texttt{invokevirtual} instruction invoking the \textit{next} method. Once detected, the respective value is taken from the stack frame and added to a list of output values in the strategy. This list is filled up with every element in the iterator.
 

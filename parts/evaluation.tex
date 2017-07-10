@@ -1,1 +1,27 @@
 \TUchapter{Evaluation}
+
+\TUsection{Limitations}
+
+%The limited support to String symbolic operations. The lack of a solver that specializes on Strings makes it limited to supporting many big data tasks.
+%
+%Limited support to objects and how symbolic objects are created and shared
+%
+%The ugly ill-maintained codebase of jpf-symbc makes it cumbersome to extend and easily outdated due to abundance of code smells and bad practices.
+%
+%The complications when dealing with lambda expressions makes it difficult to use the tool on real spark applications. Because most current developers prefer java8 syntax favoring its flexibility and reduced verbosity.
+%
+%Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
+
+There were several concealed or at least not evident aspects of \spf{} that arose during the implementation of \textit{JPF-SymSpark}. These aspects represented major obstacles in the development process and the full reach of the developed tool. We consider relevant to indicate these pitfalls as part of the evaluation in order to guide future research initiatives on the field and improve the knowledge base when assessing this tool in the research context. The intent of this remarks is not to diminish \spf{} in any sense, on the contrary, it aims to guide future researchers to the weak spots that require more attention.
+
+The most relevant limitations is the limited support of symbolic String operations. Although it has been a work in progress since 2012~\cite{Redelinghuys2012,Pasareanu2013}, there are still some key String operations that are not yet supported by \spf{}. For example, the \textit{split} operation, which is commonly used in Spark programs, has no support; if included in an analysis it halts the verification. Additionally, constraints that combine conditions on the String structure and its length are not solved correctly, ignoring the restriction on size and placement.
+
+Moreover, specialized String constraint solvers are said to be supported, however, in practice this is no longer the case. This situation not only applies to String solvers but also to other third-party solvers for more complex numerical constraints. The problem is that the implemented interfaces that communicate with the constraint solvers are outdated given that they were implemented initially based on now obsolete versions of the tools. Some solvers like CVC3~\cite{Barrett2007} are still compatible (although the newer libraries must be included), while others like Z3~\cite{DeMoura2008} are no longer compatible.
+
+Another relevant obstacle in the context of Spark applications is the limited support of symbolic data structures, sometimes also referred to as symbolic heap or symbolic objects~\cite{Pasareanu2010}. Although supported, symbolic data structures often generate errors if used in the regular way inside Spark transformations and actions. The lack of an interface when dealing with symbolic objects makes it difficult to build extensions on top of it.
+
+Some obstacles were bested by means of a workaround. Such is the case of the lack of support of lambda expressions as target methods to be analyzed by \spf{}. As noted in series of posts exchanged between the author and Kasper Luckow (\spf{} and JDart contributor), the workaround was to refer to the static methods in the anonymous classes that are generated as a consequence of the compilation of the lambda expression. This solution is further explained in section~\ref{sec:contributions}.
+
+With a few exceptions, the \jpf{} and \spf{} communities are relatively silent and the tools seems to be lacking enthusiasts. This plays a big role when trying to extend the current tools; software communities in other open-source projects have a more structured communication mechanism and a clear list of new features and bugs where the collaborators can easily share information.
+
+Lastly, one of the aspects that resulted to be the most cumbersome was the poor quality of the \spf{} source code. Frequent redundancy (for example, the \textit{IFInstrSymbHelper} class), immense amounts of commented code, even in a way that seemed to be used as a communication platform among developers, and the general lack of coding style made the extension of the tool more troublesome than what it should have been. On top of this, new revisions are seldom uploaded and when they are, they often include a huge number of undocumented changes that are not clearly specified in the revision notes. This makes it particularly hard when tracking differences between the documentation and the current software.
