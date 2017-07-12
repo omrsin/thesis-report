@@ -3,6 +3,8 @@
 \TUsection{Limitations}
 \label{sec:limitations}
 
+%Mention how JPF-SymSpark is limited in terms of the fixed Spark library that it checks and the Java-only compatibility
+%
 %The limited support to String symbolic operations. The lack of a solver that specializes on Strings makes it limited to supporting many big data tasks.
 %
 %Limited support to objects and how symbolic objects are created and shared
@@ -13,11 +15,13 @@
 %
 %Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
 
-%TODO: Mention how JPF-SymSpark is limited in terms of the fixed Spark library that it checks and the Java-only compatibility
+The processing logic of \textit{JPF-SymSpark} focuses on programs that were written complying to version~2.0.2 of the Apache Spark library. It might be the case that previous or future libraries of the tool are still compatible, however, any change in the classes mocked up by the surrogate Spark library included in the module might render those programs incompatible. Users are encouraged to modify the surrogate library to match another official Spark library as long as the semantics are preserved.
 
-There were several concealed, or at least not evident, aspects of \spf{} that arose during the implementation of \textit{JPF-SymSpark}. These aspects represented major obstacles in the development process and had an impact on the scope of the developed tool. We consider relevant to indicate these pitfalls as part of the evaluation in order to guide future research initiatives on the field and also to improve the knowledge base when assessing \spf{} in the research context. The intent of these remarks is not to diminish \spf{} in any sense, on the contrary, it aims to guide future researchers to the weak spots that require more attention.
+Analyses using \textit{JPF-SymSpark} are expected to be run on portions of Spark code that contain a series operations applied to a single \acrshort{acr:rdd}. Including several \acrshort{acr:rdd}s in an execution could provide an invalid outcome. This point is suggested in section~\ref{sec:future} as one of the possible future extensions of the tool.
 
-The most relevant impediment is the limited support of symbolic String operations. Although it has been a work in progress since 2012~\cite{Redelinghuys2012,Pasareanu2013}, there are still some key String operations that are not yet supported by \spf{}. For example, the \textit{split} operation, which is commonly used in Spark programs, is not supported and if included in an analysis it halts the verification. Additionally, constraints that combine conditions on the String structure and its length are not solved correctly, bypassing any restrictions set on the size of the String.
+Furthermore, there were several concealed, or at least not evident, aspects of \spf{} that arose during the implementation of \textit{JPF-SymSpark}. These aspects represented major obstacles in the development process and had an impact on the scope of the developed tool. We consider relevant to indicate these pitfalls as part of the evaluation in order to guide future research initiatives on the field and also to improve the knowledge base when assessing \spf{} in the research context. The intent of these remarks is not to diminish \spf{} in any sense, on the contrary, it aims to guide future researchers to the weak spots that require more attention.
+
+The most relevant impediment is the limited support of symbolic String operations. Although it has been a work in progress since 2012~\cite{Redelinghuys2012,Pasareanu2013}, there are still some key String operations that are not yet supported by \spf{}. For example, the \textit{split} operation, which is commonly used in Spark programs, is not supported and if included in an analysis it halts the verification and crashes \jpf{}. Additionally, constraints that combine conditions on the String structure and its length are not solved correctly, bypassing any restrictions set on the size of the String.
 
 Moreover, specialized String constraint solvers are claimed to be supported, however, in practice this is no longer the case. This situation not only applies to String solvers but also to other third-party solvers specialized in more complex numerical constraints. The problem is that the implemented interfaces that communicate with the constraint solvers are outdated given that they were implemented initially based on now obsolete versions of the tools. Some solvers like CVC3~\cite{Barrett2007} are still compatible (although the newer libraries must be included), while others like Z3~\cite{DeMoura2008} are no longer compatible.
 

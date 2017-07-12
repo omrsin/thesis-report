@@ -49,8 +49,6 @@ public JavaRDD<T> filter(Function<T,Boolean> f) {
 }
 \end{lstlisting}
 
-The mocked up Spark library is already included into the dependencies of the \textit{JPF-SymSpark} module. Nevertheless, the implementation is not extensive, which might require further expansion as the different cases and programs require. Moreover, the mocked up library is bound to version 2.0.2 of the original Spark library, which poses a drawback in terms of consistency if the core behavior of Spark changes in future versions.
-
-%TODO: Mention that for future work and limitations you should refer to that chapter
+The surrogate Spark library is already included into the dependencies of the \textit{JPF-SymSpark} module. Nevertheless, the implementation is not extensive, which might require further expansion as the different cases and programs require. Moreover, the library is bound to version 2.0.2 of the original Spark library, which poses a drawback in terms of consistency if the core behavior of Spark changes in future versions. More about this drawback can be found in section~\ref{sec:limitations}.
 
 Having effectively discarded irrelevant portions of the system under test by the means of the mocked up library, it is simpler to identify the relevant Spark operations that have an impact on the analysis.
