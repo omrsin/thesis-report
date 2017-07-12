@@ -1,0 +1,29 @@
+\TUchapter{Conclusion}
+
+\TUsection{Future Work}
+
+The next points represent some improvements and extensions to \acrlong{acr:spf} and \textit{JPF-SymSpark} that would broaden the scope of programs the tools can analyze.
+
+\textbf{Symbolic execution of data structures}
+
+As mentioned in section~\ref{sec:limitations}, the limited support of symbolic data structures on \spf{} affected greatly the scope of \textit{JPF-SymSpark}. The use of data structures in Spark programs is a common practice as it is in object-oriented programming languages. Improving \spf{} to provide better mechanisms to handle and manipulate symbolic data structures would be the first step to eventually analyzing Spark operations defined over data structures.
+
+This will prove particularly useful in the many cases where \acrshort{acr:rdd}s are defined over tuples, and the many pair-oriented operations that are characteristic for this kind of structures. One example of a frequently used operations is the \textit{reduceByKey} transformation, that takes pairs matching the same key and applies a reduce function to them.
+
+\textbf{Support more Spark operations}
+
+Giving support to additional Spark operations would improve the usability of the tool. Most of the operations that are not supported yet are implemented over \acrshort{acr:rdd}s of \textit{Pair} or other data structures, hence, in order to support these operations it is necessary to provide support to symbolic data structures first. However, once this occurs, the processing logic of many of these operations resembles to many of the already implemented strategies.
+
+Nevertheless, transformations like \textit{join}, \textit{union}, and \textit{intersection} would require new processing strategies given that these transformations work over two potentially symbolic \acrshort{acr:rdd}s, something the we do not contemplate in this work.
+
+\textbf{Provide a Java annotation for analyzing single methods}
+
+The initial approach of this work is to provide a blackbox analysis on Spark programs. Any guidance on how the analyses should proceed are communicated via the configuration properties that are defined beforehand for each analysis. However, in some cases it could prove useful to provide the means to indicate in the source code which particular Spark operations should be considered in an analysis.
+
+\jpf{} offers a mechanism to introduce information relevant to an analysis directly in the source code of the program being analyzed through customized Java annotations. A new Java annotation can be created to mark which Spark operations ought to be symbolically executed. Moreover, complementary information about the data being processed could be provided, for example a pre-condition that could be appended to any path condition found during the analysis. Although this will shift the tool to a whitebox approach, it will offer more flexibility for the users. 
+
+\textbf{Support Scala}
+
+Scala is a functional programming language that also adopts many object-oriented concepts~\cite{WebScala2017}. The Spark library was originally written in Scala, only offering support to other programming languages like Java and Python later on. For this reason, Scala is the default language of choice when writing Spark programs. 
+
+By design, Scala is compiled to the \acrlong{acr:jvm} in order to take advantage of the portability and the long-time tested stability of Java. Given that Scala works on the same set of bytecode instructions, it would be possible to use \jpf{} (and by extension \spf{} as well) to analyze Scala. However, there is no official documentation about \jpf{} supporting Scala, although it is often a topic of conversation in the official \jpf{} community. Being able to analyze Spark programs written in Scala will improve greatly the scope of the tool, although it would prove to be a daunting task. It will require first to ensure compatibility with \jpf{} and \spf{}, to later create the necessary mechanisms that would allow \textit{JPF-SymSpark} to support such programs.

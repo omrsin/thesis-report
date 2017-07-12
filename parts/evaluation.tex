@@ -1,6 +1,7 @@
 \TUchapter{Evaluation}
 
 \TUsection{Limitations}
+\label{sec:limitations}
 
 %The limited support to String symbolic operations. The lack of a solver that specializes on Strings makes it limited to supporting many big data tasks.
 %
@@ -11,6 +12,8 @@
 %The complications when dealing with lambda expressions makes it difficult to use the tool on real spark applications. Because most current developers prefer java8 syntax favoring its flexibility and reduced verbosity.
 %
 %Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
+
+%TODO: Mention how JPF-SymSpark is limited in terms of the fixed Spark library that it checks and the Java-only compatibility
 
 There were several concealed, or at least not evident, aspects of \spf{} that arose during the implementation of \textit{JPF-SymSpark}. These aspects represented major obstacles in the development process and had an impact on the scope of the developed tool. We consider relevant to indicate these pitfalls as part of the evaluation in order to guide future research initiatives on the field and also to improve the knowledge base when assessing \spf{} in the research context. The intent of these remarks is not to diminish \spf{} in any sense, on the contrary, it aims to guide future researchers to the weak spots that require more attention.
 
