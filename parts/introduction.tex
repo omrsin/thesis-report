@@ -1,7 +1,15 @@
 \TUchapter{Introduction}
 \label{ch:introduction}
 
+% Make a brief introduction about how big data came to be so relevant now.
+
 \TUsection{Problem Statement}
+
+% Mention other attempts to test and debug big data applications and/or Spark.
+
+% Mention how symbolic execution has been used in the past to verification and testing purposes
+
+% Mention the illustrative example
 
 %\TUsection{Illustrative Example}
 
@@ -28,7 +36,7 @@ This work introduces \textit{JPF-SymSpark}, a symbolic execution framework for A
 
 The tool is able to symbolically execute Spark programs that handle primitive data types and Strings as their input datasets. It is also capable of chaining multiple Spark operations during a symbolic execution; providing the mechanisms for a complete analysis of a program instead of a method-by-method approach. This reasoning over the inter-relation of Spark operations and the data flow among them is the most useful contribution of this work. To our knowledge, there has not been any study over the application of symbolic execution in big data frameworks.
 
-\textit{JPF-SymSpark} is built on top of \acrfull{acr:spf}, a symbolic execution extension of \jpf{} for general Java programs. During the development of the tool, \spf{} presented unexpected behaviors when analyzing some programs. Most of these abnormal results were caused by common programming practices in Spark applications, for example, the use of anonymous classes and lambda expressions to represent the parameter functions passed to many of Spark's operations. The \spf{} extension was modified accordingly in order to cope with these scenarios. The modifications \spf{} are:
+\textit{JPF-SymSpark} is built on top of \acrfull{acr:spf}, a symbolic execution extension of \jpf{} for general Java programs. During the development of the tool, \spf{} presented unexpected behaviors when analyzing some programs. Most of these abnormal results were caused by common programming practices in Spark applications, for example, the use of anonymous classes and lambda expressions to represent the parameter functions passed to many of Spark's operations. The \spf{} extension was modified accordingly in order to cope with these scenarios. The modifications introduce to \spf{} are:
 
 \begin{itemize}
 	\item Detection of synthetic bridge methods
@@ -36,6 +44,14 @@ The tool is able to symbolically execute Spark programs that handle primitive da
 	\item Improvements to the visitor pattern in the symbolic constraints
 \end{itemize}
 
-Some of these modifications were included in a patch ans submitted to the \spf{} administrator for revision. However, to the date this document was published they have not been included in the official source code.
+Some of these modifications were included in a patch and submitted to the \spf{} administrator for revision. However, to the date this document was published they have not been included in the official source code. A detailed explanation about the contributions and modifications can be found in appendix~A.
 
-A detailed explanation about the modifications can be found in appendix~A.
+\TUsection{Outline}
+
+The following chapters are structured in such a way that the reader is able to build the necessary technical knowledge to understand the developed tool properly. Chapter~2 introduces the technologies and concepts on which this work is based. In this chapter, section~\ref{sec:spark} presents the fundamentals of Apache Spark. Section~\ref{sec:program-analysis} briefly explains program analysis as a verification technique and provides an introduction to the concept of symbolic execution. Finally, section~\ref{sec:jpf} introduces \acrlong{acr:jpf} and its extension \acrlong{acr:spf}, a program analysis framework build for the Java programming language and its symbolic execution module respectively.
+
+Chapter~3 focuses on the application of symbolic execution techniques on Apache Spark programs. Section~\ref{sec:conceptual-process} analyzes the conceptual implications of using symbolic execution in the context of big data frameworks, section~\ref{sec:logic:example} presents a concrete example, and section~\ref{sec:jpf-symspark} introduces \textit{JPF-SymSpark} and its technical details. It is strongly advised that the reader familiarizes herself with the technical concepts, in particular with the intricacies of \jpf{}, before reading this chapter.
+
+Chapter~4 presents the evaluation of the proposed tool and clarifies its limitations. Finally, chapter~5 concludes the work presenting a discussion on the research questions and additionally presents a guideline for future work. For further reading, appendix A provides and extended explanation on the contributions done to \spf{} as a consequence of the work done in this thesis, while appendix B presents a guide for the installation and usage of \textit{JPF-SymSpark}.
+
+ 
