@@ -1,5 +1,15 @@
 \TUchapter{Evaluation}
 
+This chapter explains the results of a qualitative evaluation on \textit{JPF-SymSpark}. For this purpose, we specified a series of conceptual requirements that define the functionality of an ideal tool used to conduct symbolic executions on Spark programs. \textit{JPF-SymSpark} was then compared against these requirements in order to determine how successful the implementation of the module was. Nevertheless, we include a brief quantitative evaluation on the performance of the iterative reduce strategy. The reason to include this evaluation is that it illustrates how an increase in the number of iterations to be considered in the analysis has a direct effect in the size of the path conditions and the performance of the constraint solvers.
+
+We preferred a qualitative approach instead of a quantitative one because of several reasons: To our knowledge, \textit{JPF-SymSpark} is the only tool capable of carrying out symbolic executions on a Big Data framework; for this reason, it is futile to establish a performance metric given that there is no relevant comparable peer. Additionally, although there are some proposed benchmarks for Apache Spark and Big Data frameworks in general~\cite{Li2015,Pavlo2009,Wang2014}, they focus on the workload imposed to the platforms instead of offering a corpus of programs substantial enough to measure the applicability of the developed module.
+
+The next sections are structured as follows: First, the requirements for an ideal symbolic execution tool for Spark programs are enunciated. Next, \textit{JPF-SymSpark} is contrasted against each of the defined requirements in order to determine if they are met. Additionally, the performance evaluation of the iterative reduce strategy is presented. Finally, the limitations of \textit{JPF-SymSpark} and the whole \acrshort{acr:jpf} framework are discussed.
+
+\TUsection{Requirements}
+
+\TUsection{Results}
+
 \TUsection{Limitations}
 \label{sec:limitations}
 
@@ -15,7 +25,7 @@
 %
 %Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
 
-The processing logic of \textit{JPF-SymSpark} focuses on programs that were written complying to version~2.0.2 of the Apache Spark library. It might be the case that previous or future libraries of the tool are still compatible, however, any change in the classes mocked up by the surrogate Spark library included in the module might render those programs incompatible. Users are encouraged to modify the surrogate library to match another official Spark library as long as the semantics are preserved.
+The processing logic of \textit{JPF-SymSpark} focuses on programs that were written complying to version~2.0.2 of the Apache Spark library. It might be the case that previous or future libraries of the tool are still compatible, however, any change in the classes mocked up by the surrogate Spark library included in the module might render those programs incompatible. Users are encouraged to modify the surrogate library to match another official Spark release as long as the semantics are preserved.
 
 Analyses using \textit{JPF-SymSpark} are expected to be run on portions of Spark code that contain a series operations applied to a single \acrshort{acr:rdd}. Including several \acrshort{acr:rdd}s in an execution could provide an invalid outcome. This point is suggested in section~\ref{sec:future} as one of the possible future extensions of the tool.
 
@@ -23,9 +33,9 @@ Furthermore, there were several concealed, or at least not evident, aspects of \
 
 The most relevant impediment is the limited support of symbolic String operations. Although it has been a work in progress since 2012~\cite{Redelinghuys2012,Pasareanu2013}, there are still some key String operations that are not yet supported by \spf{}. For example, the \textit{split} operation, which is commonly used in Spark programs, is not supported and if included in an analysis it halts the verification and crashes \jpf{}. Additionally, constraints that combine conditions on the String structure and its length are not solved correctly, bypassing any restrictions set on the size of the String.
 
-Moreover, specialized String constraint solvers are claimed to be supported, however, in practice this is no longer the case. This situation not only applies to String solvers but also to other third-party solvers specialized in more complex numerical constraints. The problem is that the implemented interfaces that communicate with the constraint solvers are outdated given that they were implemented initially based on now obsolete versions of the tools. Some solvers like CVC3~\cite{Barrett2007} are still compatible (although the newer libraries must be included), while others like Z3~\cite{DeMoura2008} are no longer compatible.
+Moreover, specialized String constraint solvers are claimed to be supported, however, in practice this is no longer the case. This situation not only applies to String solvers but also to other third-party solvers specialized in more complex numerical constraints. The problem is that the implemented interfaces that communicate with the constraint solvers are outdated given that they were initially implemented based on now obsolete versions of the tools. Some solvers like CVC3~\cite{Barrett2007} are still compatible (although the newer libraries must be included), while others like Z3~\cite{DeMoura2008} are no longer compatible.
 
-Another relevant obstacle in the context of Spark applications is the limited support of symbolic data structures, sometimes also referred to as symbolic heap or symbolic objects~\cite{Pasareanu2010}. Although supported, symbolic data structures often generate errors if used in the regular way inside Spark transformations and actions. The lack of an interface when dealing with symbolic objects makes it difficult to build extensions on top of it.
+Another relevant obstacle in the context of Spark applications is the limited support of symbolic data structures, sometimes also referred to as symbolic heap or symbolic objects~\cite{Pasareanu2010}. Although supported, symbolic data structures often generate errors if used in the regular way inside Spark transformations and actions. The lack of a convenient interaction mechanism when dealing with symbolic objects makes it difficult to build extensions on top of it.
 
 Some obstacles were bested by means of a workaround. Such is the case of the lack of support of lambda expressions as target methods to be analyzed by \spf{}. As noted in a series of posts exchanged between the author and Kasper Luckow (contributor to \spf{} and author of JDart~\cite{Luckow2016}) in the official \jpf{} forum, the workaround consists in referring to the static methods in the anonymous classes that are generated as a consequence of the compilation of the lambda expression. This solution is further explained in section~\ref{sec:contributions}.
 
