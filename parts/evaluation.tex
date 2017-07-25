@@ -1,14 +1,126 @@
 \TUchapter{Evaluation}
 
-This chapter explains the results of a qualitative evaluation on \textit{JPF-SymSpark}. For this purpose, we specified a series of conceptual requirements that define the functionality of an ideal tool used to conduct symbolic executions on Spark programs. \textit{JPF-SymSpark} was then compared against these requirements in order to determine how successful the implementation of the module was. Nevertheless, we include a brief quantitative evaluation on the performance of the iterative reduce strategy. The reason to include this evaluation is that it illustrates how an increase in the number of iterations to be considered in the analysis has a direct effect in the size of the path conditions and the performance of the constraint solvers.
+This chapter explains the results of a qualitative evaluation on \textit{JPF-SymSpark}. For this purpose, we specified a series of conceptual requirements that define the functionality of an ideal tool used to conduct symbolic executions on Spark programs. \textit{JPF-SymSpark} was then compared against these requirements in order to determine how successful the implementation of the module was. Nevertheless, we include a quantitative evaluation on the performance of the iterative reduce strategy. The reason to include this evaluation is that it illustrates how an increment in the number of iterations to be considered in the analysis has a direct effect in the size of the path conditions and the performance of the constraint solvers.
 
-We preferred a qualitative approach instead of a quantitative one because of several reasons: To our knowledge, \textit{JPF-SymSpark} is the only tool capable of carrying out symbolic executions on a Big Data framework; for this reason, it is futile to establish a performance metric given that there is no relevant comparable peer. Additionally, although there are some proposed benchmarks for Apache Spark and Big Data frameworks in general~\cite{Li2015,Pavlo2009,Wang2014}, they focus on the workload imposed to the platforms instead of offering a corpus of programs substantial enough to measure the applicability of the developed module.
+We preferred a qualitative approach instead of a quantitative one because of several reasons: To our knowledge, \textit{JPF-SymSpark} is the only tool capable of carrying out symbolic executions on a Big Data framework; for this reason, it is futile to establish a performance metric given that there is no relevant comparable peer. Additionally, although there are some proposed benchmarks for Apache Spark and big data frameworks in general~\cite{Li2015,Pavlo2009,Wang2014}, they focus on the workload imposed to the platforms instead of offering a corpus of programs substantial enough to measure the applicability of the developed module.
 
 The next sections are structured as follows: First, the requirements for an ideal symbolic execution tool for Spark programs are enunciated. Next, \textit{JPF-SymSpark} is contrasted against each of the defined requirements in order to determine if they are met. Additionally, the performance evaluation of the iterative reduce strategy is presented. Finally, the limitations of \textit{JPF-SymSpark} and the whole \acrshort{acr:jpf} framework are discussed.
 
 \TUsection{Requirements}
+\label{sec:requirements}
+
+The requirements presented in this section are conceived as a series of the functional properties an ideal framework for conducting symbolic executions of Apache Spark programs should satisfy. The list is presented as generic as possible, without falling into the specifics of any architecture or programming language. The requirements focus on the capacity of generating artificial input values that ensure full path coverage which is the ultimate goal of this research work. The following list presents the nine identified requirements and also provides a brief explanation for each of them. 
+
+\newcommand{\reqitem}[1]{\item[\textit{\textbf{R.#1}}]}
+\begin{itemize}
+\reqitem{1} \textit{The framework should produce a reduced input dataset that ensures full path coverage of the program under test}
+
+This is the core requirement for such a framework. The expected output of a symbolic execution in this case should be a dataset with as few elements as possible that can be used as input in a regular run of the program under test to ensure full path coverage. There could be several use cases for such an input dataset, for example, the generation of automated unit tests that assert the correct termination of the program.
+
+\reqitem{2} \textit{The framework should report unfeasible path conditions in case there are any}
+
+Unfeasible paths are a sign of faulty implementations or wrong design assumptions. It is highly desirable that the framework notifies when an unfeasible path is found because such information will aid developers to focus on flawed portions of the source code.
+
+\reqitem{3} \textit{The framework shall conduct a symbolic execution of all the operations that conform the program, ensuring the correct interconnection between consecutive transformations and actions}
+
+A holistic analysis of a Spark program is only reasonable if intra-procedural and inter-procedural evaluation is ensured. Conducting symbolic executions on each relevant operation independently is not sufficient to argue on the whole data flow. For this reason, ensuring the right propagation of symbolic values among operations is crucial for a significant analysis.
+	
+\reqitem{4} \textit{The framework shall conduct a symbolic execution of the program under test without requiring any modification to its source code}
+
+Black-box approaches promote the adoption of the analysis tool and ensure that the program under test is faithfully a representation of a real program. Additionally, such approaches could be integrated with developer environments in order to conduct automated analyses and provide suggestions real-time, whereas this could not be possible if the tool would require the manipulation of the source code. 
+	
+\reqitem{5} \textit{The framework shall be able to reason over symbolic primitive types}
+
+Primitive types represented as their respective wrappers classes in Java should be supported. Symbolic path conditions for these types are often represented as linear and non-linear arithmetical equations. However, few Spark programs work solely on \acrshort{acr:rdd}s of simple primitive types, more elaborated data structures are used often.
+	
+\reqitem{6} \textit{The framework shall be able to reason over symbolic Strings}
+
+Spark is frequently used to processes large amounts of text input, usually in the form of whole files. One example of such an algorithm is the calculation of an inverted index, used commonly in search engines to map key terms to the document where they are found. For this reason, supporting symbolic String operations is fundamental for such a framework.
+	
+\reqitem{7} \textit{The framework shall be able to reason over symbolic data structures}
+
+In a similar form, many Spark programs work on more complex data structures. Tuples in particular are widely used, having even in some cases specific operations defined on them, such is the case of \textit{reduceByKey}.
+	
+\reqitem{8} \textit{The framework should support all Spark programs that compile correctly}
+
+A valid Spark program should always be supported even if there is no relevant dataset to be inferred. This enforces the usability of the framework.
+	
+\reqitem{9} \textit{The framework shall be able to process iterative and cumulative actions}
+
+Some Spark actions, such as \textit{reduce}, have an iterative behavior over the elements of an \acrshort{acr:rdd}. In some cases an accumulated value could participate in branching operations; this causes the path conditions to change for every element processed. The framework should be able to reason about how this path conditions will change every iteration and provide different input datasets that explore them based on how many elements they contained.
+
+\end{itemize}
+
+These general requirements are sufficient to describe a tool for the symbolic execution of Spark program by dealing with the specific conditions of the big data framework. Further studies can use and extend this primary requirements to conduct additional evaluations to other data intensive frameworks. 
 
 \TUsection{Results}
+
+This section discusses first about the qualitative validation of \textit{JPF-SymSpark} by explaining to what extent the requirements mentioned in the previous section are met. Additionally, it also comments about a quantitative evaluation on the performance of the iterative symbolic execution of aggregate operations in Spark.
+
+\TUsubsection{Qualitative Validation}
+
+For the validation, each of the requirements introduced in section~\ref{sec:requirements} is revisited and discussed in the context of \textit{JPF-SymSpark}, followed by a conclusion on the fulfillment or not of the requirement. On occasions requirements are only partially met, in which case, the reasons for a partial fulfillment are explained. However, section~\ref{sec:limitations} offers a thorough discussion on the limitations of the tool. Table~\ref{tab:evaluation:quantitative} presents a summary of the validation.
+
+\begin{itemize}
+\reqitem{1} \textit{The framework should produce a reduced input dataset that ensures full path coverage of the program under test}
+
+This requirement is fulfilled. As explained in section~\ref{subsec:module:output}, \textit{JPF-SymSpark} produces two types of output as a consequence of the symbolic execution. The first is a single input dataset containing a value for each satisfiable path condition found. This dataset is in fact minimal given that only one value per path condition is taken. The second type is a family of input datasets produced as a consequence of the symbolic execution of iterative aggregate operations. In this case each element in the dataset follows a single path condition, however, its cardinality indicates the number of iterations considered in the analysis.
+
+\reqitem{2} \textit{The framework should report unfeasible path conditions in case there are any}
+
+This requirement is fulfilled. Again, as explained in section~\ref{subsec:module:output}, \textit{JPF-SymSpark} reports unfeasible path conditions as soon as they are found.
+
+\reqitem{3} \textit{The framework shall conduct a symbolic execution of all the operations that conform the program, ensuring the correct interconnection between consecutive transformations and actions}
+
+This requirement is fulfilled. The main contribution of \textit{JPF-SymSpark} is to provide a framework that allows the symbolic execution of consecutive Spark operations by correctly connecting the respective input and output values of each operation. This approach allows a comprehensive analysis of a program instead of a method-by-method reasoning.
+
+\reqitem{4} \textit{The framework shall conduct a symbolic execution of the program under test without requiring any modification to its source code}
+
+This requirement is fulfilled. \textit{JPF-SymSpark} was designed to work as a black-box tool.
+
+\reqitem{5} \textit{The framework shall be able to reason over symbolic primitive types}
+
+This requirement is fulfilled. Spark operations over \acrshort{acr:rdd}s of \textit{Integer}, \textit{Long}, \textit{Float}, \textit{Double} and \textit{Boolean} wrapper classes are supported.
+
+\reqitem{6} \textit{The framework shall be able to reason over symbolic Strings}
+
+This requirements is partially fulfilled. Support on symbolic String operations is constrained by the limitations of \spf{}. This poses a major limitation for the adoption of the tool given that many big data tasks rely on text processing. More on this in section~\ref{sec:limitations}.
+
+\reqitem{7} \textit{The framework shall be able to reason over symbolic data structures}
+
+This requirement is not fulfilled. Support to symbolic data structures in \spf{} is faulty; as a consequence, \textit{JPF-SymSpark} is not capable to reason on \acrshort{acr:rdd}s of any complex data structures. This represents a major limitation given that Tuples are frequently used in big data task to group data.
+
+\reqitem{8} \textit{The framework should support all Spark programs that compile correctly}
+
+This requirements is partially fulfilled. \textit{JPF-SymSpark} relies on a surrogate Apache Spark library that is used for two purposes: First, to relief \jpf{} from processing irrelevant operations for a symbolic execution, such as context initialization. The second, simplify the methods in the \acrshort{acr:rdd}'s API in order to facilitate the symbolic executions, for example, removing loops and additional considerations relative to distributed computing. This library is not exhaustive, for this reason there might be unsupported operations that compile under the regular Spark library. Furthermore, other Spark APIs, such as the Dataset API, are not supported.
+
+\reqitem{9} \textit{The framework shall be able to process iterative and cumulative actions}
+
+This requirement is partially fulfilled. Only actions that work on primitive values are supported. As a consequence of \textit{R.7}, all the actions that work on symbolic data structures cannot be processed. Moreover, the symbolic output of aggregate functions is not percolated beyond the boundaries of the operation; this means that any branching condition applied on the return value of an action is not symbolically executed.
+\end{itemize}
+
+\begin{table}[t]
+	\centering
+	\large
+	\begin{tabular}{lcccccccccc}
+		& R.1 & R.2 & R.3 & R.4 & R.5 & R.6 & R.7 & R.8 & R.9 \\
+		\hline
+		\rule{0pt}{2.5ex}
+		\textit{JPF-SymSpark} & \checkmark & \checkmark & \checkmark & \checkmark & \checkmark & \dag & \texttimes & \dag & \dag \\
+		\hline
+	\end{tabular}
+	\caption*{		
+		\begin{tabular}{l l l l l l}
+			\footnotesize{Fulfilled} & $\checkmark$ & \footnotesize{Not fulfilled} & $\times$ & \footnotesize{Partially fulfilled} & $\dag$ \\
+		\end{tabular}
+	}
+	\caption[Summary of the Qualitative Validation of \textit{JPF-SymSpark}]{Summary of the qualitative validation of \textit{JPF-SymSpark}.}
+	\label{tab:evaluation:quantitative}
+\end{table}
+
+Although most of the requirements are met, those that are only partially met or not met at all represent severe obstacles to the applicability of the tool on less trivial Spark programs. Nevertheless, the proposed process and the foundation of \textit{JPF-SymSpark} lay the ground for further research on this topic.
+
+\TUsubsection{Performance of Iterative Executions}
 
 \TUsection{Limitations}
 \label{sec:limitations}

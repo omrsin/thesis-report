@@ -96,11 +96,14 @@
 \addcontentsline{toc}{chapter}{\listfigurename}
 \listoffigures
 
+\begingroup
+\let\clearpage\relax
+
 % Includes the list of tables
-%\cleardoublepage
-%\phantomsection
-%\addcontentsline{toc}{chapter}{\listtablename}
-%\listoftables
+\phantomsection
+\addcontentsline{toc}{chapter}{\listtablename}
+\listoftables
+\endgroup
 
 % Includes the list of listings
 \cleardoublepage
