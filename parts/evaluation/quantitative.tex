@@ -1,36 +1,59 @@
 \TUsection{Quantitative Evaluation of Iterative Symbolic Executions}
 
-This evaluation focuses on the behavior of the iterative reduce strategy. It illustrates how an increment in the number of iterations to be considered in the analysis has a direct impact in the number and size of path conditions, as well as in the performance of the constraint solvers. Moreover, it serves as an example to identify path explosion in symbolic executions.
+The process carried out by the iterative reduce strategy resembles to a loop unwinding technique, where an iterative behavior is taken out of a loop and executed sequentially without the need of accumulators or counters. This approach is often used to improve execution speed of a program by getting rid of all the control flow instructions inherent in to loop statements. However, regarding \textit{JPF-SymSpark} and several other program analysis techniques, loop unwinding is used to bound the execution of potentially infinite loop instructions, hence allowing the evaluation of the program under test.
+
+\textit{JPF-SymSpark} allows the user to specify the number of iterations of an aggregated function that will be symbolically executed. This enables the module to bound the execution of the iterative behavior and carry out the analysis by correctly chaining the outcome of previous iterations. However, the number of path conditions grow exponentially with the number of conditional statements found. This means that if the aggregate function being analyzed has a conditional statement, then it is most likely that a path explosion will occur.
+
+This evaluation focuses on the behavior of the iterative reduce strategy and it aims to identify the major aspects that pose performance losses. It illustrates how an increment in the number of iterations to be considered in the analysis has a direct impact in the number and size of path conditions, as well as in the performance of the constraint solvers. Moreover, it serves as an example to identify path explosion in symbolic executions.
+
+\TUsubsection{Setup}
+
+Four scenarios were considered for the experiments:
+
+\begin{itemize}
+	\item \textbf{Iterative Reduce with Non Cumulative Condition (IRNC)}: The program under test contains a single \textit{reduce} action with a conditional instruction defined only over a non cumulative symbolic variable.
+	\item \textbf{Iterative Reduce with Cumulative Condition (IRC)}: Also a single \textit{reduce} action but this time the conditional instruction is defined over the cumulative symbolic variable.
+	\item \textbf{Iterative Map and Reduce with Non Cumulative Condition (IMRNC)}: This scenario is similar to the first one with the difference that the \textit{reduce} action is precede by a \textit{map} transformation with a single conditional statement over its symbolical variable.
+	\item \textbf{Iterative Map and Reduce with Cumulative Condition (IMRC)}: Same as the previous scenario except that the \textit{reduce} action has a conditional instruction defined over its cumulative symbolic variable.
+\end{itemize}
+
+The first two scenarios aim to determine what kind of performance effects generate from solving constraints based on cumulative and non cumulative constraints. The last two scenarios are used to measure the relevance of previous transformations that manipulate the symbolic variable and also introduce a condition to the path before the \texttt{reduce} action. All the scenarios were implemented as trivial Spark programs processing only integer values. Furthermore, the conditional statements between operations were defined in a way that unsatisfiable path conditions would be generated eventually.
+
+Each scenario was analyzed for 2, 3, 5, 8 and 13 iterations respectively repeating each case ten times and taking the average of the execution time as the result. This range follows a Fibonacci sequence and was chose to space out the iterations enough to make any trend distinguishable. Additionally, for each case, the number of satisfiable and unsatisfiable path conditions was registered. The experiments were carried out in a laptop computer with a core-i7 intel processor and assigning 1GB of memory to the JVM executing the analysis. \jpf{} was triggered using the command line instead of the Eclipse JPF plugin in order to avoid wasting memory in processes inherent to the Eclipse IDE.
+
+\TUsubsection{Results and Discussion}
 
 \begin{table}[t]
 	\centering
-	\large
-	\begin{tabular}{l||ccccc}
-		& \multicolumn{5}{c}{Iterations} \\		
-		& 2 & 3 & 5 & 8 & 13 \\
+	\small
+	\begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}} lccccc}
 		\hline
+		Iterations & 2 & 3 & 5 & 8 & 13 \\
+		\hline\hline
 		IRNC  & 0.6802 & 0.705  & 0.8558  & 1.3442   & 5.4894   \\
 		IRC   & 0.5896 & 0.6251 & 15.6161 & 568.0045 & N/A      \\
 		IMRNC & 0.6697 & 0.7102 & 0.9814  & 2.6217   & 21.6629  \\
-		IMRC  & 0.6818 & 0.7284 & 1.1445  & 2.585    & 177.5792 \\		
-	\end{tabular}	
+		IMRC  & 0.6818 & 0.7284 & 1.1445  & 2.585    & 177.5792 \\
+		\hline	
+	\end{tabular*}	
 	\caption[This]{and that.}
 	\label{tab:evaluation:quantitative-time}
 \end{table}
 
 \begin{table}[t]
 	\centering
-	\large
-	\begin{tabular}{l||cccccccccc}
-		& \multicolumn{10}{c}{Iterations} \\		
-		& \multicolumn{2}{c}{2} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{5} & \multicolumn{2}{c}{8} & \multicolumn{2}{c}{13} \\
-		& S & U & S & U & S & U & S & U & S & U \\		
+	\small
+	\begin{tabular*}{0.8\textwidth}{@{\extracolsep{\fill}} lcccccccccc}
 		\hline
+		Iterations & \multicolumn{2}{c}{2} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{5} & \multicolumn{2}{c}{8} & \multicolumn{2}{c}{13} \\
+		& S & U & S & U & S & U & S & U & S & U \\		
+		\hline\hline
 		IRNC   & 6 & 0 & 14 & 0  & 62 & 0  & 510 & 0   & 16382 & 0               \\
 		IRC    & 6 & 0 & 14 & 0  & 62 & 0  & 454 & 56  & \multicolumn{2}{c}{N/A} \\
 		IMRNC  & 8 & 4 & 17 & 11 & 67 & 57 & 518 & 512 & 16395 & 16369           \\
-		IMRC   & 7 & 5 & 12 & 16 & 25 & 99 & 57  & 963 & 573   & 32191           \\		
-	\end{tabular}
+		IMRC   & 7 & 5 & 12 & 16 & 25 & 99 & 57  & 963 & 573   & 32191           \\
+		\hline	
+	\end{tabular*}
 	\caption[This]{and that.}
 	\label{tab:evaluation:quantitative-path-conditions}
 \end{table} 
