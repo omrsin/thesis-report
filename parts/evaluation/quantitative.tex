@@ -1,0 +1,36 @@
+\TUsection{Quantitative Evaluation of Iterative Symbolic Executions}
+
+This evaluation focuses on the behavior of the iterative reduce strategy. It illustrates how an increment in the number of iterations to be considered in the analysis has a direct impact in the number and size of path conditions, as well as in the performance of the constraint solvers. Moreover, it serves as an example to identify path explosion in symbolic executions.
+
+\begin{table}[t]
+	\centering
+	\large
+	\begin{tabular}{l||ccccc}
+		& \multicolumn{5}{c}{Iterations} \\		
+		& 2 & 3 & 5 & 8 & 13 \\
+		\hline
+		IRNC  & 0.6802 & 0.705  & 0.8558  & 1.3442   & 5.4894   \\
+		IRC   & 0.5896 & 0.6251 & 15.6161 & 568.0045 & N/A      \\
+		IMRNC & 0.6697 & 0.7102 & 0.9814  & 2.6217   & 21.6629  \\
+		IMRC  & 0.6818 & 0.7284 & 1.1445  & 2.585    & 177.5792 \\		
+	\end{tabular}	
+	\caption[This]{and that.}
+	\label{tab:evaluation:quantitative-time}
+\end{table}
+
+\begin{table}[t]
+	\centering
+	\large
+	\begin{tabular}{l||cccccccccc}
+		& \multicolumn{10}{c}{Iterations} \\		
+		& \multicolumn{2}{c}{2} & \multicolumn{2}{c}{3} & \multicolumn{2}{c}{5} & \multicolumn{2}{c}{8} & \multicolumn{2}{c}{13} \\
+		& S & U & S & U & S & U & S & U & S & U \\		
+		\hline
+		IRNC   & 6 & 0 & 14 & 0  & 62 & 0  & 510 & 0   & 16382 & 0               \\
+		IRC    & 6 & 0 & 14 & 0  & 62 & 0  & 454 & 56  & \multicolumn{2}{c}{N/A} \\
+		IMRNC  & 8 & 4 & 17 & 11 & 67 & 57 & 518 & 512 & 16395 & 16369           \\
+		IMRC   & 7 & 5 & 12 & 16 & 25 & 99 & 57  & 963 & 573   & 32191           \\		
+	\end{tabular}
+	\caption[This]{and that.}
+	\label{tab:evaluation:quantitative-path-conditions}
+\end{table} 
