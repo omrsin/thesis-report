@@ -63,6 +63,8 @@ The tool is able to symbolically execute Spark programs that handle primitive da
 
 Some of these modifications were included in a patch and submitted for revision to the \spf{} administrator. However, to the date this document was published they have not been included in the official source code. A detailed explanation about the contributions and modifications can be found in appendix~A.
 
+Two evaluations of the tool are presented in this work. The first is a qualitative evaluation that aims to determine how compliant \textit{JPF-SymSpark} is in terms of a series of functional and non-functional requirements defined for a tool of such purpose. The second evaluation consists of a performance assessment of the iterative symbolic operations carried out during an analysis. Additionally, a discussion over the limitations of tool is presented in order to establish the scope and capabilities of its current state.
+
 \TUsection{Outline}
 
 The following chapters are structured in such a way that the reader is able to build the necessary technical knowledge to understand the developed tool properly. Chapter~2 introduces the technologies and concepts on which this work is based. In this chapter, section~\ref{sec:spark} presents the fundamentals of Apache Spark. Section~\ref{sec:program-analysis} briefly explains program analysis as a verification technique and provides an introduction to the concept of symbolic execution. Finally, section~\ref{sec:jpf} introduces \acrlong{acr:jpf} and its extension \acrlong{acr:spf}, a program analysis framework build for the Java programming language and its symbolic execution module respectively.
