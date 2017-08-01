@@ -13,7 +13,7 @@
 %
 %Although support for other solvers is mentioned, in practice, many of them fail due to missing libraries which are outdated when independently included.
 
-This section comments on several limitations of \textit{JPF-SymSpark} that come as a direct consequence of the design decisions or originate as limitation of any of the frameworks upon which the module builds up.
+This section comments on several limitations of \textit{JPF-SymSpark} that come as a direct consequence of the design decisions or are caused by any of the frameworks upon which the module builds up.
 
 The processing logic of \textit{JPF-SymSpark} focuses on programs that were written complying to version~2.0.2 of the Apache Spark library. It might be the case that previous or future libraries of the tool are still compatible, however, any change in the classes mocked up by the surrogate Spark library included in the module might render those programs incompatible. Users are encouraged to modify the surrogate library to match another official Spark release as long as the semantics are preserved.
 
