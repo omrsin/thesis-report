@@ -49,7 +49,7 @@ The following research questions are relevant for this study:
 \TUsection{Contributions}
 \label{sec:contributions}
 
-This work introduces \textit{JPF-SymSpark}, a symbolic execution framework for Apache Spark programs built as an extension of \acrfull{acr:jpf}. The main goal of \textit{JPF-SymSpark} is to generate reduced input datasets that offer full path coverage of the analyzed program. Such datasets can have several uses in the development process of a Spark application, for example, as input data for unit tests.
+This work introduces \textit{JPF-SymSpark}, a symbolic execution framework for Apache Spark programs built as an extension of \acrfull{acr:jpf}~\cite{Visser2003}. The main goal of \textit{JPF-SymSpark} is to generate reduced input datasets that offer full path coverage of the analyzed program. Such datasets can have several uses in the development process of a Spark application, for example, as input data for unit tests.
 
 The tool is able to symbolically execute Spark programs that handle primitive data types and Strings as their input datasets. It is also capable of chaining multiple Spark operations during a symbolic execution; providing the mechanisms for a complete analysis of a program instead of a method-by-method approach. This reasoning over the interrelation of Spark operations and the data flow among them is the most useful contribution of this work. To our knowledge, there has not been any study over the application of symbolic execution in big data frameworks.
 
