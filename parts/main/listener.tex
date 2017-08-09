@@ -9,7 +9,7 @@ The Spark method listener extends the \textit{PropertyListenerAdapter} which alr
 \begin{itemize}
 	\item \textbf{instructionExecuted}: Which is triggered every time an instruction is executed. When this event is triggered, the listener forwards the executed instruction to the coordinator in order to validate if it is a relevant instruction for the analysis.
 	\item \textbf{methodExited}: Which is triggered every time a method finishes its execution. In this case, if the method is related to Spark, the listener indicates to the coordinator that it should prepare to percolate the output to possible subsequent Spark methods.
-	\item \textbf{stateAdvanced} Which every time the internal state of \jpf{} advances. This is only relevant to identify that an end state has been reached, in which case the listener indicates to the coordinator that a full path has been explored.
+	\item \textbf{stateAdvanced} Which is triggered every time the internal state of \jpf{} advances. This is only relevant to identify that an end state has been reached, in which case the listener indicates to the coordinator that a full path has been explored.
 	\item \textbf{stateBacktracked}: Which is triggered every time the execution reached an end state but there were already choice generators registered with unexplored options. The state is always backtracked to the latest point where a choice generator was registered. In this case, the listener instructs the coordinator to obtain a solution to the symbolic input value if the state backtracked to a different alternative of the path condition.
 \end{itemize}
 
@@ -26,7 +26,7 @@ The main actions of the coordinator are:
 \begin{itemize}
 	\item \textbf{detectSparkInstruction}: This action determines whether the executed instruction is a Spark operation or the respective invocation if its parameter function. In the case of being a Spark operation, the coordinator selects the adequate strategy matching the operation. Otherwise, if it detect the invocation of the parameter function, then it indicates to the currently active strategy to execute the pre-processing phase.
 	\item \textbf{percolateToNextMethod}: In this case, the coordinator instructs the active strategy to execute its post-processing phase. In general, all post-processing activities deal with the inter-connection of Spark operations, this is, dealing with output parameters and the interruption of the control flow, among others.
-	\item \textbf{processSolution}: Arguably the most important action of the coordinator. This action is invoked anytime \jpf{} backtracks to a previous state. In the case the state is backtracked to a point where a different path most be taken in a branching condition, that means that the other path has been completely explored. Being this the case, the current path condition is obtained from the choice generator and passed to the solver to determine if it is feasible or not; in the positive case, a sample value of the symbolic input is added to the solution list, otherwise an unfeasible path is reported.
+	\item \textbf{processSolution}: Arguably the most important action of the coordinator. This action is invoked anytime \jpf{} backtracks to a previous state. In the case the state is backtracked to a point where a different path must be taken in a branching condition, that means that the other path has been completely explored. Being this the case, the current path condition is obtained from the choice generator and passed to the solver to determine if it is feasible or not; in the positive case, a sample value of the symbolic input is added to the solution list, otherwise an unfeasible path is reported.
 \end{itemize}
 
 % Define block styles
@@ -97,7 +97,7 @@ The main actions of the coordinator are:
 	\path [line] (L8.east) -- node[]{\footnotesize \textit{detectSparkInstruction}}(CO8.west);
 	\path [line] (L9.east) -- node[]{\footnotesize \textit{processSolution}}(CO9.west);
 	\end{tikzpicture}
-	\caption[Execution flow of the Spark Method Listener and Coordinator]{Execution flow of the Spark method listener and the coordinator when analyzing the sample program shown in listing~\ref{lst:logic:example}. The exact point on which the listener events are triggered actually depends on precise bytecode instructions; this diagram provides an approximation to where this instructions occur in the source code.}
+	\caption[Execution flow of the Spark Method Listener and Coordinator]{Execution flow of the Spark method listener and the coordinator when analyzing the sample program shown in listing~\ref{lst:logic:example}. The exact point where the listener events are triggered actually depends on precise bytecode instructions; this diagram provides an approximation to where this instructions occur in the source code.}
 	\label{fig:listener:flow-diagram}
 \end{figure}
 

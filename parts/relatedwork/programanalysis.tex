@@ -29,7 +29,7 @@ Programs can be modeled as a series of \textit{states} that can be reached after
 
 \begin{lstlisting}[
 language=Java,
-caption={[Linear Search Algorithm] Linear search algorithm written in Java to illustrate the creation of a Control Flow Graph. If the element is contained in the array, the corresponding index is returned, otherwise a -1 is returned.},
+caption={[Linear Search Algorithm] Linear search algorithm written in Java to illustrate the creation of a Control Flow Graph. If the element is contained in the array, the corresponding index is returned, otherwise -1 is returned.},
 float=h,
 label=lst:program-analysis:cfg
 ]
@@ -85,7 +85,7 @@ Models like \acrshort{acr:cfg}s are useful when reasoning about properties relat
 
 This technique, also known as Finite State Verification, consists of systematically exploring the potentially huge state space of a program in order to understand all possible executions. States are determined, for example, by all the possible values a variable or an expression can take during the execution of the system under test or by all possible interleavings that can result from the execution of a concurrent program. 
 
-As can be expected, the number of states for non-trivial programs grow exponentially; what is known as \textit{state space explosion} problem. This condition poses several limitations to the practical use of the technique given that computational resources are quickly exhausted and timeliness conclusions are not feasible. Hence, the challenge relies on the reduction of the state space of the execution while still maintaining a full semantic correspondence between the model and the program, at least in terms of the property that is validated.
+As can be expected, the number of states for non-trivial programs grows exponentially; what is known as \textit{state space explosion} problem. This condition poses several limitations to the practical use of the technique given that computational resources are quickly exhausted and timely conclusions are not feasible. Hence, the challenge relies on the reduction of the state space of the execution while still maintaining a full semantic correspondence between the model and the program, at least in terms of the property that is validated.
 
 % TODO: Missing references about Partial Order Reduction
 Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting when transitions resulting from concurrent operations result in equivalent states, making it necessary to explore such path only once. 

@@ -5,7 +5,7 @@
 % Instruction Factory
 % Listener and Coordinator
 % Strategies
-JPF-SymSpark is a \jpf{} module whose goal is to coordinate the symbolic execution of Apache Spark programs to produce a reduced input dataset that ensures full path coverage on a regular execution. It builds on top of \spf{} to delegate the handling of symbolic expressions while it focus on how to interconnect Spark's transformations and actions in order to reason coherently over the execution flow of the program. This section describes the general structure and technical aspects of the \textit{JPF-SymSpark} module. The work presented here is based on the logical processes defined in the previous section. 
+JPF-SymSpark is a \jpf{} module whose goal is to coordinate the symbolic execution of Apache Spark programs to produce a reduced input dataset that ensures full path coverage on a regular execution. It builds on top of \spf{} to delegate the handling of symbolic expressions while it focuses on how to interconnect Spark's transformations and actions in order to reason coherently over the execution flow of the program. This section describes the general structure and technical aspects of the \textit{JPF-SymSpark} module. The work presented here is based on the logical processes defined in the previous section. 
 
 The main \jpf{} extension points used in the module are:
 
@@ -19,7 +19,7 @@ The main \jpf{} extension points used in the module are:
 Additionally, the module also introduces the following control components that play an important role during the analysis:
 
 \begin{itemize}
-	\item \textbf{Validators}: This are abstractions that encapsulate the necessary validations to determine if an executed instruction is a Spark operation or an invocation of the user-defined function. As for the case of the Java platform, the validator is implemented in the \textit{JavaSparkValidator} class.
+	\item \textbf{Validators}: These are abstractions that encapsulate the necessary validations to determine if an executed instruction is a Spark operation or an invocation of the user-defined function. As for the case of the Java platform, the validator is implemented in the \textit{JavaSparkValidator} class.
 	\item \textbf{Method Strategies}: Each Spark operation follows a different strategy depending on how they deal with their input and output parameters. One example of a method strategy can be found in the \textit{FilterStrategy} class.
 	\item \textbf{Method Coordinator}: The coordinator is in charge of selecting the adequate strategy based on the Spark operation currently being executed. It maintains a general view of the whole analysis. The method coordinator is implemented in the \textit{MethodSequenceCoordinator} class.
 	\item \textbf{Surrogate Spark Library}: The regular Spark library undergoes several unnecessary workload that is not relevant to the symbolic execution. Instead of it, a surrogate Spark library was implemented and included as one of the dependencies of the module to relieve the analysis of the irrelevant load.

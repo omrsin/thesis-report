@@ -71,7 +71,7 @@ This requirement is fulfilled. The main contribution of \textit{JPF-SymSpark} is
 
 \reqitem{4} \textit{The framework shall conduct a symbolic execution of the program under test without requiring any modification to its source code}
 
-This requirement is fulfilled. \textit{JPF-SymSpark} was designed to work as a black-box tool.
+This requirement is fulfilled. \textit{JPF-SymSpark} was designed to work as a black-box tool. The surrogate Spark library is only included in the \jpf{}'s classpath as it is specified in the corresponding ``properties'' file, making it only available during the analyses. Normal executions of the program under test do not include the surrogate library, using instead the official Spark library.
 
 \reqitem{5} \textit{The framework shall be able to reason over symbolic primitive types}
 
@@ -83,11 +83,11 @@ This requirements is partially fulfilled. Support on symbolic String operations 
 
 \reqitem{7} \textit{The framework shall be able to reason over symbolic data structures}
 
-This requirement is not fulfilled. Support to symbolic data structures in \spf{} is faulty; as a consequence, \textit{JPF-SymSpark} is not capable to reason on \acrshort{acr:rdd}s of any complex data structures. This represents a major limitation given that Tuples are frequently used in big data task to group data.
+This requirement is not fulfilled. Support to symbolic data structures in \spf{} is faulty; as a consequence, \textit{JPF-SymSpark} is not capable of reasoning on \acrshort{acr:rdd}s of any complex data structures. This represents a major limitation given that Tuples are frequently used in big data tasks to group data.
 
 \reqitem{8} \textit{The framework should support all Spark programs that compile correctly}
 
-This requirements is partially fulfilled. \textit{JPF-SymSpark} relies on a surrogate Apache Spark library that is used for two purposes: First, to relief \jpf{} from processing irrelevant operations for a symbolic execution, such as context initialization. The second, simplify the methods in the \acrshort{acr:rdd}'s API in order to facilitate the symbolic executions, for example, removing loops and additional considerations relative to distributed computing. This library is not exhaustive, for this reason there might be unsupported operations that compile under the regular Spark library. Furthermore, other Spark APIs, such as the Dataset API, are not supported.
+This requirements is partially fulfilled. \textit{JPF-SymSpark} relies on a surrogate Apache Spark library that is used for two purposes: First, to relief \jpf{} from processing irrelevant operations for a symbolic execution, such as context initialization. The second, simplify the methods in the \acrshort{acr:rdd}'s API in order to facilitate the symbolic executions, for example, removing loops and additional considerations relative to distributed computing. This library is not exhaustive, for this reason there will be unsupported operations that compile under the regular Spark library. Furthermore, other Spark APIs, such as the Dataset API, are not supported.
 
 \reqitem{9} \textit{The framework shall be able to process iterative and cumulative actions}
 
