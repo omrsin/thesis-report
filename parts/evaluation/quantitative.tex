@@ -29,7 +29,7 @@ The results of the experiments are summarized in table~\ref{tab:evaluation:quant
 
 All the scenarios have a similar performance up until three symbolic iterations. However, the performance of some scenarios start to diverge after five iterations. The starkest difference is displayed by the \textit{IRC} scenario, where the execution times increase several orders of magnitude in comparison to the other scenarios. In particular, the \textit{IRC} scenario could not be executed for 13 iterations or more, resulting in executions that lasted several hours and culminating eventually in \textit{OutOfMemory} exceptions.
 
-The rest of the scenarios have a steady increase in their measurements until they reach 13 symbolic iterations, where the execution times start to grow exponentially. From the remainder three scenarios, the \textit{IMRC} scenario displays the worst performance, taking almost three minutes to execute 13 symbolic executions. 
+The rest of the scenarios have a steady increase in their measurements until they reach 13 symbolic iterations, where the execution times start to grow exponentially. From the remainder three scenarios, the \textit{IMRC} scenario displays the worst performance, taking almost three minutes to execute 13 symbolic executions. Figure~\ref{fig:evaluation:quantitative} presents a plot of the execution times in a logarithmic scale that better depicts the disparity between some of the scenarios.
 
 \begin{table}[t]
 	\centering
@@ -47,6 +47,62 @@ The rest of the scenarios have a steady increase in their measurements until the
 	\caption[Average Execution Times]{Average execution time in seconds for each scenario under the different number of executed iterations.}
 	\label{tab:evaluation:quantitative-time}
 \end{table}
+
+\begin{figure}
+	\centering	
+	\begin{tikzpicture}
+		\begin{axis}[
+%			title={Average Execution Times in Log10},
+			xlabel={Number of Iterations},
+			ylabel={Log(Average Execution Times)},
+			xmin=1, xmax=14,
+			ymin=-0.5, ymax=3,
+			xtick={2,3,5,8,13},
+			ytick={-0.5,0,0.5,1,1.5,2,2.5,3},
+			legend pos=north west,
+			ymajorgrids=true,
+			grid style=dashed,
+		]
+			
+			\addplot[
+			color=blue,
+			mark=square,
+			]
+			coordinates {
+				(2,-0.1673633724)(3,-0.151810883)(5,-0.0676277179)(8,0.1284638911)(13,0.739524878)
+			};
+	
+			\addplot[
+			color=red,
+			mark=triangle,
+			]
+			coordinates {
+				(2,-0.2294425251)(3,-0.2040505011)(5,1.1935725814)(8,2.7543517764)
+			};
+			
+			\addplot[
+			color=teal,
+			mark=o,
+			]
+			coordinates {
+				(2,-0.1741197011)(3,-0.148619332)(5,-0.0081539464)(8,0.4185829941)(13,1.3357165949)
+			};
+			
+			\addplot[
+			color=olive,
+			mark=pentagon,
+			]
+			coordinates {
+				(2,-0.1663430031)(3,-0.1376300629)(5,0.058615797)(8,0.4124605474)(13,2.2493920951)
+			};
+	
+			\legend{IRNC, IRC, IMRNC, IMRC}
+		\end{axis}
+	\end{tikzpicture}
+	\caption[Average Execution Times in Logarithmic Scale]{Average Execution Times in Logarithmic Scale. The disparity between the scenarios is easily perceived using a logarithmic scale while still preserving the notion of exponential growth.}
+	\label{fig:evaluation:quantitative}
+\end{figure}
+
 
 \textbf{Number of path conditions}
 

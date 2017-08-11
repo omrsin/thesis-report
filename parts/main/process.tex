@@ -11,7 +11,7 @@
 
 % Mention the special case of flatMap and their increased cardinality in the output
 
-A Spark program consists of a chain of transformations on one or more \acrshort{acr:rdd}s that finally conclude with an action applied on them. \acrshort{acr:rdd}s are manipulated through an \acrshort{acr:api} that provides the general guidelines on how the data collection is to be processed without falling into the specifics. For example, the \textit{filter} transformation indicates that only the elements matching a given filtering condition would be selected, without specifying exactly what is the condition to be evaluated. A similar approach is followed by most of the actions and transformations in Spark.
+A Spark program consists of a chain of transformations on one or more \acrshort{acr:rdd}s that finally conclude with an action applied on them. \acrshort{acr:rdd}s are manipulated through an \acrshort{acr:api} that provides the general guidelines on how the data collection is to be processed without falling into the specifics. For example, the \textit{filter} transformation indicates that only the elements matching a given filtering condition would be selected, without specifying exactly what is the condition to be evaluated. A similar approach is followed by most of the actions and transformations in Spark. Many of these operations come from functional programming languages and define abstractions to interact with data collections.
 %TODO: MAYBE Refer to the first part of the diagram
 
 The precise behavior of most actions and transformations is defined by the programmer. Given that most of Spark's actions and transformations are higher order functions, the programmers define a custom function that fulfills the contract of the specific operation. For example, again the \textit{filter} transformation expects as a parameter a function that takes an element of the same type as the type of the elements in the collection handled by the \acrshort{acr:rdd} and returns a boolean value. When the \textit{filter} transformation is later invoked, it calls the passed function with each element in the \acrshort{acr:rdd} and, depending on the output, it decides if the value is filtered or not.
@@ -135,7 +135,7 @@ Only two words would suffice to explore all the possible paths of the program; o
 			\small $\lor ~V_{0}.startsWith(``in"))$} \\
 		V_{0} = ``re" & & & V_{0} = ``un" & &  V_{0} = ``in" & & V_{0} = ``\_" \\
 	} \]
-	\caption[Symbolic Execution Tree of the Selective Word Count Example]{Symbolic execution tree corresponding to the Spark program shown in listing~\ref{lst:logic:word-count-example}. An input file containing the words $\{``re",``un",``in",``\_"\}$ would suffice to explore all feasible paths in the program.}
+	\caption[Symbolic Execution Tree of the Selective Word Count Example]{Symbolic execution tree corresponding to the Spark program shown in listing~\ref{lst:logic:word-count-example}. An input file containing the words $``re",``un",``in"$ and $``\_"$ would suffice to explore all feasible paths in the program.}
 	\label{fig:logic:symbolic-spark-word-count-example}
 \end{figure}
 
