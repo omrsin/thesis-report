@@ -1,6 +1,6 @@
 \TUchapter{Conclusion}
 
-This chapter concludes the work done in this thesis. First, it summarizes the contributions of \textit{JPF-SymSpark} as well as results of its evaluation. Next, it presents a revisited discussion about the aim and research questions defined at the beginning of this study. Finally, it points towards several improvements to \textit{JPF-SymSpark} and future work on this line of research.
+This chapter concludes the work done in this thesis. First, it summarizes the contributions of \textit{JPF-SymSpark} as well as the results of its evaluation. Next, it presents a revisited discussion about the aim and research questions defined at the beginning of this study. Finally, it points towards several improvements to \textit{JPF-SymSpark} and future work on this line of research.
 
 \TUsection{Summary}
 
@@ -27,7 +27,7 @@ The following answers correspond to the research questions stated as premises of
 	
 	\item \textit{What are the particular characteristics associated with the symbolic execution of a Spark program.}
 	
-	There are two particular characteristics that differentiate the symbolic execution of Spark programs from other programs. The first is that the control flow instructions of an application can be contained inside functions passed as parameters to Spark operations. Such a situation requires path conditions and symbolic transformations to be percolated between Spark operations. The second characteristic is that some Spark operations, in particular aggregation functions, have control flow semantics defined intrinsically. One example is the \textit{reduce} action, that defines an iterative behavior and accumulates a value resulting from the application of the passed user-defined function. In a symbolic execution, this iterative behavior needs to be considered to control undesirable results, as is the case of the symbolic state explosion.
+	There are two particular characteristics that differentiate the symbolic execution of Spark programs from other programs. The first is that the control flow instructions of an application can be contained inside functions passed as parameters to Spark operations. Such a situation requires path conditions and symbolic transformations to be percolated between Spark operations. The second characteristic is that some Spark operations, in particular aggregation functions, have control flow semantics defined intrinsically. One example is the \textit{reduce} action, that defines an iterative behavior and accumulates a value resulting from the application of the passed user-defined function. In a symbolic execution, this iterative behavior needs to be considered in order to control undesirable results, as is the case of the symbolic state explosion.
 	
 	\item \textit{Is there a symbolic execution framework that can be adapted to perform symbolic executions of Spark programs.}
 	
@@ -35,7 +35,7 @@ The following answers correspond to the research questions stated as premises of
 	
 	\item \textit{If it exists, what are the advantages and disadvantages of such a framework in the context of Spark applications.}
 	
-	\spf{} is a powerful framework that is able to replace the whole instruction of Java bytecode for its symbolic counterparts. A wide variety of symbolic operations for all the primitive types are supported as well as a subset of the operations defined for Strings. It takes care of the identification of branching instructions and, with the help of \jpf{}'s state generation engine, is capable of exploring the different paths. It also provides a convenient set of mechanisms to consult and manipulate the execution state if needed. This is particularly useful when percolating path conditions among Spark operations. 
+	\spf{} is a powerful framework that is able to replace the whole instruction set of the Java bytecode for its symbolic counterparts. A wide variety of symbolic operations for all the primitive types are supported as well as a subset of the operations defined for Strings. It takes care of the identification of branching instructions and, with the help of \jpf{}'s state generation engine, is capable of exploring the different paths. It also provides a convenient set of mechanisms to consult and manipulate the execution state if needed. This is particularly useful when percolating path conditions among Spark operations. 
 	
 	However, \spf{} does not support symbolic data structures and only supports symbolic Strings partially. This presents a major limitation given that most of the realistic Spark programs operate to a certain extent this type of data. Additionally, \spf{} has undergone several development iterations and its codebase starts to show hints of code decay. Code comments used as a communication mechanisms between developers, frequent code duplication and outdated examples prove to be serious obstacles for the further improvement of the tool.
 	

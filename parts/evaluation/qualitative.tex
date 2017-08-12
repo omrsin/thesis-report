@@ -20,11 +20,11 @@ Unfeasible paths are a sign of faulty implementations or wrong design assumption
 
 \reqitem{3} \textit{The framework shall conduct a symbolic execution of all the operations that conform the program, ensuring the correct interconnection between consecutive transformations and actions}
 
-A holistic analysis of a Spark program is only reasonable if intra-procedural and inter-procedural evaluation is ensured. Conducting symbolic executions on each relevant operation independently is not sufficient to argue on the whole data flow. For this reason, ensuring the right propagation of symbolic values among operations is crucial for a significant analysis.
+A holistic analysis of a Spark program is only reasonable if intra-procedural and inter-procedural evaluation are ensured. Conducting symbolic executions on each relevant operation independently is not sufficient to argue on the whole data flow. For this reason, ensuring the right propagation of symbolic values among operations is crucial for a significant analysis.
 	
 \reqitem{4} \textit{The framework shall conduct a symbolic execution of the program under test without requiring any modification to its source code}
 
-Black-box approaches promote the adoption of the analysis tool and ensure that the program under test is faithfully a representation of a real program. Additionally, such approaches could be integrated with developer environments in order to conduct automated analyses and provide suggestions real-time, whereas this could not be possible if the tool would require the manipulation of the source code. 
+Black-box approaches promote the adoption of the analysis tool and ensure that the program under test is faithfully a representation of a real program. Additionally, such approaches could be integrated with developer environments in order to conduct automated analyses and provide suggestions in real-time, whereas this could not be possible if the tool would require the manipulation of the source code. 
 	
 \reqitem{5} \textit{The framework shall be able to reason over symbolic primitive types}
 
@@ -32,7 +32,7 @@ Primitive types represented as their respective wrappers classes in Java should 
 	
 \reqitem{6} \textit{The framework shall be able to reason over symbolic Strings}
 
-Spark is frequently used to processes large amounts of text input, usually in the form of whole files. One example of such an algorithm is the calculation of an inverted index, used commonly in search engines to map key terms to the document where they are found. For this reason, supporting symbolic String operations is fundamental for such a framework.
+Spark is frequently used to process large amounts of text input, usually in the form of whole files. One example of such an algorithm is the calculation of an inverted index, used commonly in search engines to map key terms to the document where they are found. For this reason, supporting symbolic String operations is fundamental for such a framework.
 	
 \reqitem{7} \textit{The framework shall be able to reason over symbolic data structures}
 
@@ -44,7 +44,7 @@ A valid Spark program should always be supported even if there is no relevant da
 	
 \reqitem{9} \textit{The framework shall be able to process iterative and cumulative actions}
 
-Some Spark actions, such as \textit{reduce}, have an iterative behavior over the elements of an \acrshort{acr:rdd}. In some cases an accumulated value could participate in branching operations; this causes the path conditions to change for every element processed. The framework should be able to reason about how this path conditions will change every iteration and provide different input datasets that explore them based on how many elements they contained.
+Some Spark actions, such as \textit{reduce}, have an iterative behavior over the elements of an \acrshort{acr:rdd}. In some cases an accumulated value could participate in branching operations; this causes the path conditions to change for every element processed. The framework should be able to reason about how this path conditions will change after every iteration and provide different input datasets that explore their respective paths based on how many elements they contained.
 
 \end{itemize}
 
@@ -52,14 +52,14 @@ These general requirements are sufficient to describe a tool for the symbolic ex
 
 \TUsubsection{Validation}
 
-For the validation, each requirement introduced in section~\ref{sec:requirement} is revisited and discussed in the context of \textit{JPF-SymSpark}. We indicate first whether \textit{JPF-SymSpark} complies or not with the requirement and, subsequently, provide an explanation on how this was concluded. On occasions requirements are only partially met, in which case the reasons for a partial fulfillment are explained. However, section~\ref{sec:limitations} offers a thorough discussion on the limitations of the tool. Moreover, table~\ref{tab:evaluation:quantitative} presents a summary of the validation.
+For the validation, each requirement introduced in section~\ref{sec:requirement} is revisited and discussed in the context of \textit{JPF-SymSpark}. We indicate first whether \textit{JPF-SymSpark} complies or not with the requirement and, subsequently, provide an explanation on how this was concluded. On occasions requirements are only partially met, in which case the reasons for a partial fulfillment are explained. However, section~\ref{sec:limitations} offers a thorough discussion on the limitations of the tool. Moreover, table~\ref{tab:evaluation:quantitative} presents a summary of the validation results.
 
 \begin{itemize}
 \reqitem{1} \textit{The framework should produce a reduced input dataset that ensures full path coverage of the program under test}
 
 This requirement is fulfilled. As explained in section~\ref{subsec:module:output}, \textit{JPF-SymSpark} produces two types of output as a consequence of the symbolic execution. The first is a single input dataset containing a value for each satisfiable path condition found. This dataset is in fact minimal given that only one value per path condition is taken. The second type is a family of input datasets produced as a consequence of the symbolic execution of iterative aggregate operations. In this case each element in the dataset follows a single path condition, however, its cardinality indicates the number of iterations considered in the analysis.
 
-Certifying that the generated datasets actually ensured full path coverage comes as a direct consequence on how the elements of the dataset were obtained. However, we used \textit{JaCoCo}~\cite{JaCoCo2017}, a code coverage analysis tool for Java programs that is capable of measuring different levels of coverage, in order to verify the assumption in several examples. Although there is no tool for the Java programming language that is capable of measuring path coverage, \textit{JaCoCo} is able to measure branch coverage and cyclomatic complexity~\cite{McCabe1976} (only intra-procedural), which gives an approximation to path coverage metrics. In all the evaluated examples, the obtained datasets offered full coverage in the two aforementioned metrics.
+Certifying that the generated datasets actually ensured full path coverage comes as a direct consequence on how the elements of the dataset were obtained. However, we used \textit{JaCoCo}~\cite{JaCoCo2017}, a code coverage analysis tool for Java programs that is capable of measuring different levels of coverage in order to verify the assumption in several examples. Although there is no tool for the Java programming language that is capable of measuring path coverage, \textit{JaCoCo} is able to measure branch coverage and cyclomatic complexity~\cite{McCabe1976} (only intra-procedural), which gives an approximation to path coverage metrics. In all the evaluated examples, the obtained datasets offered full coverage in the two aforementioned metrics.
 
 \reqitem{2} \textit{The framework should report unfeasible path conditions in case there are any}
 
@@ -71,7 +71,7 @@ This requirement is fulfilled. The main contribution of \textit{JPF-SymSpark} is
 
 \reqitem{4} \textit{The framework shall conduct a symbolic execution of the program under test without requiring any modification to its source code}
 
-This requirement is fulfilled. \textit{JPF-SymSpark} was designed to work as a black-box tool. The surrogate Spark library is only included in the \jpf{}'s classpath as it is specified in the corresponding ``properties'' file, making it only available during the analyses. Normal executions of the program under test do not include the surrogate library, using instead the official Spark library.
+This requirement is fulfilled. \textit{JPF-SymSpark} was designed to work as a black-box tool. The surrogate Spark library is only included in the \jpf{}'s classpath as it is specified in the corresponding \textit{.properties} file, making it only available during the analyses. Normal executions of the program under test do not include the surrogate library, using instead the official Spark library.
 
 \reqitem{5} \textit{The framework shall be able to reason over symbolic primitive types}
 

@@ -8,7 +8,7 @@
 
 The first step for carrying out the analysis is to identify when a Spark operation is being executed. Given that all relevant operations in the concrete \textit{JavaRDD} class are implemented as non-static methods, the bytecode instruction of interest is \textit{invokevirtual}. This instruction is in charge of dispatching Java methods, unless they are interface methods, static methods or some other special cases (\textit{invokeinterface}, \textit{invokestatic} and \textit{invokespecial} are used respectively)~\cite{Lindholm2014}.
 
-For this purpose, we implemented the \textit{SparkSymbolicInstructionFactory} class; which extends from the \textit{SymbolicInstructionFactory} class defined in the \spf{} module. The goal of this class is to solely intercept calls to the \textit{invokevirtual} bytecode instruction and validate if they intend to dispatch one of the Spark operations relevant to the analysis.
+For this purpose, we implemented the \textit{SparkSymbolicInstructionFactory} class, which extends from the \textit{SymbolicInstructionFactory} class defined in the \spf{} module. The goal of this class is to solely intercept calls to the \textit{invokevirtual} bytecode instruction and validate if they intend to dispatch one of the Spark operations relevant to the analysis.
 
 Just to illustrate this situation better in the case of the Java implementation, let us assume that the \textit{filter} transformation is being called on an existing \acrshort{acr:rdd} such as
 
@@ -26,7 +26,7 @@ Moreover, the user must define in a configuration file the method names of the o
 
 Once the method has been detected, the instruction factory issues a custom \texttt{INVOKEVIRTUAL} instruction to the \jpf{} core. This instruction indicates what should the \jpf{} virtual machine do when the method of interest is executed. In our case, we need to prepare for the subsequent execution of the function passed as a parameter to the Spark operation. To do this, we manipulate the \jpf{} configuration programatically in order to take advantage of the configuration properties used by \spf{} to define which methods are supposed to be analyzed by the symbolic engine.
 
-Again, let us assume this time that the \textit{filter} method above was executed in a class defined in a class named \texttt{Main} (fully described in \texttt{com.test.Main}). Then, after detecting the \textit{filter} transformation, the configuration will contain one of the following entries in the \texttt{symbolic.method} key:
+Again, let us assume this time that the \textit{filter} method above was executed in a class named \texttt{Main} (fully described in \texttt{com.test.Main}). Then, after detecting the \textit{filter} transformation, the configuration will contain one of the following entries in the \texttt{symbolic.method} key:
 
 \hspace*{1cm} \lstinline[]|symbolic.method=...;com.test.Main$1.call(sym)|  \hfill (1)
 
@@ -41,7 +41,7 @@ The ``\texttt{\$1}'' in (1) points to the first anonymous class created inside \
 
 In the case of (2), the method indicated corresponds to a static method defined by the Java compiler whenever a lambda expression is found. This method will invoke afterwards an anonymous class created on the fly which implements the \textit{call} method of the \textit{Function} interface. It is sufficient to indicate the first static method with the symbolic parameter given that it only forwards the execution to the \textit{call} method in the anonymous class. This solution came as a workaround for detecting lambda expressions, given that \spf{} does not provide any mechanism on its own to clearly specify the analysis of such methods. Same as in the case of anonymous classes, the number accompanying the method is monotonically increasing and depends on how many lambda expressions have been created thus far.
 
-It will be relevant later on, that the method marked to be symbolically executed by (1) will be invoked using \texttt{invokevirtual}, while the one defined by (2) will be invoked using \texttt{invokestatic}. This will require the handling of the input and output parameters in a different way.
+It will be relevant later on, that the method marked to be symbolically executed by (1) will be invoked using \texttt{invokevirtual}, while the ones defined by (2) will be invoked using \texttt{invokestatic}. This will require the handling of the input and output parameters in a different way.
 
 The dynamic manipulation of the configuration properties makes it easier for the user to specify which methods are to be symbolically executed. Defining the methods before hand, as in the regular \spf{} approach, proves to be cumbersome, given that the method names corresponding to anonymous classes or lambda expressions are often elusive and even difficult to track.
 

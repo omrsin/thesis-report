@@ -1,6 +1,6 @@
 \TUsection{Quantitative Evaluation of Iterative Symbolic Executions}
 
-The process carried out by the iterative reduce strategy resembles to a loop unwinding technique, where an iterative behavior is taken out of a loop and executed sequentially without the need of accumulators or counters. This approach is often used to improve execution speed of a program by getting rid of all the control flow instructions inherent in to loop statements. However, regarding \textit{JPF-SymSpark} and several other program analysis techniques, loop unwinding is used to bound the execution of potentially infinite loop instructions, hence allowing the evaluation of the program under test.
+The process carried out by the iterative reduce strategy resembles to a loop unwinding technique, where an iterative behavior is taken out of a loop and executed sequentially without the need of accumulators or counters. This approach is often used to improve execution speed of a program by getting rid of all the control flow instructions inherent to loop statements. However, regarding \textit{JPF-SymSpark} and several other program analysis techniques, loop unwinding is used to bound the execution of potentially infinite loop instructions, hence allowing the evaluation of the program under test.
 
 \textit{JPF-SymSpark} allows the user to specify the number of iterations of an aggregated function that will be symbolically executed. This enables the module to bound the execution of the iterative behavior and carry out the analysis by correctly chaining the outcome of previous iterations. However, the number of path conditions grow exponentially with the number of conditional statements found. This means that if the aggregate function being analyzed has a conditional statement, then it is most likely that a path explosion will occur.
 
@@ -29,7 +29,7 @@ The results of the experiments are summarized in table~\ref{tab:evaluation:quant
 
 All the scenarios have a similar performance up until three symbolic iterations. However, the performance of some scenarios start to diverge after five iterations. The starkest difference is displayed by the \textit{IRC} scenario, where the execution times increase several orders of magnitude in comparison to the other scenarios. In particular, the \textit{IRC} scenario could not be executed for 13 iterations or more, resulting in executions that lasted several hours and culminating eventually in \textit{OutOfMemory} exceptions.
 
-The rest of the scenarios have a steady increase in their measurements until they reach 13 symbolic iterations, where the execution times start to grow exponentially. From the remainder three scenarios, the \textit{IMRC} scenario displays the worst performance, taking almost three minutes to execute 13 symbolic executions. Figure~\ref{fig:evaluation:quantitative} presents a plot of the execution times in a logarithmic scale that better depicts the disparity between some of the scenarios.
+The rest of the scenarios have a steady increase in their measurements until they reach 13 symbolic iterations, where the execution times start to grow exponentially. From the remaining three scenarios, the \textit{IMRC} scenario displays the worst performance, taking almost three minutes to execute 13 symbolic executions. Figure~\ref{fig:evaluation:quantitative} presents a plot of the execution times in a logarithmic scale that better depicts the disparity between some of the scenarios.
 
 \begin{table}[t]
 	\centering
@@ -99,7 +99,7 @@ The rest of the scenarios have a steady increase in their measurements until the
 			\legend{IRNC, IRC, IMRNC, IMRC}
 		\end{axis}
 	\end{tikzpicture}
-	\caption[Average Execution Times in Logarithmic Scale]{Average Execution Times in Logarithmic Scale. The disparity between the scenarios is easily perceived using a logarithmic scale while still preserving the notion of exponential growth.}
+	\caption[Average Execution Times in Logarithmic Scale]{Average execution times in logarithmic scale. The disparity between the scenarios is easily perceived using a logarithmic scale while still preserving the notion of exponential growth.}
 	\label{fig:evaluation:quantitative}
 \end{figure}
 
@@ -114,7 +114,7 @@ Nevertheless, the number of non satisfiable path conditions varies strongly depe
 
 The results obtained in these experiments highlight some key features on the behavior of symbolic execution of aggregate functions. First, the performance of the framework is considerably better when the conditional statements defined in the aggregate function only affect the non-cumulative symbolic variable in the operation. This comes as a consequence of the kind of constraints generated in such cases. In the case of non-cumulative conditions, the constraints are defined over single independent symbolic variables that are joined in a conjunction on each iteration, while in the case of cumulative conditions, after each iteration, the constraints include more symbolic variables related with each other. Constraint solvers perform better when the constraints are defined over independent symbolic variables, which explains the behavior of the \textit{IRC} scenario and the difference between the cumulative and non-cumulative scenarios in general.
 
-Another aspect is the difference between the \textit{IRC} and \textit{IMRC} scenarios. After five iterations, the behavior of these two scenarios diverges strongly, having the \textit{IRC} scenario performing exponentially worse and even reaching the point of not being able to finish its execution, while the \textit{IMRC} scenario is still capable to finish the execution within a reasonable amount of time. The reason for this relies in the number of unsatisfiable path conditions in the \textit{IMRC} scenario because, although this scenario has more path conditions than the \textit{IMC} scenario, a large number of them are unsatisfiable, allowing the constraint solver to conclude faster. This result indicates that having more path conditions does not necessarily translates into worse performance; it depends on how many of the path conditions are actually satisfiable.
+Another aspect is the difference between the \textit{IRC} and \textit{IMRC} scenarios. After five iterations, the behavior of these two scenarios diverges strongly, having the \textit{IRC} scenario performing exponentially worse and even reaching the point of not being able to finish its execution, while the \textit{IMRC} scenario is still capable to finish the execution within a reasonable amount of time. The reason for this relies in the number of unsatisfiable path conditions in the \textit{IMRC} scenario because, although this scenario has more path conditions than the \textit{IMC} scenario, a large number of them are unsatisfiable, allowing the constraint solver to conclude faster. This result indicates that having more path conditions does not necessarily translates into worse performance; it depends on how complex the path conditions are and how many of them are actually satisfiable.
 
 The performance of the constraint solver as well as the complexity of the path conditions are the major factors that affect the overall performance of iterative symbolic executions in \textit{JPF-SymSpark}. Moreover, the construction of aggregate functions with conditional statements has to be properly evaluated in terms of the congruency of the operation. Conditions applied to a cumulative value can break the associativity requirement of reducer functions, leading to invalid, non-parallelizable Spark programs.
 
@@ -132,6 +132,6 @@ The performance of the constraint solver as well as the complexity of the path c
 		IMRC   & 7 & 5 & 12 & 16 & 25 & 99 & 57  & 963 & 573   & 32191 \\
 		\hline	
 	\end{tabular*}
-	\caption[Number of satisfiable and unsatisfiable Path Conditions]{Number of satisfiable and unsatisfiable path conditions for each scenario under the different number of executed iterations. As a reference, the letter ``s'' stands for satisfiable while the letter ``u'' stands for unsatisfiable.}
+	\caption[Number of Satisfiable and Unsatisfiable Path Conditions]{Number of satisfiable and unsatisfiable path conditions for each scenario under the different number of executed iterations. As a reference, the letter ``s'' stands for satisfiable while the letter ``u'' stands for unsatisfiable.}
 	\label{tab:evaluation:quantitative-path-conditions}
 \end{table} 

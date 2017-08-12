@@ -25,7 +25,7 @@ In general, a model is an abstraction that preserves some selected attributes of
 
 Programs can be modeled as a series of \textit{states} that can be reached after certain actions occur, for instance, an action can be thought as the execution of code statements. In consequence, the \textit{behavior} of a program can be defined as a sequence of states (or \textit{path}) ranging from the beginning of the execution to its termination.
 
-\textit{\acrfullpl{acr:cfg}} are one example of such models, where nodes represent program statements and directed edges define the control flow relationship between them~\cite{Allen1970}. Listing~\ref{lst:program-analysis:cfg} and figure \ref{fig:program-analysis:cfg} show a simple linear search algorithm and its corresponding \acrlong{acr:cfg} respectively. \acrshort{acr:cfg}s serve as a starting point for different types of analyses, for example, data flow analysis where each node is augmented with information related to data accesses in order to verify that a variable is always initialized before is read. 
+\textit{\acrfullpl{acr:cfg}} are one example of such models, where nodes represent program statements and directed edges define the control flow relationship between them~\cite{Allen1970}. Listing~\ref{lst:program-analysis:cfg} and figure \ref{fig:program-analysis:cfg} show a simple linear search algorithm and its corresponding \acrlong{acr:cfg} respectively. \acrshort{acr:cfg}s serve as a starting point for different types of analyses, for example, data flow analysis where each node is augmented with information related to data accesses in order to verify that a variable is always initialized before it is read. 
 
 \begin{lstlisting}[
 language=Java,
@@ -68,7 +68,7 @@ public static int search(int[] a, int elem) {
 	\path [line] (FORACCUM) -- (FORCOND);
 	\path [line, rounded corners] (FORCOND.225) -- node[left]{\textit{false}}(-0.4,-3) -| (RETURN.north);
 \end{tikzpicture}
-\caption[Control Flow Graph of the linear search algorithm]{Control Flow Graph corresponding to the linear search algorithm shown in listing~\ref{lst:program-analysis:cfg}. The entry node is the signature of the method, while end nodes, represented with a double frame, contain the return statements that put at end to the execution. The \textit{for} loop instruction was split into its composing statements to better display how the control flow work for this instruction.}
+\caption[Control Flow Graph of the Linear Search Algorithm]{Control Flow Graph corresponding to the linear search algorithm shown in listing~\ref{lst:program-analysis:cfg}. The entry node is the signature of the method, while end nodes, represented with a double frame, contain the return statements that put at end to the execution. The \textit{for} loop instruction was split into its composing statements to better display how the control flow works for this instruction.}
 \label{fig:program-analysis:cfg}
 \end{figure}
 
@@ -88,9 +88,9 @@ This technique, also known as Finite State Verification, consists of systematica
 As can be expected, the number of states for non-trivial programs grows exponentially; what is known as \textit{state space explosion} problem. This condition poses several limitations to the practical use of the technique given that computational resources are quickly exhausted and timely conclusions are not feasible. Hence, the challenge relies on the reduction of the state space of the execution while still maintaining a full semantic correspondence between the model and the program, at least in terms of the property that is validated.
 
 % TODO: Missing references about Partial Order Reduction
-Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting when transitions resulting from concurrent operations result in equivalent states, making it necessary to explore such path only once. 
+Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting transitions resulting from concurrent operations that lead to equivalent states, making it necessary to explore such paths only once. 
 
-Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been challenging, if not impossible, to notice with traditional software testing techniques. In particular, they result useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. They are commonly used to validate critical and concurrent systems, and are often combined with other testing techniques.
+Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been challenging, if not impossible, to notice with traditional software testing techniques. In particular, it results useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. It is commonly used to validate critical and concurrent systems, and is often combined with other testing techniques.
 
 % TODO: Maybe mention that, in further sections, concrete examples of this technique are shown (JPF)
 
@@ -122,12 +122,12 @@ The first discussions of symbolic execution date several decades back~\cite{Hoar
 % TODO: Add Path Condition to the glossary, as well as equivalence classes, symbolic execution
 Conditional statements are trivial to evaluate when tracing the execution of a program with a concrete value; the branching conditions are simply evaluated and a path is chosen to proceed with the execution. However, if the branch condition depends on symbolic values, both paths corresponding to the \textit{true} and \textit{false} evaluation respectively are an option, hence, the execution continues to be traced through both branches. As a result, each execution path of the program is characterized by a sequence of predicates and how they were evaluated; also known as path condition.
 
-A path condition is satisfiable if there exists a group of concrete input values that makes its logical predicate hold, which means that these values can steer the execution of the program through that path. Whereas, if the path condition cannot be satisfied then it will be impossible for any concrete execution to follow that path, rendering the path infeasible. Interestingly enough, each satisfiable path condition represents an equivalence class of concrete input values.
+A path condition is satisfiable if there exists a group of concrete input values that makes its logical predicate hold, which means that these values can steer the execution of the program through that path. Whereas, if the path condition cannot be satisfied then it will be impossible for any concrete execution to follow that path, rendering the path unfeasible. Interestingly enough, each satisfiable path condition represents an equivalence class of concrete input values.
 Figure~\ref{fig:program-analysis:symbolic} shows the symbolic execution tree of the program in listing~\ref{lst:program-analysis:symbolic}.
 
 \begin{lstlisting}[
 language=Java,
-caption={[Trivial program to illustrate symbolic execution] Trivial program to illustrate how symbolic execution works.},
+caption={[Trivial Program to Illustrate Symbolic Execution] Trivial program to illustrate how symbolic execution works.},
 float=h,
 label=lst:program-analysis:symbolic
 ]
@@ -166,7 +166,7 @@ public void trivial(boolean a, int b, boolean c) {
 	 \\ \footnotesize $\land ~ b_{0}+1 > 5 \equiv false$
  \\ ~}			
 } \]
-\caption[Symbolic execution tree of a trivial program]{Symbolic execution tree of the program presented in listing~\ref{lst:program-analysis:symbolic}. The root node represents the input parameters as symbolic values while the intermediate nodes illustrate the control flow of the program evaluated on these symbolic values wherever possible.Each intermediate node branches into two options, each corresponding to the predicate evaluating to \textit{true} or \textit{false} respectively. Also, each branch is labeled with the statements executed following one of the evaluations. More importantly, the leaves collect the predicates that form the path condition for that particular execution. The left most leave in the dotted frame contains an unfeasible path condition given that the predicate cannot be satisfied. Moreover, the path conditions in the dashed frames define executions that will fail the assertion of line \ref{lst:ln:symbolic:assertion}.}
+\caption[Symbolic Execution Tree of a Trivial Program]{Symbolic execution tree of the program presented in listing~\ref{lst:program-analysis:symbolic}. The root node represents the input parameters as symbolic values while the intermediate nodes illustrate the control flow of the program evaluated on these symbolic values wherever possible. Each intermediate node branches into two options, each corresponding to the predicate evaluating to \textit{true} or \textit{false} respectively. Also, each branch is labeled with the executed statements following one of the evaluations. More importantly, the leaves collect the predicates that form the path condition for that particular execution. The left most leave in the dotted frame contains an unfeasible path condition given that the predicate cannot be satisfied. Moreover, the path conditions in the dashed frames define executions that will fail the assertion of line \ref{lst:ln:symbolic:assertion}.}
 \label{fig:program-analysis:symbolic}
 \end{figure}
 

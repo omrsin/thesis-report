@@ -30,14 +30,14 @@ public class JavaSparkContext {
 }
 \end{lstlisting}
 
-However, some of the methods invoked by the Spark library are relevant to the analysis. Such is the case of the methods defined in the \textit{JavaRDD} class and the rest of the classes in the \acrshort{acr:rdd} family. These methods include operations like \textit{filter}, \textit{map} and \textit{reduce}, that make use of the functions passed by the programmers. In these cases, the goal of the surrogate library is that the functions passed to the operations is invoked inside these methods so the analysis can be triggered following the usual \spf{} approach. Listing~\ref{lst:module:filter-javardd} shows an example of the mocked \textit{filter} method of the \textit{JavaRDD} class. The function passed to the \textit{filter} method is invoked with the first element of the \acrshort{acr:rdd} only and the returned value is the current RDD itself given that it does not affect the end result when using symbolic input parameters.
+However, some of the methods invoked by the Spark library are relevant to the analysis. Such is the case of the methods defined in the \textit{JavaRDD} class and the rest of the classes in the \acrshort{acr:rdd} family. These methods include operations like \textit{filter}, \textit{map} and \textit{reduce}, that make use of the functions passed by the programmers. In these cases, the goal of the surrogate library is that the functions passed to the operations are invoked inside these methods so the analysis can be triggered following the usual \spf{} approach. Listing~\ref{lst:module:filter-javardd} shows an example of the mocked \textit{filter} method of the \textit{JavaRDD} class. The function passed to the \textit{filter} method is invoked with the first element of the \acrshort{acr:rdd} only and the returned value is the current RDD itself given that it does not affect the end result when using symbolic input parameters.
 
 Having effectively discarded irrelevant portions of the system under test by the means of the surrogate library, makes it simpler to identify the relevant Spark operations that have an impact on the analysis.
 
 %TODO: Include lines references in description
 \begin{lstlisting}[
 language=Java,
-caption={[Mocked \textit{filter} method in the JavaRDD class] Mocked filter method in the JavaRDD class. The function passed to the method is invoked. Note that the \textit{Function} interface is also mocked.},
+caption={[Mocked \textit{filter} Method in the JavaRDD Class] Mocked filter method in the JavaRDD class. The function passed to the method is invoked. Note that the \textit{Function} interface is also mocked.},
 float=h,
 label=lst:module:filter-javardd
 ]
@@ -51,4 +51,4 @@ public JavaRDD<T> filter(Function<T,Boolean> f) {
 }
 \end{lstlisting}
 
-The surrogate Spark library is already included into the dependencies of the \textit{JPF-SymSpark} module and is never meant to be used outside the context of af analysis. Nevertheless, the implementation is not extensive, which might require further expansion as the different cases and programs require. Moreover, the library is bound to version 2.0.2 of the original Spark library, which poses a drawback in terms of consistency if the core behavior of Spark changes in future versions. More about this issue can be found in section~\ref{sec:limitations}.
+The surrogate Spark library is already included into the dependencies of the \textit{JPF-SymSpark} module and is never meant to be used outside the context of an analysis. Nevertheless, the implementation is not extensive, which might require further expansion as the different cases and programs require. Moreover, the library is bound to version 2.0.2 of the original Spark library, which poses a drawback in terms of consistency if the core behavior of Spark changes in future versions. More about this issue can be found in section~\ref{sec:limitations}.

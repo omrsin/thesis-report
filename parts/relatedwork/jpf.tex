@@ -96,7 +96,7 @@ In its core, \jpf{} is a \acrlong{acr:jvm} implemented in Java itself, comprised
 	
 	\path [arrow] (JPF) -- (REPORT);
 \end{tikzpicture}
-\caption[\jpf{} Components and Workflow]{\jpf{} Components and workflow. The program under test, taken as bytecode, is loaded into the \jpf{} Virtual Machine which is un turn executed on top of the host JVM. Libraries used in the program under test need to be visible to the core in order to be able to execute the program correctly. Note that the core is comprised by several components in charge of directing the execution of the analysis. The behavior of this components could be extended by including modules. The final output is a report in its general sense; this could range from simple console output to automatic test generation. Moreover, several configuration inputs dictate how the participants proceed through their execution.}
+\caption[\jpf{} Components and Workflow]{\jpf{} Components and workflow. The program under test, taken as bytecode, is loaded into the \jpf{} Virtual Machine which is in turn executed on top of the host JVM. Libraries used in the program under test need to be visible to the core in order to be able to execute the program correctly. Note that the core is comprised by several components in charge of directing the execution of the analysis. The behavior of this components could be extended by including modules. The final output is a report in its general sense; this could range from simple console output to automatic test generation. Moreover, several configuration inputs dictate how the participants proceed through their execution.}
 \label{fig:jpf:process}
 \end{figure}
 
@@ -107,7 +107,7 @@ Figure \ref{fig:jpf:process} portrays the components that participate in a verif
 
 \begin{lstlisting}[
 language=Java,
-caption={[Simple example with random values] The use of random values could lead to unexpected behavior. In this case, a division by zero could occur if certain combinations of random values are used. (Example taken from~\cite{WebNASAAmes2017})},
+caption={[Simple Example with Random Values] The use of random values could lead to unexpected behavior. In this case, a division by zero could occur if certain combinations of random values are used. (Example taken from~\cite{WebNASAAmes2017})},
 float,
 label=lst:jsp:random
 ]
@@ -151,7 +151,7 @@ Listing~\ref{lst:jsp:random} introduces an example that illustrates better how \
 	\txt{\texttt{int c = a/(b+a-2)~~~~~~}}
 } \]
 %\includegraphics[height=5cm]{example-image}
-\caption[State space exploration of an example program]{State space exploration of the program shown in listing~\ref{lst:jsp:random}. \jpf{} starts checking the state space whenever the the conditions that trigger the property to be validated are found; in this case, using random values. The \texttt{nextInt} instruction causes \jpf{} to register a \textit{Choice Generator} and start exploring the state space of the possible options. The dashed edges represent the search strategy used to explore the state space; in this case depth-first search. If a given execution path gets to an end and no unexpected behavior is found, \jpf{} backtracks to the latest instruction where a \textit{Choice Generator} was registered and tries a different value. The red arrows point to the first execution that triggers an error. Whenever an error is found \jpf{} halts the validation and reports its findings.}
+\caption[State Space Exploration of an Example Program]{State space exploration of the program shown in listing~\ref{lst:jsp:random}. \jpf{} starts checking the state space whenever the conditions that trigger the property to be validated are found; in this case, using random values. The \texttt{nextInt} instruction causes \jpf{} to register a \textit{Choice Generator} and start exploring the state space of the possible options. The dashed edges represent the search strategy used to explore the state space; in this case depth-first search. If a given execution path gets to an end and no unexpected behavior is found, \jpf{} backtracks to the latest instruction where a \textit{Choice Generator} was registered and tries a different value. The red arrows point to the first execution that triggers an error. Whenever an error is found \jpf{} halts the validation and reports its findings.}
 \label{fig:jpf:random}
 \end{figure}
 
@@ -166,7 +166,7 @@ A key aspect of \jpf{} was to make it extensible and customizable. Following a m
 	
 	\item \textbf{Native Peers}: In some cases, a system under test will contain calls that are irrelevant to the analysis carried out (e.g., calling external libraries) or will execute native instructions that cannot be interpreted by \jpf{}. For these cases, native peers provide a mechanism for modeling the behavior of such situations and efficiently delegating their execution to the host virtual machine.
 	
-	\item \textbf{Publishers}: Report the outcome of an analysis. Whether a property was violated or the system under test was explored satisfactorily, publishers provide the information that makes the analysis valuable.   
+	\item \textbf{Publishers}: Report the outcome of an analysis. Whether a property was violated or the system under test was explored successfully, publishers provide the information that makes the analysis valuable.   
 	
 	\item \textbf{Search Strategies}: Indicate how the state space of the system under test is to be explored. In other words, the search strategy tells \jpf{} when to move forward and generate a new state or when to backtrack to a previously known state in order to try a different choice. Search strategies can be customized to guide the exploration of the state space to areas of interests where the analysis is most likely to detect an anomaly. 
 \end{itemize}
@@ -202,7 +202,7 @@ As one of the earliest extension modules, \acrfull{acr:spf} integrates symbolic 
 
 The introduction of symbolic semantics is achieved through the use of the \textit{SymbolicInstructionFactory} class; an extension to the default bytecode instruction set that interacts with symbolic values and expressions. For example, operating two symbolic integers using the \textit{IADD} bytecode instruction results in the creation of a symbolic expression that represents the sum of those integers. Furthermore, symbolic values and expressions are assigned to variables and fields, instead of the corresponding concrete representation that would result from a normal execution.
 
-\spf{} supports symbolic operations on several primitive types: booleans, integers and doubles, as well as on complex data structures. Nevertheless, only limited support to symbolic \textit{String} operations is offered in the latest \spf{} version.
+\spf{} supports symbolic operations on several primitive types: booleans, integers and doubles. Nevertheless, only limited support to symbolic data structures and \textit{String} operations is offered in the latest \spf{} version.
 
 The interpretation of branching instructions is a key point of symbolic execution because it determines how the subsequent paths ought to be explored. \spf{} processes branches by generating a special choice generator called \textit{PCChoiceGenerator} every time a conditional instruction is found. The choices registered by the choice generator correspond to the evaluation of the predicate and its negation respectively, where each choice is linked with a path condition reflecting how the predicate was evaluated. \spf{} takes advantage of \jpf{}'s model checking framework to explore the symbolic state space by considering only the registered choices at branching instructions.
 
@@ -210,7 +210,7 @@ The interpretation of branching instructions is a key point of symbolic executio
 
 Listeners are used to gather information during the evaluation of path conditions. Publishers make use of this information to present it to the user in different ways: One common case is to partition the input data in the different equivalence classes, while other is the automatic generation of unit tests. Using symbolic execution to automatically generate a test suite with path coverage is a research topic explored in several studies~\cite{Pasareanu2008b,Visser2004a,Godefroid2008}.
 
-Configuration files are used to indicate which methods should be executed symbolically and also specify which their parameters are to be considered as symbolic or concrete values. By combining symbolic and concrete values during the execution of a method marked to be symbolically executed, \spf{} provides the framework for concolic execution~\cite{Godefroid2005}.
+Configuration files are used to indicate which methods should be executed symbolically and also specify which of their parameters are to be considered as symbolic or concrete values. By combining symbolic and concrete values during the execution of a method marked to be symbolically executed, \spf{} provides the framework for concolic execution~\cite{Godefroid2005}.
 
 
 

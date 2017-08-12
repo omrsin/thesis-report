@@ -10,7 +10,7 @@ The working units in Spark are called \textit{\acrlongpl{acr:rdd}}, better known
 \begin{lstlisting}[
 	language=Scala,
 	float,
-	caption={[Log processing with Spark] Entries in a log file are filtered, grouped and counted based on a common property. Finally the result is saved to persistent storage.},
+	caption={[Log Processing with Spark] Entries in a log file are filtered, grouped and counted based on a common property. Finally the result is saved to persistent storage.},
 	label=lst:spark:simple
 ]
 val log = spark.textFile("*file*") /*# \label{lst:ln:spark:conf} #*/
@@ -20,7 +20,7 @@ val errors = log.filter(_.contains("ERROR")) /*# \label{lst:ln:spark:transformat
 errors.save() /*# \label{lst:ln:spark:actions} #*/
 \end{lstlisting}
 
-To interact with the \acrshort{acr:rdd} abstraction, Spark provides several \acrshortpl{acr:api} for different programming languages such as Java, Scala, Python and recently R~\cite{Venkataraman2016}. Listing~\ref{lst:spark:simple} presents a simple Spark program written with the Scala \acrshort{acr:api}, that processes log files in the search for errors. The operation in line~\ref{lst:ln:spark:conf} creates the first \acrshort{acr:rdd} from a log file, whose origin could be a local file or a partitioned file in a distributed file system such as \acrfull{acr:hdfs}~\cite{WebHadoop2017}. Spark converts each line in the file to a \textit{String} element in the newly created \acrshort{acr:rdd}. In lines~\ref{lst:ln:spark:transformations-begin} to~\ref{lst:ln:spark:transformations-end}, a chain of transformations is applied to the \acrshort{acr:rdd}: First, elements not containing the text ``ERROR'' are filtered. Next, the remaining elements are transformed to tuples consisting of a certain property (e.g., a time stamp; assumed to be the first information in a log entry) and the number~1. Finally, the tuples are grouped and counted based on the chosen property. Line~\ref{lst:ln:spark:actions} represents the action applied to the \acrshort{acr:rdd}, in this case, saving it to persistent storage.
+To interact with the \acrshort{acr:rdd} abstraction, Spark provides several \acrshortpl{acr:api} for different programming languages such as Java, Scala, Python and recently R~\cite{Venkataraman2016}. Listing~\ref{lst:spark:simple} presents a simple Spark program written with the Scala \acrshort{acr:api}, that processes log files in the search for errors. The operation in line~\ref{lst:ln:spark:conf} creates the first \acrshort{acr:rdd} from a log file, whose origin could be a local file or a partitioned file in a distributed file system such as \acrfull{acr:hdfs}~\cite{WebHadoop2017}. Spark converts each line in the file to a \textit{String} element in the newly created \acrshort{acr:rdd}. In lines~\ref{lst:ln:spark:transformations-begin} to~\ref{lst:ln:spark:transformations-end}, a chain of transformations is applied to the \acrshort{acr:rdd}: First, elements not containing the text ``ERROR'' are filtered out. Next, the remaining elements are transformed to tuples consisting of a certain property (e.g., a time stamp; assumed to be the first information in a log entry) and the number~1. Finally, the tuples are grouped and counted based on the chosen property. Line~\ref{lst:ln:spark:actions} represents the action applied to the \acrshort{acr:rdd}, in this case, saving it to persistent storage.
 
 % TODO: Glossary entries: Spark, RDD, Distributed File System, data locality, lineage
 During the execution of a program, Spark does not generate imperatively new data collections for every transformation it finds. Instead, it constructs new \acrshortpl{acr:rdd} attached with the operation that has to be applied to each element. The resulting \acrshort{acr:rdd} is a sequence of operations starting from the source dataset, whose semantics depends on the nature of each transformation involved. It is not until an action is found that the target \acrshort{acr:rdd} is resolved and the whole sequence of transformations actually operates the data. 
@@ -78,7 +78,7 @@ Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to impr
 	\label{fig:spark:execution}
 \end{minipage}
 
-\caption[\Gls{gls:lineage} tree and execution of a Spark program]{\Gls{gls:lineage} and execution of the Spark program shown in listing~\ref{lst:spark:simple}. The \gls{gls:lineage} is independent from the association of an \acrshort{acr:rdd} to a variable; for example, the \acrshort{acr:rdd} resulting from the filter transformation is not assigned to a variable, however it is a node in the lineage tree.}
+\caption[\Gls{gls:lineage} Tree and Execution of a Spark Program]{\Gls{gls:lineage} and execution of the Spark program shown in listing~\ref{lst:spark:simple}. The \gls{gls:lineage} is independent from the association of an \acrshort{acr:rdd} to a variable; for example, the \acrshort{acr:rdd} resulting from the filter transformation is not assigned to a variable, however it is a node in the lineage tree.}
 \end{figure}
 
 % TODO: Glossary entries: higher-order functions, user-defined aggregations, closure
