@@ -1,7 +1,7 @@
 \TUchapter{Symbolic Execution of Spark Programs}
 \label{ch:symbolic-spark}
 
-To provide a flexible programming paradigm for big data processing, Spark's main \acrshort{acr:api} exposes methods that act as higher order functions. Particularly, these methods receive user defined functions as input parameters that dictate how certain operations will be carried out. However, the passed functions always have to comply to some conditions imposed by the method, for example, the function passed to a \textit{filter} transformation must be defined over the data type of the target \acrshort{acr:rdd} and must return a \textit{boolean} value.
+To provide a flexible programming paradigm for big data processing, Spark's main \acrshort{acr:api} exposes methods that act as higher order functions. Particularly, these methods receive user defined functions as input parameters that dictate how certain operations will be carried out. However, the passed functions always have to comply with some conditions imposed by the method, for example, the function passed to a \textit{filter} transformation must be defined over the data type of the target \acrshort{acr:rdd} and must return a \textit{boolean} value.
 
 The use of functions as parameters in Spark operations has an impact on the control flow of the program. Not only the particular Spark operation defines how the program will behave, but also the passed functions could potentially introduce control flow statements like conditionals or loops. Moreover, the control flow behavior of the Spark operations themselves is mostly static (e.g., the iterative and cumulative nature of a \textit{reduce} action), whereas the diverse range of variation introduced by a user defined function is practically unbounded.
 

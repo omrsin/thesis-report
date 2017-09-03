@@ -16,24 +16,24 @@ During the development of the tool, \spf{} presented unexpected behaviors when a
 
 A revision of the aim and research questions defined at the beginning of this work provides an overall understanding of the lessons learned and the results obtained during the execution of this study.
 
-The aim of this work is to  determine if \textit{symbolic execution techniques can be used in the context of Apache Spark as a big data framework to generate reduced input data sets that enforce full path coverage}. \textit{JPF-SymSpark} serves as an example of the application of symbolic execution techniques used to generate such datasets in the context of Apache Spark. Nonetheless, the limitations of \spf{} as the underlying symbolic execution framework scope down the application of the technique to an unsubstantial group of use cases that do not represent the characteristics of most realistic Apache Spark programs. As mentioned earlier, the lack of support of symbolic data structures and symbolic Strings strongly reduces the usability of such a technique. Further improvements in \spf{} or newer symbolic execution frameworks would improve the applicability of the technique as well as the capacity for more thorough evaluations.
+The aim of this work is to  determine if \textit{symbolic execution techniques can be used in the context of Apache Spark as a big data framework to generate reduced input datasets that enforce full path coverage}. \textit{JPF-SymSpark} serves as an example of the application of symbolic execution techniques used to generate such datasets in the context of Apache Spark. Nonetheless, the limitations of \spf{} as the underlying symbolic execution framework scope down the application of the technique to an unsubstantial group of use cases that do not represent the characteristics of most realistic Apache Spark programs. As mentioned earlier, the lack of support of symbolic data structures and symbolic Strings strongly reduces the usability of such a technique. Further improvements in \spf{} or newer symbolic execution frameworks would improve the applicability of the technique as well as the capacity for more thorough evaluations.
 
 The following answers correspond to the research questions stated as premises of this study:
 
 \begin{enumerate}
-	\item \textit{Is symbolic execution a suitable technique for analyzing programs in the context of Spark applications.} 
+	\item \textit{Is symbolic execution a suitable technique for analyzing programs in the context of Spark applications?} 
 	
 	Yes. As \textit{JPF-SymSpark} demonstrates, the technique can be used to analyze Apache Spark programs although an additional reasoning on the structure of the operations had to be included in order to produce any valuable result.
 	
-	\item \textit{What are the particular characteristics associated with the symbolic execution of a Spark program.}
+	\item \textit{What are the particular characteristics associated with the symbolic execution of a Spark program?}
 	
 	There are two particular characteristics that differentiate the symbolic execution of Spark programs from other programs. The first is that the control flow instructions of an application can be contained inside functions passed as parameters to Spark operations. Such a situation requires path conditions and symbolic transformations to be percolated between Spark operations. The second characteristic is that some Spark operations, in particular aggregation functions, have control flow semantics defined intrinsically. One example is the \textit{reduce} action, that defines an iterative behavior and accumulates a value resulting from the application of the passed user-defined function. In a symbolic execution, this iterative behavior needs to be considered in order to control undesirable results, as is the case of the symbolic state explosion.
 	
-	\item \textit{Is there a symbolic execution framework that can be adapted to perform symbolic executions of Spark programs.}
+	\item \textit{Is there a symbolic execution framework that can be adapted to perform symbolic executions of Spark programs?}
 	
 	Spark provides several implementations for different programming languages, being the most common for the Scala and Java programming languages. Both of this languages compile to the \acrlong{acr:jvm}. There are only a few symbolic execution frameworks that can be applied to Java programs or their respective compiled bytecode versions. \spf{} is the most complete framework available and with the most amount of documentation.
 	
-	\item \textit{If it exists, what are the advantages and disadvantages of such a framework in the context of Spark applications.}
+	\item \textit{If it exists, what are the advantages and disadvantages of such a framework in the context of Spark applications?}
 	
 	\spf{} is a powerful framework that is able to replace the whole instruction set of the Java bytecode for its symbolic counterparts. A wide variety of symbolic operations for all the primitive types are supported as well as a subset of the operations defined for Strings. It takes care of the identification of branching instructions and, with the help of \jpf{}'s state generation engine, is capable of exploring the different paths. It also provides a convenient set of mechanisms to consult and manipulate the execution state if needed. This is particularly useful when percolating path conditions among Spark operations. 
 	

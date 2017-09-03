@@ -5,7 +5,7 @@
 
 Spark is a distributed data processing framework that was first introduced in 2012~\cite{Zaharia2012a}. Similar to other systems, such as MapReduce~\cite{Dean2008} and Dryad~\cite{Isard2007}, it aims to provide a clean and flexible abstraction to distributed computations on large datasets. However, Spark offers two advantages in comparison to such systems: It makes use of a shared memory abstraction that improves performance by avoiding persisting intermediate sets. It also maintains an efficient fault-tolerance mechanism, based on tracking coarse-grained operations, that can recover lost tasks with minimal impact.
 
-The working units in Spark are called \textit{\acrlongpl{acr:rdd}}, better known as \acrshortpl{acr:rdd}. These units represent an immutable partitioned collection of elements in a distributed memory space. \acrshortpl{acr:rdd} can only be created through a set of deterministic operations, known as \textit{transformations} (e.g., \textit{map}, \textit{filter} and \textit{join}), that can be applied to both, raw data or other \acrshortpl{acr:rdd}. Transformations are not evaluated immediately, instead Spark keeps track of all the transformations applied to each \acrshort{acr:rdd} in a program so it can optimize their subsequent processing. Additionally, \acrshortpl{acr:rdd} can be made persistent into storage or can be operated to produce a value. This kind of operations are known as \textit{actions} (e.g., \textit{count}, \textit{reduce} and \textit{save}), and they are the ones that trigger the processing of \acrshortpl{acr:rdd}.
+The working units in Spark are called \textit{\acrlongpl{acr:rdd}}, better known as \acrshortpl{acr:rdd}. These units represent an immutable partitioned collection of elements in a distributed memory space. \acrshortpl{acr:rdd} can only be created through a set of deterministic operations, known as \textit{transformations} (e.g., \textit{map}, \textit{filter} and \textit{join}), that can be applied to both, raw data or other \acrshortpl{acr:rdd}. Transformations are not evaluated immediately, instead,  Spark keeps track of all the transformations applied to each \acrshort{acr:rdd} in a program so it can optimize their subsequent processing. Additionally, \acrshortpl{acr:rdd} can be made persistent into storage or can be operated to produce a value. This kind of operations are known as \textit{actions} (e.g., \textit{count}, \textit{reduce} and \textit{save}), and they are the ones that trigger the processing of \acrshortpl{acr:rdd}.
 
 \begin{lstlisting}[
 	language=Scala,
@@ -25,7 +25,7 @@ To interact with the \acrshort{acr:rdd} abstraction, Spark provides several \acr
 % TODO: Glossary entries: Spark, RDD, Distributed File System, data locality, lineage
 During the execution of a program, Spark does not generate imperatively new data collections for every transformation it finds. Instead, it constructs new \acrshortpl{acr:rdd} attached with the operation that has to be applied to each element. The resulting \acrshort{acr:rdd} is a sequence of operations starting from the source dataset, whose semantics depends on the nature of each transformation involved. It is not until an action is found that the target \acrshort{acr:rdd} is resolved and the whole sequence of transformations actually operates the data. 
 
-Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to improve the distribution of operations in a clustered dataset, taking advantage of properties like data locality. Moreover, the trace of operations that produced a certain element in an \acrshort{acr:rdd}, known as \textit{\gls{gls:lineage}}, enables Spark to recover failed tasks only recalling to the necessary data elements that reproduce the lost portion. Figure~\ref{fig:spark:lineage} depicts the resulting \gls{gls:lineage} of the program explained in listing \ref{lst:spark:simple} and figure~\ref{fig:spark:execution} shows a sample execution of the same program.
+Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to improve the distribution of operations in a clustered dataset, taking advantage of properties like data locality. Moreover, the trace of operations that produced a certain element in an \acrshort{acr:rdd}, known as \textit{\gls{gls:lineage}}, enables Spark to recover failed tasks only recalling to the necessary data elements that reproduce the lost portion. Figure~\ref{fig:spark:lineage} depicts the resulting \gls{gls:lineage} of the program explained in Listing \ref{lst:spark:simple} and Figure~\ref{fig:spark:execution} shows a sample execution of the same program.
 
 % TODO: Establish a default for the captions of figures and add a figure to the lineage
 
@@ -49,7 +49,7 @@ Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to impr
 \end{tikzpicture}
 
 \begin{minipage}[t]{\linewidth}
-	\subcaption{\Gls{gls:lineage} of the program shown in listing~\ref{lst:spark:simple}. After each transformation, a new node in the lineage tree is created.} 
+	\subcaption{\Gls{gls:lineage} of the program shown in Listing~\ref{lst:spark:simple}. After each transformation, a new node in the lineage tree is created.} 
 	\label{fig:spark:lineage}
 \end{minipage}
 \vspace{\belowdisplayskip}
@@ -74,20 +74,20 @@ Delaying the resolution of \acrshortpl{acr:rdd} in this way allows Spark to impr
 	\path [line] (PAIRSDATA) -- (REDUCEDATA);
 \end{tikzpicture}
 \begin{minipage}[t]{\linewidth}
-	\subcaption{Sample execution of the program shown in listing~\ref{lst:spark:simple}. If a task failed, Spark is capable to recalculate only the missing portions by retracing the operations in the \gls{gls:lineage} that led to the missing data.}
+	\subcaption{Sample execution of the program shown in Listing~\ref{lst:spark:simple}. If a task failed, Spark is capable to recalculate only the missing portions by retracing the operations in the \gls{gls:lineage} that led to the missing data.}
 	\label{fig:spark:execution}
 \end{minipage}
 
-\caption[\Gls{gls:lineage} Tree and Execution of a Spark Program]{\Gls{gls:lineage} and execution of the Spark program shown in listing~\ref{lst:spark:simple}. The \gls{gls:lineage} is independent from the association of an \acrshort{acr:rdd} to a variable; for example, the \acrshort{acr:rdd} resulting from the filter transformation is not assigned to a variable, however it is a node in the lineage tree.}
+\caption[\Gls{gls:lineage} Tree and Execution of a Spark Program]{\Gls{gls:lineage} and execution of the Spark program shown in Listing~\ref{lst:spark:simple}. The \gls{gls:lineage} is independent from the association of an \acrshort{acr:rdd} to a variable; for example, the \acrshort{acr:rdd} resulting from the filter transformation is not assigned to a variable, however it is a node in the lineage tree.}
 \end{figure}
 
 % TODO: Glossary entries: higher-order functions, user-defined aggregations, closure
-Most of the operations in Spark are higher-order functions, this means they accept one or more functions as parameters. For example, the \textit{filter} transformation requires a function that takes an element of the \acrshort{acr:rdd} and evaluates to a boolean value. These user-defined functions work as closures by scoping their environment even if it contains references to variables outside itself; this enables Spark to ensure consistency when applying such functions in parallel nodes. The use of higher-order functions serve as a flexible mechanism to adapt Spark's computation model to different tasks.
+Most of the operations in Spark are higher-order functions, this means they accept one or more functions as parameters. For example, the \textit{filter} transformation requires a function that takes an element of the \acrshort{acr:rdd} and evaluates to a boolean value. These user-defined functions work as closures by scoping their environment even if it contains references to variables outside itself; this enables Spark to ensure consistency when applying such functions in parallel nodes. The use of higher-order functions serves as a flexible mechanism to adapt Spark's computation model to different tasks.
 
 % TODO: Maybe include a referece to machine learning algorithms that are iterative (this could be considered common knowledge)
 The inherent capacity of Spark to operate in a distributed memory space makes it well-suited for two particular scenarios: iterative algorithms and interactive querying. The former, which are commonplace among machine learning algorithms, leverages the reuse of datasets and avoids having to perform costly I/O operations for every iteration. The latter allows data mining techniques to synthesize queries faster by keeping working data at hand.
 
-Spark is part of the Apache Software Foundation and it is offered as an open-source software~\cite{WebApache2017,WebSpark2017}. Several purpose-specific libraries are built on top of Spark, as is the case of: MLlib for machine learning~\cite{Meng2016}, GraphX for graph computations~\cite{Xin2013}, Spark Streaming for stream processing~\cite{Zaharia2013}, and Spark SQL, an \mbox{SQL-like} interface for structured querying in Spark~\cite{Armbrust2015a}.
+Spark is part of the Apache Software Foundation and it is offered as an open-source software~\cite{WebApache2017,WebSpark2017}. Several purpose-specific libraries are built on top of Spark: MLlib for machine learning~\cite{Meng2016}, GraphX for graph computations~\cite{Xin2013}, Spark Streaming for stream processing~\cite{Zaharia2013}, and Spark SQL, an \mbox{SQL-like} interface for structured querying in Spark~\cite{Armbrust2015a}.
 
 In 2014, Spark reported the fastest Daytona GraySort as defined by the Sort Benchmark committee, and later in 2016, Spark was part of the technology stack that claimed the most resource-efficient Daytona CloudSort as defined by the same committee~\cite{WebSortBenchmark2017,Xin2014,Wang}. Overall, Spark offers a better performance in comparison to other data processing frameworks.
 
