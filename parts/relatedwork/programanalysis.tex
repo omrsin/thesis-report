@@ -72,23 +72,21 @@ public static int search(int[] a, int elem) {
 \label{fig:program-analysis:cfg}
 \end{figure}
 
-% TODO: Add Symbolic Execution and Explicit State Model Checking to the glossary
 Models like \acrshort{acr:cfg}s are useful when reasoning about properties related to the structure of the system under test. However, analyses of this kind often over-approximate on their conclusions given that they lack the means for conclusively asserting properties that depend on the execution of the program. In contrast, \textit{explicit state model checking} and \textit{symbolic execution} techniques reason about the properties of a program when this is being executed. The following sections discuss these two concepts in more detail.
 
 %(Finite State Verificatio) Finite State Verification borrows techniques from symbolic execution and formal verification, but like control and data flow analysis, applies them to models that abstract the potentially infinite state space of a program behavior into finite representations.~\cite{BookPezze2008}. Systematically exploring an enormous space of possible programs states, the challenge is to construct a suitable model of software that can be analyzed with reasonable expenditure of human and computational resources, captures enough significant detail for verification to succeed, and can be shown to be consistent with actual software.
 
 %(State Space Explosion)
 
-% TODO: Some missing references, validate if Explicit State Model Checking and Finite State Verification are actually equivalent
 \TUsubsection{Explicit State Model Checking}
 \label{subsec:explicit-state-model-checking}
 
-This technique, also known as Finite State Verification, consists of systematically exploring the potentially huge state space of a program in order to understand all possible executions. States are determined, for example, by all the possible values a variable or an expression can take during the execution of the system under test or by all possible interleavings that can result from the execution of a concurrent program. 
+This technique, also known as Finite State Verification, consists of systematically exploring the potentially huge explicit state space of a program in order to understand all possible executions~\cite{Clarke2000}. States are determined, for example, by all the possible values a variable or an expression can take during the execution of the system under test or by all possible interleavings that can result from the execution of a concurrent program. This technique is used together with temporal logic predicates that assert the validity of a reached state~\cite{Pnueli1977}. 
 
 As expected, the number of states for non-trivial programs grows exponentially; what is known as \textit{state space explosion} problem. This condition poses several limitations to the practical use of the technique given that computational resources are quickly exhausted and timely conclusions are not feasible. Hence, the challenge relies on the reduction of the state space of the execution while still maintaining a full semantic correspondence between the model and the program, at least in terms of the property that is validated.
 
 % TODO: Missing references about Partial Order Reduction
-Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting transitions resulting from concurrent operations that lead to equivalent states, making it necessary to explore such paths only once. 
+Strategies to make the state space smaller are frequently used when generating and exploring a model as an effort to make the technique applicable. For example, \textit{Partial Order Reduction} is a strategy that aims to reduce the number of states to be explored by detecting transitions resulting from concurrent operations that lead to equivalent states, making it necessary to explore such paths only once~\cite{Godefroid1996,Peled1993,Valmari1991}. 
 
 Nonetheless, explicit state model checking proves itself useful because of its capacity to easily detect faults that would have been challenging, if not impossible, to notice with traditional software testing techniques. In particular, it results useful for discovering faults that would occur rarely under very specific conditions that cannot be generalized. It is commonly used to validate critical and concurrent systems and is often combined with other testing techniques.
 
