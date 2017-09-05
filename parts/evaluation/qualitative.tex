@@ -3,6 +3,8 @@
 
 For the qualitative examination, we specify a series of conceptual requirements that define the functionality of an ideal tool used to conduct symbolic executions on Spark programs. \textit{JPF-SymSpark} is then compared against these requirements in order to determine how successful the implementation of the module is. Given that, to our knowledge, \textit{JPF-SymSpark} is the only tool capable of carrying out symbolic executions on a big data framework, it is relevant to identify what are the main requirements for a tool with such a goal in order to define a complying criteria for further evaluations.
 
+The purpose of this evaluation is to respond some of the research questions stated in Chapter~1. In particular, the requirements elaborate the aim further, offering a detailed description of what means to conduct symbolic executions on Spark programs. Additionally, the requirements answer directly to the second research question ---\textit{What are the particular characteristics associated with the symbolic execution of a Spark program?} while the evaluation of \textit{JPF-SymSpark} also aims to answer the fourth research question, specifically regarding \spf{} ---\textit{What are the advantages and disadvantages of such a framework in the context of Spark applications?}
+
 The requirements presented in this section are as generic as possible, without falling into the specifics of any architecture or programming language. They focus on the capacity of generating artificial input values that ensure full path coverage, which is the ultimate goal of this research work. The following list presents the nine identified requirements and also provides a brief explanation for each of them. 
 
 \TUsubsection{Requirements}
@@ -52,18 +54,18 @@ These general requirements are sufficient to describe a tool for the symbolic ex
 
 \TUsubsection{Validation}
 
-For the validation, each requirement introduced in section~\ref{sec:requirement} is revisited and discussed in the context of \textit{JPF-SymSpark}. We indicate first whether \textit{JPF-SymSpark} complies or not with the requirement and, subsequently, provide an explanation on how this was concluded. On occasions, requirements are only partially met, in which case the reasons for a partial fulfillment are explained. However, section~\ref{sec:limitations} offers a thorough discussion of the limitations of the tool. Moreover, Table~\ref{tab:evaluation:quantitative} presents a summary of the validation results.
+For the validation, each requirement introduced in Section~\ref{sec:requirement} is revisited and discussed in the context of \textit{JPF-SymSpark}. We indicate first whether \textit{JPF-SymSpark} complies or not with the requirement and, subsequently, provide an explanation on how this was concluded. On occasions, requirements are only partially met, in which case the reasons for a partial fulfillment are explained. However, Section~\ref{sec:limitations} offers a thorough discussion of the limitations of the tool. Moreover, Table~\ref{tab:evaluation:quantitative} presents a summary of the validation results.
 
 \begin{itemize}
 \reqitem{1} \textit{The framework should produce a reduced input dataset that ensures full path coverage of the program under test}
 
-This requirement is fulfilled. As explained in section~\ref{subsec:module:output}, \textit{JPF-SymSpark} produces two types of output as a consequence of the symbolic execution. The first is a single input dataset containing a value for each satisfiable path condition found. This dataset is, in fact, minimal given that only one value per path condition is taken. The second type is a family of input datasets produced as a consequence of the symbolic execution of iterative aggregate operations. In this case, all the elements in a dataset follow the same single path condition until they are combined in the aggregate operation. Moreover, the cardinality of the datasets indicates the number of iterations considered in the analysis.
+This requirement is fulfilled. As explained in Section~\ref{subsec:module:output}, \textit{JPF-SymSpark} produces two types of output as a consequence of the symbolic execution. The first is a single input dataset containing a value for each satisfiable path condition found. This dataset is, in fact, minimal given that only one value per path condition is taken. The second type is a family of input datasets produced as a consequence of the symbolic execution of iterative aggregate operations. In this case, all the elements in a dataset follow the same single path condition until they are combined in the aggregate operation. Moreover, the cardinality of the datasets indicates the number of iterations considered in the analysis.
 
 Certifying that the generated datasets actually ensured full path coverage comes as a direct consequence on how the elements of the dataset were obtained. However, we used \textit{JaCoCo}~\cite{JaCoCo2017}, a code coverage analysis tool for Java programs that is capable of measuring different levels of coverage in order to verify the assumption in several examples. Although there is no tool for the Java programming language that is capable of measuring path coverage, \textit{JaCoCo} is able to measure branch coverage and cyclomatic complexity~\cite{McCabe1976} (only intra-procedural), which gives an approximation to path coverage metrics. In all the evaluated examples, the obtained datasets offered full coverage in the two aforementioned metrics.
 
 \reqitem{2} \textit{The framework should report unfeasible path conditions in case there are any}
 
-This requirement is fulfilled. Again, as explained in section~\ref{subsec:module:output}, \textit{JPF-SymSpark} reports unfeasible path conditions as soon as they are found.
+This requirement is fulfilled. Again, as explained in Section~\ref{subsec:module:output}, \textit{JPF-SymSpark} reports unfeasible path conditions as soon as they are found.
 
 \reqitem{3} \textit{The framework shall conduct a symbolic execution of all the operations that conform the program, ensuring the correct interconnection between consecutive transformations and actions}
 
@@ -79,7 +81,7 @@ This requirement is fulfilled. Spark operations over \acrshort{acr:rdd}s of \tex
 
 \reqitem{6} \textit{The framework shall be able to reason over symbolic Strings}
 
-This requirement is partially fulfilled. Support on symbolic String operations is constrained by the limitations of \spf{}. This poses a major limitation for the adoption of the tool given that many big data tasks rely on text processing. More on this in section~\ref{sec:limitations}.
+This requirement is partially fulfilled. Support on symbolic String operations is constrained by the limitations of \spf{}. This poses a major limitation for the adoption of the tool given that many big data tasks rely on text processing. More on this in Section~\ref{sec:limitations}.
 
 \reqitem{7} \textit{The framework shall be able to reason over symbolic data structures}
 

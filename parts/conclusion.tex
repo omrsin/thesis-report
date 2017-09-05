@@ -53,7 +53,7 @@ The next points represent some improvements and extensions to \acrlong{acr:spf} 
 
 \textbf{Symbolic execution of data structures}
 
-As mentioned in section~\ref{sec:limitations}, the limited support of symbolic data structures on \spf{} affected greatly the scope of \textit{JPF-SymSpark}. The use of data structures in Spark programs is a common practice as it is in object-oriented programming languages. Improving \spf{} to provide better mechanisms to handle and manipulate symbolic data structures would be the first step to eventually analyzing Spark operations defined over data structures.
+As mentioned in Section~\ref{sec:limitations}, the limited support of symbolic data structures on \spf{} affected greatly the scope of \textit{JPF-SymSpark}. The use of data structures in Spark programs is a common practice as it is in object-oriented programming languages. Improving \spf{} to provide better mechanisms to handle and manipulate symbolic data structures would be the first step to eventually analyzing Spark operations defined over data structures.
 
 This will prove particularly useful in the many cases where \acrshort{acr:rdd}s are defined over tuples and when using the many pair-oriented operations that are characteristic for this kind of structures. One example of a frequently used operation is the \textit{reduceByKey} transformation, that takes pairs matching the same key and applies a reduce function to them.
 

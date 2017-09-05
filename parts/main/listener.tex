@@ -19,7 +19,7 @@ Additionally to these events, the \textit{SparkMethodListener} also implements t
 
 The \textit{MethodSequenceCoordinator} class was created as a stateful control structure used to keep track of the progress and results of the analysis. Although it is heavily influenced by the events detected in the listener, the idea was to keep it detached from the event-flow responsibilities of the listener, focusing only on the module's process state.
 
-The goal of the coordinator is to switch to the adequate strategy based on the Spark operations. The different strategies actually do the heavy-lifting in the analysis and are in charge of handling the behavior of each particular operation correctly. More on the strategies can be found in section~\ref{subsec:module:strategies}.
+The goal of the coordinator is to switch to the adequate strategy based on the Spark operations. The different strategies actually do the heavy-lifting in the analysis and are in charge of handling the behavior of each particular operation correctly. More on the strategies can be found in Section~\ref{subsec:module:strategies}.
 
 The main actions of the coordinator are:
 
